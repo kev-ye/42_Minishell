@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/19 15:05:20 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/19 23:56:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,9 @@ void	prompt(void)
 
 	while (1)
 	{
-		char *pwd = getcwd(NULL, 0);
-		dprintf(STDIN_FILENO, PROMPT "%s" CLR_COLOR " ", ft_strrchr(pwd, '/') + 1);
-		// ft_putstr_fd(PROMPT, STDIN_FILENO);
-
+		char	*pwd = getcwd(NULL, 0);
+		ft_dprintf(STDIN_FILENO, PROMPT "%s" CLR_COLOR " ", ft_strrchr(pwd, '/') + 1);
+		free(pwd);
 		r = get_next_line(STDIN_FILENO, &ret);
 		//
 		//	PARSE HERE
