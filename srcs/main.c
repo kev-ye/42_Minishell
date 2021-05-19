@@ -6,13 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 00:19:47 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/20 00:43:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-#define CWD_BUFFER 1024
 
 void	*singleton(void)
 {
@@ -30,17 +28,17 @@ void	*singleton(void)
 	return (ptr);
 }
 
+#define CWD_BUFFER 1024
 void	ft_cd(char *dir)
 {
-	char	buf[CWD_BUFFER];
+	// char	buf[CWD_BUFFER];
 
-	getcwd(buf, CWD_BUFFER);
+	// getcwd(buf, CWD_BUFFER);
 	if (chdir(dir))
 	{
 		perror(dir);
 		// exit(errno);
 	}
-	getcwd(buf, CWD_BUFFER);
 }
 
 void	prompt(void)
@@ -55,14 +53,31 @@ void	prompt(void)
 		free(pwd);
 		r = get_next_line(STDIN_FILENO, &ret);
 		
-		if (ft_strncmp(ret, "cd ", 3) == 0)
-			ft_cd(ret + 3);
-		else if (ft_strncmp(ret, "exit", 4) == 0)
-			exit(0);
 		//
 		//	PARSE HERE
 		//
-		printf("[%s]\n", ret);
+		char **args_split = ft_split(ret, ' ');
+
+		if (ft_strcmp(*args_split, "cd") == 0 && ft_strslen(args_split) > 1)
+			ft_cd(args_split[1]);
+		else if (ft_strcmp(*args_split, "exit") == 0)
+			exit(0);
+
+
+		size_t i = 0;
+		while (args_split[i])
+		{
+			ft_printf("[%s]", args_split[i]);
+			if (args_split[i + 1])
+				ft_printf(" ");
+			++i;
+		}
+		
+		if (ft_strslen(args_split) > 0)
+			ft_printf("\n");
+
+
+		ft_strsfree(ft_strslen(args_split), args_split);
 		free(ret);
 		if (r <= 0)
 			break ;
