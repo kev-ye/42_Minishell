@@ -6,28 +6,30 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/17 17:59:59 by kaye             ###   ########.fr        #
+#    Updated: 2021/05/20 10:37:03 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
-CC		= clang
-CFLAGS 	= -Wall -Wextra -Werror
-IFLAGS 	= -I./inc
+CC			= clang
+CFLAGS 		= -Wall -Wextra -Werror
+IFLAGS 		= -I./inc -I./libft/incs
+LIBFLAGS 	= -L./libft -lft 
 
 # DIRECTORIES
 
 BUILD		:= .build
+LIB_DIR		:= libft
 INC_DIR		:= inc
 SRC_DIR		:= src
-OBJ_DIR 	:= obj
+OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SRC_DIR))
 
 # FILES
 
 NAME	:= minishell
-SRC		:= 
+SRC		:= main.c
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 # COLORS
@@ -45,14 +47,25 @@ WHITE_COLOR 	= \033[1;107m
 # MAKEFILE
 
 $(NAME): $(OBJ)
+	@echo "Compiling $(RED_COLOR)Libft $(DEFAULT_COLOR)..."
+	@$(MAKE) -C $(LIB_DIR) >/dev/null
+	@echo "Creating $(RED_COLOR) $@ $(DEFAULT_COLOR)..."
+	@$(CC) $(CFLAGS) $(IFLAGS) $^ -o $@ $(LIBFLAGS)
+	@echo "$(GREEN_COLOR)Compilation $(YELLOW_COLOR)of $(RED_COLOR)$@ $(BLUE_COLOR)done$(DEFAULT_COLOR)"
 
-all: $(NAME):
+all: $(NAME)
 
 clean:
-	rm -rf $(BUILD)
+	@echo "Deleting $(CYAN_COLOR).o file $(DEFAULT_COLOR)of libft ..."
+	@$(MAKE) clean -C $(LIB_DIR) >/dev/null
+	@echo "Deleting $(CYAN_COLOR).o file $(DEFAULT_COLOR)of minishell ..."
+	@rm -rf $(BUILD)
 
 fclean: clean
-	rm -rf $(NAME)
+	@echo "Deleting $(CYAN_COLOR)libft $(DEFAULT_COLOR)file ..."
+	@$(MAKE) fclean -C $(LIB_DIR) >/dev/null
+	@echo "Deleting $(CYAN_COLOR)minishell $(DEFAULT_COLOR)file ..."
+	@rm -rf $(NAME)
 
 re: fclean all
 
@@ -60,7 +73,7 @@ $(BUILD):
 	@echo "Creating $(RED_COLOR)$@ $(DEFAULT_COLOR)..."
 	@mkdir $@ $(DIRS)
 	
-$(BUILD)/%.o:$(BUILD)/%.c | $(BUILD)
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c | $(BUILD)
 	@echo "Compiling $(YELLOW_COLOR)$< $(DEFAULT_COLOR)..."
 	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 

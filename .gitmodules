@@ -1,0 +1,3 @@
+[submodule "libfg"]
+	path = libfg
+	url = https://github.com/besellem/libft.git
