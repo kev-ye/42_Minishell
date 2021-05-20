@@ -6,11 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-<<<<<<< HEAD
-#    Updated: 2021/05/20 10:37:03 by kaye             ###   ########.fr        #
-=======
-#    Updated: 2021/05/20 11:54:35 by kaye             ###   ########.fr        #
->>>>>>> master
+#    Updated: 2021/05/20 11:59:06 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,24 +14,15 @@
 
 CC			= clang
 CFLAGS 		= -Wall -Wextra -Werror
-<<<<<<< HEAD
 IFLAGS 		= -I./inc -I./libft/incs
-=======
-IFLAGS 		= -I./incs -I./libft/incs
->>>>>>> master
 LIBFLAGS 	= -L./libft -lft 
 
 # DIRECTORIES
 
 BUILD		:= .build
 LIB_DIR		:= libft
-<<<<<<< HEAD
 INC_DIR		:= inc
 SRC_DIR		:= src
-=======
-INC_DIR		:= incs
-SRC_DIR		:= srcs
->>>>>>> master
 OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SRC_DIR))
 
