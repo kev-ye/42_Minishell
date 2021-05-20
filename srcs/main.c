@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 17:58:05 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/20 18:13:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,39 +236,18 @@ int	ft_exec_cmd(char *cmd)
 int	main(__attribute__((unused))int ac,
 		__attribute__((unused))const char **av,
 		__attribute__((unused))char **env)
-{
-	(void)ac;
-	(void)av;
-	(void)env;
-	
+{	
 	// ft_printstrs(STDOUT_FILENO, env);
-
-	// pid_t id = fork();
-
-	// if (id == 0)
-	// {
-	// 	execve()
-	// 	printf("CHILD PROC\n");
-	// }
-	// else
-	// {
-	// 	printf("PARENT PROC\n");
-	// 	wait(NULL);
-	// }
-
 	singleton()->env = env;
-	char *ex = search_executable("ls ");
+	char *ex = search_executable("ls");
 	if (ex)
 	{
+		ft_printf("`ls' command:\n");
 		ft_exec_cmd(ex);
 		free(ex);
 	}
-
 	// ft_printf("pwd=[%s]\n", getenv("PWD"));
-	
-	// ft_getenv(env);
-	
+	// ft_getenv(env);	
 	prompt();
-	
 	return (0);
 }

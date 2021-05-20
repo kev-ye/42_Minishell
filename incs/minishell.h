@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 17:55:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/20 18:14:32 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,31 +62,31 @@ typedef struct s_dlist
 	void			*data;
 	struct s_dlist	*prev;
 	struct s_dlist	*next;
-} t_dlist;
+}	t_dlist;
 
 typedef struct s_fptr
 {
 	char	*data;
 	int		(*f)();
-} t_fptr;
+}	t_fptr;
 
 typedef struct s_cmd
 {
 	char	**cmd;
 	int		pipe;
 	int		redirect;
-} t_cmd;
+}	t_cmd;
 
 typedef struct s_minishl
 {
 	char	**env;
 	char	**cmds;
 	t_list	*lst;
-} t_minishl;
+}	t_minishl;
 
 /*
 ** -- PROTOTYPES --
 */
-char	*search_executable(char *s);
+char	*search_executable(char *command);
 
 #endif
