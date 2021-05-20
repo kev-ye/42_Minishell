@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/19 14:59:44 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/20 17:55:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,55 @@
 */
 # define PROG_NAME "minishell"
 
+// # define SUCCESS 0
+// # define ERROR 1
+
 /*
 ** -- DATA STRUCTURES --
 */
 
+enum	e_state
+{
+	SUCCESS,
+	ERROR
+};
+
+enum	e_search
+{
+	FOUND,
+	NOT_FOUND = -1
+};
+
+typedef struct s_dlist
+{
+	void			*data;
+	struct s_dlist	*prev;
+	struct s_dlist	*next;
+} t_dlist;
+
+typedef struct s_fptr
+{
+	char	*data;
+	int		(*f)();
+} t_fptr;
+
+typedef struct s_cmd
+{
+	char	**cmd;
+	int		pipe;
+	int		redirect;
+} t_cmd;
+
+typedef struct s_minishl
+{
+	char	**env;
+	char	**cmds;
+	t_list	*lst;
+} t_minishl;
+
 /*
 ** -- PROTOTYPES --
 */
+char	*search_executable(char *s);
 
 #endif
