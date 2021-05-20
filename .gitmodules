@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 [submodule "libfg"]
 	path = libfg
 	url = https://github.com/besellem/libft.git
+=======
+[submodule "libft"]
+	path = libft
+	url = git@github.com:besellem/libft.git
+>>>>>>> master
