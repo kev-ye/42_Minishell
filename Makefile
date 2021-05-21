@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/20 11:59:06 by kaye             ###   ########.fr        #
+#    Updated: 2021/05/21 11:32:12 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SRC_DIR))
 # FILES
 
 NAME	:= minishell
-SRC		:= main.c
+SRC		:= main.c exec_cmds.c parser.c search_executable.c utils.c
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 # COLORS
