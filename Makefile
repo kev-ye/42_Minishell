@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/21 11:32:12 by kaye             ###   ########.fr        #
+#    Updated: 2021/05/21 11:53:42 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,22 +14,34 @@
 
 CC			= clang
 CFLAGS 		= -Wall -Wextra -Werror
-IFLAGS 		= -I./inc -I./libft/incs
-LIBFLAGS 	= -L./libft -lft 
+IFLAGS 		= -I./incs -I./libft/incs
+LIBFLAGS 	= -L./libft -lft
 
 # DIRECTORIES
 
 BUILD		:= .build
 LIB_DIR		:= libft
-INC_DIR		:= inc
-SRC_DIR		:= src
+INC_DIR		:= incs
+SRC_DIR		:= srcs
+SUB_DIR		:= builtin \
+			   parser \
+			   util
 OBJ_DIR 	:= $(BUILD)/obj
-DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SRC_DIR))
+DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 
 # FILES
 
 NAME	:= minishell
-SRC		:= main.c exec_cmds.c parser.c search_executable.c utils.c
+SRC		:= main.c
+SUB_SRC	:= exec_cmds.c \
+		   parser.c \
+		   search_executable.c \
+		   sig.c
+SRC		+= $(addprefix parser/, $(SUB_SRC))
+# SUB_SRC	:=
+# SRC		+= $(addprefix builtin/, $(SUB_SRC))
+SUB_SRC	:= utils.c
+SRC		+= $(addprefix util/, $(SUB_SRC))
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 # COLORS
