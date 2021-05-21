@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 22:58:23 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/21 16:52:08 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@
 
 # define SUCCESS 0
 # define ERROR 1
+// # define PATH_MAX_LEN 256
 
 /*
 ** -- DATA STRUCTURES --
@@ -75,7 +76,8 @@ typedef struct s_fptr
 
 typedef struct s_cmd
 {
-	char	**cmd;
+	char	**av;
+	int		ac;
 	int		pipe;
 	int		redirect;
 }	t_cmd;
@@ -90,17 +92,32 @@ typedef struct s_minishl
 
 /*
 ** -- PROTOTYPES --
-** Utils / General
+*/
+
+/*
+** Utils
 */
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
 void		ft_free_exit(void);
 
+/*
+** Parser
+*/
 t_minishl	*singleton(void);
 char		*search_executable(char *command);
 int			got_quotes(int add_single, int add_double, int reinit);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
+
+/*
+** Builtin
+*/
+void   ft_echo(t_cmd *cmd);
+int    ft_cd(const char *path);
+int    ft_pwd(void);
+int    ft_env(t_cmd *cmd);
+void   ft_exit(void);
 
 #endif
