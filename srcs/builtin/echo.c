@@ -6,35 +6,45 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/21 16:52:20 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/22 15:48:12 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void    ft_echo(t_cmd *cmd)
+int    ft_echo(char **cmds)
 {
     int i;
+    int len_cmd;
 
-    if (ft_strcmp(cmd->av[1]), "-n")
+    i = 0;
+    if (!cmds || !*cmds)
+        return (ERROR);
+    while (cmds[i])
+        ++i;
+    len_cmd = i;
+    if (*cmds && *(cmds + 1) && !ft_strcmp(cmds[1], "-n"))
     {
         i = 2;
-        while (i < ac)
+        while (i < len_cmd)
         {
-            printf("%s", cmd->av[i++]);
-            if (i < ac - 1)
+            printf("in loop i : %d len_cmd : %d\n", i, len_cmd);
+            printf("0 : %s 1 : %s 2 : %s\n", cmds[0], cmds[1], cmds[2]);
+            printf("%s", cmds[i++]);
+            if (i < len_cmd)
                 printf(" ");
         }
     }
     else
     {
         i = 1;
-        while (i < ac)
+        while (i < len_cmd && cmds[i])
         {
-            printf("%s", cmd->av[i++]);
-            if (i < ac - 1)
+            printf("%s", cmds[i++]);
+            if (i < len_cmd)
                 printf(" ");
         }
         printf("\n");
     }
+    return (SUCCESS);
 }

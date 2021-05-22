@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 22:42:37 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/22 12:51:26 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,27 @@ void	prompt(void)
 	}
 }
 
+///////////////////////////////////////////////////////////////
+t_cmd	*init_cmd(void)   /////////////////////////////////kaye
+{
+	t_cmd *cmd;
+
+	cmd = calloc(1, sizeof(t_cmd));
+	if (!cmd)
+		return (NULL);
+	cmd->ac = -1;
+	cmd->av = NULL;
+	return (cmd);
+}
+//////////////////////////////////////////////////////////////
+
 int	main(__attribute__((unused))int ac,
 		__attribute__((unused))const char **av,
 		__attribute__((unused))char **env)
 {
 	// ft_printstrs(STDOUT_FILENO, env);
 	singleton()->env = env;
+
 	// char *ex = search_executable("ls");
 	// if (ex)
 	// {

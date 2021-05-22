@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/21 16:52:08 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/22 15:57:26 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@
 */
 # define PROG_NAME "minishell"
 # define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
+# define BUILTIN 7
 
 # define SUCCESS 0
 # define ERROR 1
@@ -88,7 +89,15 @@ typedef struct s_minishl
 	char	**cmds;
 	t_list	*lst;
 	int		last_return_value;
+	t_cmd 	*cmd;
 }	t_minishl;
+
+typedef struct s_builtin
+{
+	char *cmd;
+	int (*f1)(char **cmds);
+	int (*f2)(void);
+}	t_builtin;
 
 /*
 ** -- PROTOTYPES --
@@ -110,14 +119,18 @@ char		*search_executable(char *command);
 int			got_quotes(int add_single, int add_double, int reinit);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
+////////////////////// kaye
+char	*search_builtin_executable(char *command);
+////////////////////////
 
 /*
 ** Builtin
 */
-void   ft_echo(t_cmd *cmd);
-int    ft_cd(const char *path);
-int    ft_pwd(void);
-int    ft_env(t_cmd *cmd);
-void   ft_exit(void);
+int		ft_echo(char **cmds);
+int    	ft_cd(char **cmds);
+int		ft_pwd(void);
+int   	ft_env(char **cmds);
+int 	ft_unset(char **cmds);
+int   	ft_exit(void);
 
 #endif

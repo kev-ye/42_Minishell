@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 23:28:32 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/22 16:06:39 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,31 @@ void	ft_interrupt(int code)
 	ft_dprintf(STDIN_FILENO, "interrupt: %d\n", code);
 	// exit(code);
 }
+
+//////////////////////////////////////////////////kaye
+int ft_exec_builtin_cmd(char **cmds)
+{
+	const t_builtin builtin[BUILTIN] = {{"echo", ft_echo, NULL}, 
+				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
+				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
+				{"export", NULL, NULL}, {"exit", NULL, ft_exit}};
+	int i;
+
+	i = 0;
+	while (i < BUILTIN)
+	{
+		if (!ft_strcmp(cmds[0], builtin[i].cmd))
+		{
+			if (!builtin[i].f1)
+				return (!builtin[i].f2());
+			else
+				return (!builtin[i].f1(cmds));
+		}
+		++i;
+	}
+	return (SUCCESS);
+}
+//////////////////////////////////////////////////////
 
 int	ft_exec_cmd(char *file, char **cmds)
 {
@@ -96,7 +121,16 @@ void	ft_pre_exec_cmd(void *cmd)
 	if (!cmd_list || !*cmd_list)
 		return ;
 	char *ex = search_executable(cmd_list[0]);
-	if (ex)
+	//////////////////////////////////////////////////////// kaye
+	char *bl = search_builtin_executable(cmd_list[0]);
+	if (bl)
+	{
+		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
+		singleton()->last_return_value = ft_exec_builtin_cmd(cmd_list);
+		// free(bl);
+	}
+	////////////////////////////////////////////////////////////
+	else if (ex)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd_list);

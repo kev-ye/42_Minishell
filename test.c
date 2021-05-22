@@ -4,10 +4,9 @@
 #include <string.h>
 #include <sys/errno.h>
 #include <stdlib.h>
-#include "libft.h"
 
 int main(int ac, char **av, char **env)
 {
-    // testing
+    printf("%s\n", getenv("lol"));
     return (0);
 }

@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/21 12:16:29 by kaye             ###   ########.fr        #
+#    Updated: 2021/05/22 12:23:18 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,8 +38,14 @@ SUB_SRC	:= exec_cmds.c \
 		   search_executable.c \
 		   sig.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
-# SUB_SRC	:=
-# SRC		+= $(addprefix builtin/, $(SUB_SRC))
+SUB_SRC	:= cd.c \
+		   echo.c \
+		   env.c \
+		   exit.c \
+		   export.c \
+		   pwd.c \
+		   unset.c
+SRC		+= $(addprefix builtin/, $(SUB_SRC))
 SUB_SRC	:= utils.c
 SRC		+= $(addprefix util/, $(SUB_SRC))
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)

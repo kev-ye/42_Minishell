@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   search_executable.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 18:16:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/22 16:02:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ static char	*find_exec(char **exectbl, char *command)
 			close(fd);
 			return (cmd);
 		}
+		///////////////////////////////kaye
+		//printf("cmd : %s\n", cmd); /// dont underst why can open if file no exist
+		///////////////////////////////////
 		ft_memdel((void **)&cmd);
 	}
 	return (NULL);
@@ -42,11 +45,34 @@ char	*search_executable(char *command)
 	char		*cmd;
 
 	if (!path)
+	{
+		///////////////// kaye
+		printf("Path are unset ... maybe here need add some check function\n"); // need add check function for no found message
+		//////////////////////
 		return (NULL);
+	}
 	exectbl = ft_split(path, ':');
 	if (!exectbl)
 		return (NULL);
 	cmd = find_exec(exectbl, command);
 	ft_strsfree(ft_strslen(exectbl), exectbl);
 	return (cmd);
+}
+
+char	*search_builtin_executable(char *command)
+{
+	const t_builtin builtin[BUILTIN] = {{"echo", ft_echo, NULL}, 
+				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
+				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
+				{"export", NULL, NULL}, {"exit", NULL, ft_exit}};
+	int i;
+
+	i = 0;
+	while (i < BUILTIN)
+	{
+		if (!ft_strcmp(command, builtin[i].cmd))
+			return (command);
+		++i;
+	}
+	return (NULL);
 }
