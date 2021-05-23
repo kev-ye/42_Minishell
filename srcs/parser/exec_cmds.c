@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 12:24:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 16:44:50 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,48 +95,27 @@ char	**ft_lst_to_strs(t_list *lst)
 	return (s);
 }
 
-void	ft_pre_exec_cmd(void *cmd)
+void	ft_pre_exec_cmd(void *ptr)
 {
-	__attribute__((unused)) char	*s;
-	__attribute__((unused)) t_list	*cmds;
-	__attribute__((unused)) size_t	i;
+	t_cmd	*cmd;
 
-	// got_quotes(0, 0, 1);
-	// s = (char *)cmd;
-	// i = 0;
-	// while (s[i])
-	// {
-	// 	got_quotes((s[i] == '\''), (s[i] == '"'), 0);
-	// 	if (!got_quotes(0, 0, 0))
-	// 	{
-	// 		ft_lstadd_back(&cmds, ft_lstnew(ft_substr(s, 0, i)));
-	// 		s = s + i;
-	// 		i = 0;
-	// 	}
-	// 	else
-	// 		++i;
-	// }
-	// char **cmd_list = ft_lst_to_strs(cmds);
-	char **cmd_list = ft_split(cmd, ' ');
-	if (!cmd_list || !*cmd_list)
+	cmd = ptr;
+	if (!cmd->args || !*cmd->args)
 		return ;
-	char *ex = search_executable(cmd_list[0]);
-	//////////////////////////////////////////////////////// kaye
-	char *bl = search_builtin_executable(cmd_list[0]);
+	char *ex = search_executable(cmd->args[0]);
+	char *bl = search_builtin_executable(cmd->args[0]);
 	if (bl)
 	{
 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
-		singleton()->last_return_value = ft_exec_builtin_cmd(cmd_list);
-		// free(bl);
+		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
 	}
-	////////////////////////////////////////////////////////////
 	else if (ex)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-		singleton()->last_return_value = ft_exec_cmd(ex, cmd_list);
-		free(ex);
+		singleton()->last_return_value = ft_exec_cmd(ex, cmd->args);
+		ft_memdel((void **)&ex);
 	}
-	ft_strsfree(ft_strslen(cmd_list) + 1, cmd_list);
+	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 
 void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
@@ -152,20 +131,8 @@ void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
 	}
 }
 
-void	*clean_data(void *data)
-{
-	// void	*tmp;
-
-	// tmp = data;
-	// data = ft_strtrim(data, " ");
-	// free(tmp);
-	return (data);
-}
-
 void	ft_exec_each_cmd(void)
 {
-	ft_lstiter_replace(singleton()->lst, clean_data);
 	ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
-
-	// ft_lstprint(singleton()->lst, '\n');
+	// ft_lstprint_cmd(singleton()->lst, '\n');
 }

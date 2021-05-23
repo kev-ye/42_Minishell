@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 12:26:21 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 13:04:57 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static char	*find_exec(char **exectbl, char *command)
 		///////////////////////////////////
 		ft_memdel((void **)&cmd);
 	}
+	ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", PROG_NAME, command, strerror(errno));
 	return (NULL);
 }
 

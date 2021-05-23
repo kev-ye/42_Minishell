@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 22:03:05 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 16:30:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,25 @@ void	ft_lstprint(t_list *lst, char sep)
 	while (tmp)
 	{
 		ft_printf("%s%c", tmp->content, sep);
+		tmp = tmp->next;
+	}
+}
+
+void	ft_lstprint_cmd(t_list *lst, char sep)
+{
+	t_list	*tmp;
+	t_cmd	*cmd;
+	size_t	i;
+
+	tmp = lst;
+	while (tmp)
+	{
+		ft_putendl("####");
+		cmd = tmp->content;
+		i = 0;
+		while (cmd->args[i])
+			ft_printf("arg[%s] stat[%.16b]%c", cmd->args[i++], cmd->status_flag, sep);
+		ft_putstr("\n");
 		tmp = tmp->next;
 	}
 }
