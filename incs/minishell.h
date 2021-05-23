@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/22 15:57:26 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/23 17:52:02 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
 void		ft_free_exit(void);
+void 		ft_list_sort(t_list **begin_list, int (*cmp)());
 
 /*
 ** Parser
@@ -130,6 +131,7 @@ int		ft_echo(char **cmds);
 int    	ft_cd(char **cmds);
 int		ft_pwd(void);
 int   	ft_env(char **cmds);
+int    	ft_export(char **cmds);
 int 	ft_unset(char **cmds);
 int   	ft_exit(void);
 

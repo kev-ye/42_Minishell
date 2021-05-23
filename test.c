@@ -5,8 +5,13 @@
 #include <sys/errno.h>
 #include <stdlib.h>
 
-int main(int ac, char **av, char **env)
+extern char**environ;
+
+int main ()
 {
-    printf("%s\n", getenv("lol"));
-    return (0);
+    char **var;
+
+    for (var =environ;*var !=NULL;++var)
+        printf ("%s\n",*var);
+    return 0;
 }

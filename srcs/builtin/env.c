@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:43 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/23 12:17:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 15:45:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ int    ft_env(char **cmds)
     i = 0;
     if (len_cmd == 1)
         while (singleton()->env[i])
-            printf("%s\n", singleton()->env[i++]);
+        {
+            // maybe need add a check condition if set a var without '='
+            ft_dprintf(STDIN_FILENO, "%s\n", singleton()->env[i++]);
+        }
     // else if (cmd->ac >= 2)
     // {
     //     // coming soon ...

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/20 22:03:05 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 17:52:04 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,24 @@ void	ft_free_exit(void)
 	ft_lstclear(&singleton()->lst, free);
 	free(singleton());
 	exit(0);
+}
+
+void ft_list_sort(t_list **begin_list, int (*cmp)())
+{
+    t_list *list;
+    void *content;
+
+    list = *begin_list;
+    while (list && list->next)
+    {
+        if (cmp(list->content, list->next->content) > 0)
+        {
+            content = list->content;
+            list->content = list->next->content;
+            list->next->content = content;
+            list = *begin_list;
+        }
+        else
+            list = list->next;
+    }
 }

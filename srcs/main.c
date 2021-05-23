@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 12:07:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 19:48:32 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,19 +80,16 @@ void	prompt(void)
 	}
 }
 
-///////////////////////////////////////////////////////////////
-t_cmd	*init_cmd(void)   /////////////////////////////////kaye
-{
-	t_cmd *cmd;
+// void	get_env(char **env)
+// {
+// 	char **new_env;
+// 	int i;
 
-	cmd = calloc(1, sizeof(t_cmd));
-	if (!cmd)
-		return (NULL);
-	cmd->ac = -1;
-	cmd->av = NULL;
-	return (cmd);
-}
-//////////////////////////////////////////////////////////////
+// 	i = 0;
+// 	while (env[i])
+// 		++i;
+// 	new_env = malloc(sizeof())
+// }
 
 int	main(__attribute__((unused))int ac,
 		__attribute__((unused))const char **av,

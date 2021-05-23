@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:21:48 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/21 16:09:57 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/23 14:50:28 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int    ft_pwd(void)
     path = getcwd(NULL, 0);
     if (!path)
         return (ERROR);
-    printf("%s\n", path);
+    ft_dprintf(STDIN_FILENO, "%s\n", path);
     free(path);
     return (SUCCESS);      
 }
