@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/22 12:51:26 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/23 12:07:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,11 @@ void	print_prompt(void)
 {
 	const char	*pwd = getcwd(NULL, 0);
 
-	ft_dprintf(STDIN_FILENO, PROMPT, ft_strrchr(pwd, '/') + 1);
-	free((char *)pwd);
+	if (pwd)
+	{
+		ft_dprintf(STDIN_FILENO, PROMPT, ft_strrchr(pwd, '/') + 1);
+		free((char *)pwd);
+	}
 }
 
 void	prompt(void)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   search_executable.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/22 16:02:06 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/23 12:26:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,14 @@ char	*search_executable(char *command)
 
 char	*search_builtin_executable(char *command)
 {
-	const t_builtin builtin[BUILTIN] = {{"echo", ft_echo, NULL}, 
-				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
-				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-				{"export", NULL, NULL}, {"exit", NULL, ft_exit}};
-	int i;
+	const t_builtin	builtin[] = {
+		{"echo", ft_echo, NULL}, {"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd},
+		{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
+		{"export", NULL, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
+	int				i;
 
 	i = 0;
-	while (i < BUILTIN)
+	while (builtin[i].cmd)
 	{
 		if (!ft_strcmp(command, builtin[i].cmd))
 			return (command);

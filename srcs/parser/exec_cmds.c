@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/22 16:06:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/23 12:24:59 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@ void	ft_interrupt(int code)
 //////////////////////////////////////////////////kaye
 int ft_exec_builtin_cmd(char **cmds)
 {
-	const t_builtin builtin[BUILTIN] = {{"echo", ft_echo, NULL}, 
+	const t_builtin builtin[] = {{"echo", ft_echo, NULL}, 
 				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
 				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-				{"export", NULL, NULL}, {"exit", NULL, ft_exit}};
+				{"export", NULL, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
 	int i;
 
 	i = 0;
-	while (i < BUILTIN)
+	while (builtin[i].cmd)
 	{
 		if (!ft_strcmp(cmds[0], builtin[i].cmd))
 		{

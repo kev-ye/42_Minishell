@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/22 15:48:12 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/23 12:13:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,9 @@ int    ft_echo(char **cmds)
         i = 2;
         while (i < len_cmd)
         {
-            printf("in loop i : %d len_cmd : %d\n", i, len_cmd);
-            printf("0 : %s 1 : %s 2 : %s\n", cmds[0], cmds[1], cmds[2]);
-            printf("%s", cmds[i++]);
+            ft_dprintf(STDIN_FILENO, "%s", cmds[i++]);
             if (i < len_cmd)
-                printf(" ");
+                ft_dprintf(STDIN_FILENO, " ");
         }
     }
     else
@@ -40,11 +38,11 @@ int    ft_echo(char **cmds)
         i = 1;
         while (i < len_cmd && cmds[i])
         {
-            printf("%s", cmds[i++]);
+            ft_dprintf(STDIN_FILENO, "%s", cmds[i++]);
             if (i < len_cmd)
-                printf(" ");
+                ft_dprintf(STDIN_FILENO, " ");
         }
-        printf("\n");
+        ft_dprintf(STDIN_FILENO, "\n");
     }
     return (SUCCESS);
 }
