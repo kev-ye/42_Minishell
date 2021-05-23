@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 16:34:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 18:05:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,25 +56,11 @@ void	prompt(void)
 		r = get_next_line(STDIN_FILENO, &ret);
 		ft_parse(ret);
 		ft_exec_each_cmd();
-		free(ret);
+		ft_memdel((void **)(&ret));
 		if (r <= 0)
 			break ;
 	}
 }
-
-// ///////////////////////////////////////////////////////////////
-// t_cmd	*init_cmd(void)   /////////////////////////////////kaye
-// {
-// 	t_cmd *cmd;
-
-// 	cmd = calloc(1, sizeof(t_cmd));
-// 	if (!cmd)
-// 		return (NULL);
-// 	cmd->ac = -1;
-// 	cmd->av = NULL;
-// 	return (cmd);
-// }
-// //////////////////////////////////////////////////////////////
 
 int	main(__attribute__((unused))int ac,
 		__attribute__((unused))const char **av,

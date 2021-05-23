@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 16:52:35 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/23 18:05:28 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	quotes2close(char c, int reinit)
 	return ((quotes.sgl % 2 == 1) || (quotes.dbl % 2 == 1));
 }
 
-int	cmd_len(char *cmd)
+int	cmd_args_len(char *cmd)
 {
 	int				len;
 	t_quotes		quotes;
@@ -61,9 +61,10 @@ int		is_eol(char *s)
 	return (*s == ';' || *s == '|' || *s == '>' || *s == '<'
 			|| ft_strncmp(s, ">>", 2) == 0);
 }
+
 char	**clean_cmd(char *cmd)
 {
-	const int	len_ = cmd_len(cmd);
+	const int	len_ = cmd_args_len(cmd);
 	char		**new;
 	size_t		i;
 	size_t		j;
