@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 19:48:32 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 12:43:09 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,25 +79,27 @@ void	prompt(void)
 			break ;
 	}
 }
+t_list	*get_env(char **env)
+{
+	t_list *new_env;
+	int i;
 
-// void	get_env(char **env)
-// {
-// 	char **new_env;
-// 	int i;
-
-// 	i = 0;
-// 	while (env[i])
-// 		++i;
-// 	new_env = malloc(sizeof())
-// }
+	i = 0;
+	while (env[i])
+	{
+		ft_lstadd_back(&new_env, ft_lstnew_env((void *)env[i]));
+		++i;
+	}
+	return (new_env);
+}
 
 int	main(__attribute__((unused))int ac,
 		__attribute__((unused))const char **av,
 		__attribute__((unused))char **env)
 {
 	// ft_printstrs(STDOUT_FILENO, env);
-	singleton()->env = env;
-
+	// singleton()->env = env;
+	singleton()->env = get_env(env);
 	// char *ex = search_executable("ls");
 	// if (ex)
 	// {

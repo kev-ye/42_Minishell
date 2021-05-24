@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 17:52:02 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:04:31 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ typedef struct s_cmd
 
 typedef struct s_minishl
 {
-	char	**env;
+	// char	**env;
+	t_list *env;
 	char	**cmds;
 	t_list	*lst;
 	int		last_return_value;
@@ -111,6 +112,8 @@ void		ft_lstprint(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
 void		ft_free_exit(void);
 void 		ft_list_sort(t_list **begin_list, int (*cmp)());
+t_list		*ft_lstnew_env(void *content);
+t_list  	*search_env(char *tofind, t_list **env);
 
 /*
 ** Parser
