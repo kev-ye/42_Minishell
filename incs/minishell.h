@@ -6,7 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/05/24 15:06:35 by kaye             ###   ########.fr       */
+=======
+/*   Updated: 2021/05/24 15:09:02 by kaye             ###   ########.fr       */
+>>>>>>> kaye
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +79,18 @@ typedef struct s_cmd
 
 typedef struct s_minishl
 {
+<<<<<<< HEAD
 	char	**env;					// env list
 	t_list	*lst;					// main list containing all parsed commands
 	int		last_return_value;		// last return value ($?)
 	char	*cwd;					// pwd (mainly for `prompt' function)
+=======
+	t_list *env;
+	char	**cmds;
+	t_list	*lst;
+	int		last_return_value;
+	t_cmd 	*cmd;
+>>>>>>> kaye
 }	t_minishl;
 
 typedef struct s_builtin
