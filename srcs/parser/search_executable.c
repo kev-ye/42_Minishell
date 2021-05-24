@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   search_executable.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 13:04:57 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:06:47 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ char	*search_builtin_executable(char *command)
 	const t_builtin	builtin[] = {
 		{"echo", ft_echo, NULL}, {"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd},
 		{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-		{"export", NULL, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
+		{"export", ft_export, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
 	int				i;
 
 	i = 0;

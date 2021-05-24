@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 16:44:50 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:06:43 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int ft_exec_builtin_cmd(char **cmds)
 	const t_builtin builtin[] = {{"echo", ft_echo, NULL}, 
 				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
 				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-				{"export", NULL, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
+				{"export", ft_export, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
 	int i;
 
 	i = 0;

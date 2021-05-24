@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 16:30:35 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:07:00 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,4 +74,64 @@ void	ft_free_exit(void)
 	ft_lstclear(&singleton()->lst, free);
 	free(singleton());
 	exit(0);
+}
+
+void ft_list_sort(t_list **begin_list, int (*cmp)())
+{
+    t_list *list;
+    void *content;
+
+    list = *begin_list;
+    while (list && list->next)
+    {
+        if (cmp(list->content, list->next->content) > 0)
+        {
+            content = list->content;
+            list->content = list->next->content;
+            list->next->content = content;
+            list = *begin_list;
+        }
+        else
+            list = list->next;
+    }
+}
+
+t_list	*ft_lstnew_env(void *content)
+{
+	t_list	*new;
+	char *env;
+
+	new = (t_list *)malloc(sizeof(t_list));
+	if (!new)
+		return (NULL);
+	env = ft_strdup((char *)content);
+	if (!env)
+		return (NULL);
+	new->content = (void *)env;
+	new->next = NULL;
+	return (new);
+}
+
+t_list  *search_env(char *tofind, t_list **env)
+{
+    t_list *tmp;
+    size_t len_tofind;
+
+    len_tofind = 0;
+    while (tofind[len_tofind] && tofind[len_tofind] != '=')
+        ++len_tofind;
+    tmp = *env;
+    while (tmp)
+    {
+        if ((char *)tmp->content
+            && !ft_strncmp((char *)tmp->content, tofind, len_tofind)
+            && ((char *)(tmp->content))[len_tofind] == '=')
+            return (tmp);
+        else if ((char *)tmp->content
+            && !ft_strncmp((char *)tmp->content, tofind, len_tofind)
+            && ((char *)(tmp->content))[len_tofind] == '\0')
+            return (tmp);
+        tmp = tmp->next;
+    }
+    return (NULL);
 }
