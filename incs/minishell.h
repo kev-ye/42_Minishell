@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:04:31 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:09:02 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ typedef struct s_cmd
 
 typedef struct s_minishl
 {
-	// char	**env;
 	t_list *env;
 	char	**cmds;
 	t_list	*lst;
