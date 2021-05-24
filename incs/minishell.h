@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:51:58 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 17:44:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@
 # define SUCCESS 0
 # define ERROR 1
 // # define PATH_MAX_LEN 256
+
+#define PARSER_LIMITS_CHARS ";|<> "
 
 /*
 ** -- DATA STRUCTURES --
@@ -90,10 +92,17 @@ typedef struct s_builtin
 	int (*f2)(void);
 }	t_builtin;
 
+enum e_quote_flags
+{
+	QUOTE_FLG_SINGLE,
+	QUOTE_FLG_DOUBLE
+};
+
 typedef struct s_quotes
 {
 	int	sgl;	// single quotes
 	int	dbl;	// double quotes
+	int	first;	// flag
 }	t_quotes;
 
 struct s_redirections

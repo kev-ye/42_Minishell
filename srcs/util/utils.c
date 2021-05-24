@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:45:14 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 17:02:15 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,11 +155,8 @@ t_list  *search_env(char *tofind, t_list **env)
     {
         if ((char *)tmp->content
             && !ft_strncmp((char *)tmp->content, tofind, len_tofind)
-            && ((char *)(tmp->content))[len_tofind] == '=')
-            return (tmp);
-        else if ((char *)tmp->content
-            && !ft_strncmp((char *)tmp->content, tofind, len_tofind)
-            && ((char *)(tmp->content))[len_tofind] == '\0')
+            && (((char *)(tmp->content))[len_tofind] == '='
+			|| ((char *)(tmp->content))[len_tofind] == '\0'))
             return (tmp);
         tmp = tmp->next;
     }
