@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:49:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 01:20:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ t_minishl	*singleton(void)
 void	print_prompt(void)
 {
 	char	*pwd;
+	char	*basename;
 
 	pwd = getcwd(NULL, 0);
 	if (pwd)
@@ -42,7 +43,11 @@ void	print_prompt(void)
 		ft_memdel((void **)(&singleton()->cwd));
 		singleton()->cwd = pwd;
 	}
-	ft_dprintf(STDIN_FILENO, PROMPT, singleton()->cwd);
+	basename = ft_strrchr(singleton()->cwd, '/');
+	if (!*(basename + 1))
+		ft_dprintf(STDIN_FILENO, PROMPT, "/");
+	else
+		ft_dprintf(STDIN_FILENO, PROMPT, basename + 1);
 }
 
 void	prompt(void)
@@ -96,15 +101,5 @@ int	main(__attribute__((unused)) int ac,
 {
 	singleton()->env = get_env(env);
 	prompt();
-	// if (ac == 3)
-	// {
-	// 	__attribute__((unused)) char *new = ft_strdup(av[1]);
-
-	// 	ft_printf("str: [%s], charset: [%s]\n", av[1], av[2]);
-	// 	ft_strnclean(new + 10, av[2], 100);
-	// 	ft_printf("str: [%s]\n", new);
-	// 	// ft_printf("str: [%s]\n", ft_strclean(new, av[2]));
-	// 	ft_memdel((void **)&new);
-	// }
 	return (0);
 }

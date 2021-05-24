@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:16:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 01:22:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,12 +108,12 @@ void	ft_pre_exec_cmd(void *ptr)
 	bl = search_builtin_executable(cmd->args[0]);
 	if (bl)
 	{
-		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
+		// ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
 	}
 	else if (ex)
 	{
-		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
+		// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd->args);
 		ft_memdel((void **)&ex);
 	}

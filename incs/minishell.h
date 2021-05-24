@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 17:44:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 01:24:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,16 +94,9 @@ typedef struct s_builtin
 
 enum e_quote_flags
 {
-	QUOTE_FLG_SINGLE,
-	QUOTE_FLG_DOUBLE
+	QUOTE_FLG_SINGLE = (1U << 0),
+	QUOTE_FLG_DOUBLE = (1U << 1)
 };
-
-typedef struct s_quotes
-{
-	int	sgl;	// single quotes
-	int	dbl;	// double quotes
-	int	first;	// flag
-}	t_quotes;
 
 struct s_redirections
 {
@@ -124,7 +117,8 @@ void		ft_lstprint_cmd(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
-void		ft_free_exit(void);
+void		ft_free_exit(void) __attribute__((noreturn));
+void		*ft_malloc_error(char *file, int line);
 
 /*
 ** Parser
@@ -132,7 +126,7 @@ void		ft_free_exit(void);
 t_minishl	*singleton(void);
 char		*search_executable(char *command);
 char		*search_builtin_executable(char *command);
-int			quotes2close(char c, int reinit);
+int			quotes2close(unsigned char c, int reinit);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
 void 		ft_list_sort(t_list **begin_list, int (*cmp)());
@@ -147,6 +141,6 @@ int		ft_pwd(void);
 int   	ft_env(char **cmds);
 int    	ft_export(char **cmds);
 int 	ft_unset(char **cmds);
-int   	ft_exit(void);// __attribute__((noreturn));
+int   	ft_exit(void) __attribute__((noreturn));
 
 #endif
