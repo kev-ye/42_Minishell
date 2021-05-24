@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 13:04:57 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 13:54:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,9 @@ char	*search_executable(char *command)
 
 	if (!path)
 	{
+		printf("%s: %s: %s\n", PROG_NAME, command, strerror(errno));
 		///////////////// kaye
-		printf("Path are unset ... maybe here need add some check function\n"); // need add check function for no found message
+		// printf("Path are unset ... maybe here need add some check function\n"); // need add check function for no found message
 		//////////////////////
 		return (NULL);
 	}

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 18:05:21 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 14:26:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,21 @@ void	prompt(void)
 	}
 }
 
-int	main(__attribute__((unused))int ac,
-		__attribute__((unused))const char **av,
-		__attribute__((unused))char **env)
+int	main(__attribute__((unused)) int ac,
+		__attribute__((unused)) const char **av,
+		__attribute__((unused)) char **env)
 {
 	singleton()->env = env;
 	prompt();
+	// if (ac == 3)
+	// {
+	// 	__attribute__((unused)) char *new = ft_strdup(av[1]);
+
+	// 	ft_printf("str: [%s], charset: [%s]\n", av[1], av[2]);
+	// 	ft_strnclean(new + 10, av[2], 100);
+	// 	ft_printf("str: [%s]\n", new);
+	// 	// ft_printf("str: [%s]\n", ft_strclean(new, av[2]));
+	// 	ft_memdel((void **)&new);
+	// }
 	return (0);
 }
