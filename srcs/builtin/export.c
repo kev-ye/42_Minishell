@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/24 15:58:27 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 20:53:04 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ void add_env(char **cmds)
     }
 }
 
+////////////////////////////////////////////////////compile without fsanitize get some strange caracter
 t_list *env_export(t_list **lst_env)
 {
     t_list  *tmp;
@@ -124,8 +125,6 @@ t_list *env_export(t_list **lst_env)
     while(tmp)
     {
         env_content = ft_strdup((char *)tmp->content);
-        if (!env_content)
-            return (NULL);
         ft_lstadd_back(&new_lst_env, ft_lstnew((void *)env_content));
         tmp = tmp->next;
     }
