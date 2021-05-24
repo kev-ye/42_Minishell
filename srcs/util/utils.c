@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:04:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:45:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,25 @@ void	ft_lstprint(t_list *lst, char sep)
 	}
 }
 
+void	ft_lstprint_cmd(t_list *lst, char sep)
+{
+	t_list	*tmp;
+	t_cmd	*cmd;
+	size_t	i;
+
+	tmp = lst;
+	while (tmp)
+	{
+		ft_putendl("####");
+		cmd = tmp->content;
+		i = 0;
+		while (cmd->args[i])
+			ft_printf("arg[%s] stat[%.16b]%c", cmd->args[i++], cmd->status_flag, sep);
+		ft_putstr("\n");
+		tmp = tmp->next;
+	}
+}
+
 int		ft_find_in_strs(char *s, const char **strs)
 {
 	size_t	i;
@@ -48,6 +67,52 @@ int		ft_find_in_strs(char *s, const char **strs)
 		++i;
 	}
 	return (-1);
+}
+
+/*
+** Clean characters from `charset' found in `s'
+** /!\ it modifies `s'
+**
+** ex:
+** ft_strclean(";bonjour >to<i", ";<>");
+** => "bonjour toi"
+*/
+char	*ft_strclean(char *s, const char *charset)
+{
+	size_t	i;
+	size_t	j;
+
+	if (!s || !charset)
+		return (s);
+	j = 0;
+	i = 0;
+	while (s[i])
+	{
+		if (!ft_incharset(charset, s[i]))
+			s[j++] = s[i];
+		++i;
+	}
+	ft_bzero(s + j, ft_strlen(s + j));
+	return (s);
+}
+
+char		*ft_strnclean(char *s, const char *charset, size_t end)
+{
+	size_t	i;
+	size_t	j;
+
+	if (!s || !charset)
+		return (s);
+	j = 0;
+	i = 0;
+	while (s[i])
+	{
+		if (i >= end || !ft_incharset(charset, s[i]))
+			s[j++] = s[i];
+		++i;
+	}
+	ft_bzero(s + j, ft_strlen(s + j));
+	return (s);
 }
 
 void	ft_free_exit(void)
@@ -75,22 +140,6 @@ void ft_list_sort(t_list **begin_list, int (*cmp)())
         else
             list = list->next;
     }
-}
-
-t_list	*ft_lstnew_env(void *content)
-{
-	t_list	*new;
-	char *env;
-
-	new = (t_list *)malloc(sizeof(t_list));
-	if (!new)
-		return (NULL);
-	env = ft_strdup((char *)content);
-	if (!env)
-		return (NULL);
-	new->content = (void *)env;
-	new->next = NULL;
-	return (new);
 }
 
 t_list  *search_env(char *tofind, t_list **env)

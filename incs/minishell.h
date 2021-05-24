@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:09:02 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:51:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,40 +56,31 @@ enum	e_search
 	NOT_FOUND = -1
 };
 
-enum	e_redirect_flags
+enum	e_flags
 {
-	PIPE = (1UL << 0),
-	REDIRECTION = (1UL << 1)
+	FLG_EOL =  0U,				// end of line
+	FLG_EO_CMD = (1U << 0),		// `;'
+	FLG_PIPE = (1U << 1),		// `|'
+	FLG_OUTPUT = (1U << 2),		// `>'
+	FLG_APPEND = (1U << 3),		// `>>'
+	FLG_INPUT = (1U << 4)		// `<'
 };
-
-typedef struct s_dlist
-{
-	void			*data;
-	struct s_dlist	*prev;
-	struct s_dlist	*next;
-}	t_dlist;
-
-typedef struct s_fptr
-{
-	char	*data;
-	int		(*f)();
-}	t_fptr;
 
 typedef struct s_cmd
 {
-	char	**av;
-	int		ac;
-	int		pipe;
-	int		redirect;
+	char		**args;
+	int			args_len;
+	uint8_t		status_flag;	// used with e_flags's flags
+	int			fd;				// for bonus (aggregation fd)
 }	t_cmd;
 
 typedef struct s_minishl
 {
-	t_list *env;
-	char	**cmds;
-	t_list	*lst;
-	int		last_return_value;
-	t_cmd 	*cmd;
+	t_list	*env;				// env list
+	// char	**cmds;
+	t_list	*lst;				// main list containing all parsed commands
+	int		last_return_value;	// last return value ($?)
+	char	*cwd;				// pwd (mainly for `prompt' function)
 }	t_minishl;
 
 typedef struct s_builtin
@@ -98,6 +89,18 @@ typedef struct s_builtin
 	int (*f1)(char **cmds);
 	int (*f2)(void);
 }	t_builtin;
+
+typedef struct s_quotes
+{
+	int	sgl;	// single quotes
+	int	dbl;	// double quotes
+}	t_quotes;
+
+struct s_redirections
+{
+	char	*redir;
+	uint8_t	flag;
+};
 
 /*
 ** -- PROTOTYPES --
@@ -108,23 +111,23 @@ typedef struct s_builtin
 */
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
+void		ft_lstprint_cmd(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
+char		*ft_strclean(char *s, const char *charset);
+char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_free_exit(void);
-void 		ft_list_sort(t_list **begin_list, int (*cmp)());
-t_list		*ft_lstnew_env(void *content);
-t_list  	*search_env(char *tofind, t_list **env);
 
 /*
 ** Parser
 */
 t_minishl	*singleton(void);
 char		*search_executable(char *command);
-int			got_quotes(int add_single, int add_double, int reinit);
+char		*search_builtin_executable(char *command);
+int			quotes2close(char c, int reinit);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
-////////////////////// kaye
-char	*search_builtin_executable(char *command);
-////////////////////////
+void 		ft_list_sort(t_list **begin_list, int (*cmp)());
+t_list  	*search_env(char *tofind, t_list **env);
 
 /*
 ** Builtin
@@ -135,6 +138,6 @@ int		ft_pwd(void);
 int   	ft_env(char **cmds);
 int    	ft_export(char **cmds);
 int 	ft_unset(char **cmds);
-int   	ft_exit(void);
+int   	ft_exit(void);// __attribute__((noreturn));
 
 #endif

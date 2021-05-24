@@ -11,6 +11,9 @@ The objective of this project is for you to create a simple shell. Yes, your own
 
 ## To_do_list
 
-- [ ] ...
-- [ ] ... 
-- [ ] ...
+- [ ] Parse
+- [ ] Clean data parsed
+- [ ] Execute parsed commands
+- [ ] Add redirections if any
+- [ ] Add unit test
+- [ ] Handle memory leaks

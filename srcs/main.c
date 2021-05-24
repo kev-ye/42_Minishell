@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/05/24 15:47:33 by kaye             ###   ########.fr       */
+=======
+/*   Updated: 2021/05/24 15:49:49 by besellem         ###   ########.fr       */
+>>>>>>> master
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,39 +32,21 @@ t_minishl	*singleton(void)
 	return (ptr);
 }
 
-int	builtin_cd(char *dir)
+void	print_prompt(void)
 {
 	char	*pwd;
 
-	if (getenv("PWD"))
-	{
-		if (chdir(dir))
-			perror(dir);
-		pwd = getcwd(NULL, 0);
-		setenv("PWD", pwd, 1);
-		printf("pwd => [%s], [%s]\n", pwd, getenv("PWD"));
-		free(pwd);
-		return (0);
-	}
-	return (1);
-}
-
-int	builtin_exit(int code) __attribute__((noreturn));
-
-int	builtin_exit(int code)
-{
-	exit(code);
-}
-
-void	print_prompt(void)
-{
-	const char	*pwd = getcwd(NULL, 0);
-
+	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
-		ft_dprintf(STDIN_FILENO, PROMPT, ft_strrchr(pwd, '/') + 1);
-		free((char *)pwd);
+		/*
+		** avoid this problem:
+		** mkdir test && cd test && rm -rf ../test
+		*/
+		ft_memdel((void **)(&singleton()->cwd));
+		singleton()->cwd = pwd;
 	}
+	ft_dprintf(STDIN_FILENO, PROMPT, singleton()->cwd);
 }
 
 void	prompt(void)
@@ -74,7 +60,7 @@ void	prompt(void)
 		r = get_next_line(STDIN_FILENO, &ret);
 		ft_parse(ret);
 		ft_exec_each_cmd();
-		free(ret);
+		ft_memdel((void **)(&ret));
 		if (r <= 0)
 			break ;
 	}
@@ -82,33 +68,47 @@ void	prompt(void)
 
 t_list	*get_env(char **env)
 {
-	t_list *new_env;
-	int i;
+	t_list	*new_env;
+	t_list	*tmp;
+	void	*ptr;
+	int		i;
 
+	new_env = NULL;
 	i = 0;
 	while (env[i])
 	{
-		ft_lstadd_back(&new_env, ft_lstnew_env((void *)env[i]));
-		++i;
+		ptr = ft_strdup(env[i++]);
+		if (!ptr)
+		{
+			ft_lstclear(&new_env, free);
+			return (ft_memdel((void **)&ptr));
+		}
+		tmp = ft_lstnew(ptr);
+		if (!tmp)
+		{
+			ft_lstclear(&new_env, free);
+			return (ft_memdel((void **)&tmp));
+		}
+		ft_lstadd_back(&new_env, tmp);
 	}
 	return (new_env);
 }
 
-int	main(__attribute__((unused))int ac,
-		__attribute__((unused))const char **av,
-		__attribute__((unused))char **env)
+int	main(__attribute__((unused)) int ac,
+		__attribute__((unused)) const char **av,
+		__attribute__((unused)) char **env)
 {
-	// ft_printstrs(STDOUT_FILENO, env);
-	// singleton()->env = env;
 	singleton()->env = get_env(env);
-	// char *ex = search_executable("ls");
-	// if (ex)
-	// {
-	// 	ft_printf("`ls' command:\n");
-	// 	ft_exec_cmd(ex);
-	// 	free(ex);
-	// }
-	// ft_printf("pwd=[%s]\n", getenv("PWD"));
 	prompt();
+	// if (ac == 3)
+	// {
+	// 	__attribute__((unused)) char *new = ft_strdup(av[1]);
+
+	// 	ft_printf("str: [%s], charset: [%s]\n", av[1], av[2]);
+	// 	ft_strnclean(new + 10, av[2], 100);
+	// 	ft_printf("str: [%s]\n", new);
+	// 	// ft_printf("str: [%s]\n", ft_strclean(new, av[2]));
+	// 	ft_memdel((void **)&new);
+	// }
 	return (0);
 }

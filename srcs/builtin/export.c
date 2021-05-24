@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/24 15:04:09 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:58:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char *head_env(char *env)
+char *head_env(char *env)
 {
     char *env_head;
     int len;
@@ -38,7 +38,7 @@ static char *head_env(char *env)
     return (env_head);
 }
 
-static void add_quote(t_list **lst_env)
+void add_quote(t_list **lst_env)
 {
     t_list *tmp;
     char *new_env;
@@ -78,7 +78,7 @@ static void add_quote(t_list **lst_env)
     }
 }
 
-static void new_shell_env(char *new_env, t_list *to_change, int to_add)
+void new_shell_env(char *new_env, t_list *to_change, int to_add)
 {
     if (to_change)
     {
@@ -89,9 +89,9 @@ static void new_shell_env(char *new_env, t_list *to_change, int to_add)
         ft_lstadd_back(&singleton()->env, ft_lstnew((void *)new_env));
 }
 
-static void add_env(char **cmds)
+void add_env(char **cmds)
 {
-    t_list *to_change;
+    t_list  *to_change;
     char *new_env;
     int i;
 
@@ -113,12 +113,13 @@ static void add_env(char **cmds)
     }
 }
 
-static t_list *env_export(t_list **lst_env)
+t_list *env_export(t_list **lst_env)
 {
     t_list  *tmp;
     t_list  *new_lst_env;
     char    *env_content;
 
+    new_lst_env = NULL;
     tmp = *lst_env;
     while(tmp)
     {
