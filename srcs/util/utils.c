@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:07:00 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:16:53 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,52 @@ int		ft_find_in_strs(char *s, const char **strs)
 		++i;
 	}
 	return (-1);
+}
+
+/*
+** Clean characters from `charset' found in `s'
+** /!\ it modifies `s'
+**
+** ex:
+** ft_strclean(";bonjour >to<i", ";<>");
+** => "bonjour toi"
+*/
+char	*ft_strclean(char *s, const char *charset)
+{
+	size_t	i;
+	size_t	j;
+
+	if (!s || !charset)
+		return (s);
+	j = 0;
+	i = 0;
+	while (s[i])
+	{
+		if (!ft_incharset(charset, s[i]))
+			s[j++] = s[i];
+		++i;
+	}
+	ft_bzero(s + j, ft_strlen(s + j));
+	return (s);
+}
+
+char		*ft_strnclean(char *s, const char *charset, size_t end)
+{
+	size_t	i;
+	size_t	j;
+
+	if (!s || !charset)
+		return (s);
+	j = 0;
+	i = 0;
+	while (s[i])
+	{
+		if (i >= end || !ft_incharset(charset, s[i]))
+			s[j++] = s[i];
+		++i;
+	}
+	ft_bzero(s + j, ft_strlen(s + j));
+	return (s);
 }
 
 void	ft_free_exit(void)

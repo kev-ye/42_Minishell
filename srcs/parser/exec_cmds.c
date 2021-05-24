@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:06:43 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:16:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,14 @@ char	**ft_lst_to_strs(t_list *lst)
 void	ft_pre_exec_cmd(void *ptr)
 {
 	t_cmd	*cmd;
+	char	*ex;
+	char	*bl;
 
 	cmd = ptr;
 	if (!cmd->args || !*cmd->args)
 		return ;
-	char *ex = search_executable(cmd->args[0]);
-	char *bl = search_builtin_executable(cmd->args[0]);
+	ex = search_executable(cmd->args[0]);
+	bl = search_builtin_executable(cmd->args[0]);
 	if (bl)
 	{
 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
@@ -114,6 +116,10 @@ void	ft_pre_exec_cmd(void *ptr)
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd->args);
 		ft_memdel((void **)&ex);
+	}
+	else
+	{
+		
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }

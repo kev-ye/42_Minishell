@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/23 18:05:28 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:12:17 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,27 +104,7 @@ t_cmd	*new_cmd(char *s, uint16_t status)
 	return (cmd);
 }
 
-// static int	found_str_limit(char *s, size_t i, size_t j)
-// {
-// 	quotes2close(s[j], 0);
-// 	if (!quotes2close(0, 0) && s[j] == ';')
-// 	{
-// 		ft_lstadd_back(&singleton()->lst, ft_lstnew(ft_substr(s, i, j - i)));
-// 	}
-// 	else if (!quotes2close(0, 0) && s[j] == '|')
-// 	{
-// 		ft_lstadd_back(&singleton()->lst, ft_lstnew(ft_substr(s, i, j - i)));
-// 	}
-// 	else if (!quotes2close(0, 0) && !s[j + 1])
-// 	{
-// 		ft_lstadd_back(&singleton()->lst, ft_lstnew(ft_substr(s, i, j + 1)));
-// 	}
-// 	else
-// 		return (0);
-// 	return (1);
-// }
-
-static int	found_str_limit(char *s, size_t i, size_t j)
+int	found_str_limit(char *s, size_t i, size_t j)
 {
 	// static - no use to redefine it at each call
 	static struct s_redirections	limits[] = {
@@ -154,26 +134,111 @@ static int	found_str_limit(char *s, size_t i, size_t j)
 	return (0);
 }
 
+// void	ft_parse(char *s)
+// {
+// 	size_t	i;
+// 	size_t	j;
+
+// 	// ft_lstiter(singleton()->lst, free);		// free all `void *content' nodes
+// 	ft_lstclear(&singleton()->lst, free);	// free the list containing all parsed commands
+// 	quotes2close(0, REINIT_FLAG);			// reinit the quote test
+// 	i = 0;
+// 	while (s[i])
+// 	{
+// 		j = i;
+// 		while (s[j])
+// 		{
+// 			ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
+// 			// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
+// 			// {
+// 			// 	// s[j] = ' '; // replace `\' (backslash) by a space
+// 			// 	j += 2;
+// 			// }
+// 			quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
+// 			if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
+// 				break ;
+// 			++j;
+// 		}
+// 		ft_putstr_fd("\n", STDIN_FILENO);
+// 		i = j + 1;
+// 	}
+// 	// ft_lstprint_cmd(singleton()->lst, '\n');
+// }
+
+#define SPEC_CHARS " $'\""
+
 void	ft_parse(char *s)
 {
-	size_t	i;
-	size_t	j;
+	t_quotes	quotes;
+	size_t		i;
 
-	// ft_lstiter(singleton()->lst, free);		// free all `void *content' nodes
-	ft_lstclear(&singleton()->lst, free);	// free the list containing all parsed commands
-	quotes2close(0, REINIT_FLAG);			// reinit the quote test
+	ft_lstclear(&singleton()->lst, free);
+	quotes2close(0, REINIT_FLAG);
 	i = 0;
 	while (s[i])
 	{
-		j = i;
-		while (s[j])
+		
+		printf("[%s]\n", s);
+
+		if (s[i] == '\\')
 		{
-			quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
-			if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
-				break ;
-			++j;
+			ft_strnclean(s + i++, "\\", 1);	// remove `\' (backslash) from `s'
+			// printf(" [%s]\n", s);
+			if (ft_incharset(SPEC_CHARS, s[i]))
+				++i;
+			continue ;
 		}
-		i = j + 1;
+		else
+		{
+			quotes2close(s[i], NTHG_FLAG);
+			if (s[i] == '$')
+			{
+				/*
+				** search in env variables to replace `$' by its value
+				*/
+				// char	*tmp = search_env(s + i, &singleton()->env)->content;
+			}
+			if (ft_incharset(SPEC_CHARS, s[i]))
+			{
+				// ft_strnclean(s + i, "\\", 1);
+				// printf("after : [%s]\n", s);
+			}
+		}
+		++i;
+
+		// j = i;
+		// while (s[j])
+		// {
+		// 	ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
+		// 	// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
+		// 	// {
+		// 	// 	// s[j] = ' '; // replace `\' (backslash) by a space
+		// 	// 	j += 2;
+		// 	// }
+		// 	quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
+		// 	if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
+		// 		break ;
+		// 	++j;
+		// }
+		// ft_putstr_fd("\n", STDIN_FILENO);
+		// i = j + 1;
 	}
-	ft_lstprint_cmd(singleton()->lst, '\n');
+	printf("[%s]\n", s);
+	// ft_lstprint_cmd(singleton()->lst, '\n');
 }
+
+
+
+
+// echo \""''\"""bonjour"
+// "''"bonjour
+
+// echo \""''\"""bonjour"
+
+/*
+
+
+
+
+
+*/

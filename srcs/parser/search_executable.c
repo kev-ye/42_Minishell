@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   search_executable.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:06:47 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:16:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,9 @@ char	*search_executable(char *command)
 
 	if (!path)
 	{
+		printf("%s: %s: %s\n", PROG_NAME, command, strerror(errno));
 		///////////////// kaye
-		printf("Path are unset ... maybe here need add some check function\n"); // need add check function for no found message
+		// printf("Path are unset ... maybe here need add some check function\n"); // need add check function for no found message
 		//////////////////////
 		return (NULL);
 	}

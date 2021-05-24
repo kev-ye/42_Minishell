@@ -6,14 +6,18 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
+<<<<<<< HEAD
 #    Updated: 2021/05/24 15:07:15 by kaye             ###   ########.fr        #
+=======
+#    Updated: 2021/05/24 11:50:03 by besellem         ###   ########.fr        #
+>>>>>>> besellem
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror -fsanitize=address -g3
+CFLAGS 		= -Wall -Wextra -Werror# -fsanitize=address -g3
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft
 

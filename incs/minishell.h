@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:11:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/24 15:16:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,10 @@ typedef struct s_fptr
 
 typedef struct s_cmd
 {
-	char	**av;
-	int		ac;
-	int		pipe;
-	int		redirect;
+	char		**args;
+	int			args_len;
+	uint8_t		status_flag;	// used with e_flags's flags
+	int			fd;				// for bonus (aggregation fd)
 }	t_cmd;
 
 typedef struct s_minishl
@@ -109,6 +109,8 @@ typedef struct s_builtin
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
+char		*ft_strclean(char *s, const char *charset);
+char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_free_exit(void);
 void 		ft_list_sort(t_list **begin_list, int (*cmp)());
 t_list		*ft_lstnew_env(void *content);
