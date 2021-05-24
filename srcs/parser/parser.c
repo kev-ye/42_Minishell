@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:12:17 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:34:32 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,98 +134,98 @@ int	found_str_limit(char *s, size_t i, size_t j)
 	return (0);
 }
 
-// void	ft_parse(char *s)
-// {
-// 	size_t	i;
-// 	size_t	j;
-
-// 	// ft_lstiter(singleton()->lst, free);		// free all `void *content' nodes
-// 	ft_lstclear(&singleton()->lst, free);	// free the list containing all parsed commands
-// 	quotes2close(0, REINIT_FLAG);			// reinit the quote test
-// 	i = 0;
-// 	while (s[i])
-// 	{
-// 		j = i;
-// 		while (s[j])
-// 		{
-// 			ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
-// 			// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
-// 			// {
-// 			// 	// s[j] = ' '; // replace `\' (backslash) by a space
-// 			// 	j += 2;
-// 			// }
-// 			quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
-// 			if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
-// 				break ;
-// 			++j;
-// 		}
-// 		ft_putstr_fd("\n", STDIN_FILENO);
-// 		i = j + 1;
-// 	}
-// 	// ft_lstprint_cmd(singleton()->lst, '\n');
-// }
-
-#define SPEC_CHARS " $'\""
-
 void	ft_parse(char *s)
 {
-	t_quotes	quotes;
-	size_t		i;
+	size_t	i;
+	size_t	j;
 
-	ft_lstclear(&singleton()->lst, free);
-	quotes2close(0, REINIT_FLAG);
+	// ft_lstiter(singleton()->lst, free);		// free all `void *content' nodes
+	ft_lstclear(&singleton()->lst, free);	// free the list containing all parsed commands
+	quotes2close(0, REINIT_FLAG);			// reinit the quote test
 	i = 0;
 	while (s[i])
 	{
-		
-		printf("[%s]\n", s);
-
-		if (s[i] == '\\')
+		j = i;
+		while (s[j])
 		{
-			ft_strnclean(s + i++, "\\", 1);	// remove `\' (backslash) from `s'
-			// printf(" [%s]\n", s);
-			if (ft_incharset(SPEC_CHARS, s[i]))
-				++i;
-			continue ;
+			ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
+			// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
+			// {
+			// 	// s[j] = ' '; // replace `\' (backslash) by a space
+			// 	j += 2;
+			// }
+			quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
+			if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
+				break ;
+			++j;
 		}
-		else
-		{
-			quotes2close(s[i], NTHG_FLAG);
-			if (s[i] == '$')
-			{
-				/*
-				** search in env variables to replace `$' by its value
-				*/
-				// char	*tmp = search_env(s + i, &singleton()->env)->content;
-			}
-			if (ft_incharset(SPEC_CHARS, s[i]))
-			{
-				// ft_strnclean(s + i, "\\", 1);
-				// printf("after : [%s]\n", s);
-			}
-		}
-		++i;
-
-		// j = i;
-		// while (s[j])
-		// {
-		// 	ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
-		// 	// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
-		// 	// {
-		// 	// 	// s[j] = ' '; // replace `\' (backslash) by a space
-		// 	// 	j += 2;
-		// 	// }
-		// 	quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
-		// 	if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
-		// 		break ;
-		// 	++j;
-		// }
-		// ft_putstr_fd("\n", STDIN_FILENO);
-		// i = j + 1;
+		ft_putstr_fd("\n", STDIN_FILENO);
+		i = j + 1;
 	}
-	printf("[%s]\n", s);
 	// ft_lstprint_cmd(singleton()->lst, '\n');
 }
+
+// #define SPEC_CHARS " $'\""
+
+// void	ft_parse(char *s)
+// {
+// 	// t_quotes	quotes;
+// 	size_t		i;
+
+// 	ft_lstclear(&singleton()->lst, free);
+// 	quotes2close(0, REINIT_FLAG);
+// 	i = 0;
+// 	while (s[i])
+// 	{
+		
+// 		printf("[%s]\n", s);
+
+// 		if (s[i] == '\\')
+// 		{
+// 			ft_strnclean(s + i++, "\\", 1);	// remove `\' (backslash) from `s'
+// 			// printf(" [%s]\n", s);
+// 			if (ft_incharset(SPEC_CHARS, s[i]))
+// 				++i;
+// 			continue ;
+// 		}
+// 		else
+// 		{
+// 			quotes2close(s[i], NTHG_FLAG);
+// 			if (s[i] == '$')
+// 			{
+// 				/*
+// 				** search in env variables to replace `$' by its value
+// 				*/
+// 				// char	*tmp = search_env(s + i, &singleton()->env)->content;
+// 			}
+// 			if (ft_incharset(SPEC_CHARS, s[i]))
+// 			{
+// 				// ft_strnclean(s + i, "\\", 1);
+// 				// printf("after : [%s]\n", s);
+// 			}
+// 		}
+// 		++i;
+
+// 		// j = i;
+// 		// while (s[j])
+// 		// {
+// 		// 	ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
+// 		// 	// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
+// 		// 	// {
+// 		// 	// 	// s[j] = ' '; // replace `\' (backslash) by a space
+// 		// 	// 	j += 2;
+// 		// 	// }
+// 		// 	quotes2close(s[j], NTHG_FLAG);	// add quote test on this char
+// 		// 	if ((!quotes2close(0, NTHG_FLAG) && found_str_limit(s, i, j)))
+// 		// 		break ;
+// 		// 	++j;
+// 		// }
+// 		// ft_putstr_fd("\n", STDIN_FILENO);
+// 		// i = j + 1;
+// 	}
+// 	printf("[%s]\n", s);
+// 	// ft_lstprint_cmd(singleton()->lst, '\n');
+// }
 
 
 

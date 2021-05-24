@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:16:53 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:45:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,22 +140,6 @@ void ft_list_sort(t_list **begin_list, int (*cmp)())
         else
             list = list->next;
     }
-}
-
-t_list	*ft_lstnew_env(void *content)
-{
-	t_list	*new;
-	char *env;
-
-	new = (t_list *)malloc(sizeof(t_list));
-	if (!new)
-		return (NULL);
-	env = ft_strdup((char *)content);
-	if (!env)
-		return (NULL);
-	new->content = (void *)env;
-	new->next = NULL;
-	return (new);
 }
 
 t_list  *search_env(char *tofind, t_list **env)

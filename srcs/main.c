@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:16:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:49:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,39 @@ void	prompt(void)
 	}
 }
 
+t_list	*get_env(char **env)
+{
+	t_list	*new_env;
+	t_list	*tmp;
+	void	*ptr;
+	int		i;
+
+	new_env = NULL;
+	i = 0;
+	while (env[i])
+	{
+		ptr = ft_strdup(env[i++]);
+		if (!ptr)
+		{
+			ft_lstclear(&new_env, free);
+			return (ft_memdel((void **)&ptr));
+		}
+		tmp = ft_lstnew(ptr);
+		if (!tmp)
+		{
+			ft_lstclear(&new_env, free);
+			return (ft_memdel((void **)&tmp));
+		}
+		ft_lstadd_back(&new_env, tmp);
+	}
+	return (new_env);
+}
+
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
 {
-	singleton()->env = env;
+	singleton()->env = get_env(env);
 	prompt();
 	// if (ac == 3)
 	// {
