@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:36:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 15:51:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,11 @@ typedef struct s_cmd
 
 typedef struct s_minishl
 {
-	t_list	*env;					// env list
+	t_list	*env;				// env list
 	// char	**cmds;
-	t_list	*lst;					// main list containing all parsed commands
-	int		last_return_value;		// last return value ($?)
-	char	*cwd;					// pwd (mainly for `prompt' function)
+	t_list	*lst;				// main list containing all parsed commands
+	int		last_return_value;	// last return value ($?)
+	char	*cwd;				// pwd (mainly for `prompt' function)
 }	t_minishl;
 
 typedef struct s_builtin
@@ -113,7 +113,6 @@ void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 void		ft_lstprint_cmd(t_list *lst, char sep);
 int			ft_find_in_strs(char *s, const char **strs);
-t_list		*ft_lstnew_env(void *content);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_free_exit(void);
