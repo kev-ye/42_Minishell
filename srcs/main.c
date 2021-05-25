@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 14:23:48 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 16:08:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ void	print_prompt(void)
 	}
 	basename = ft_strrchr(singleton()->cwd, '/');
 	if (!*(basename + 1))
-		ft_dprintf(STDIN_FILENO, PROMPT, "/");
+		ft_dprintf(STDERR_FILENO, PROMPT, "/");
 	else
-		ft_dprintf(STDIN_FILENO, PROMPT, basename + 1);
+		ft_dprintf(STDERR_FILENO, PROMPT, basename + 1);
 }
 
 void	prompt(void)

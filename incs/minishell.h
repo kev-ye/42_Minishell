@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 14:14:48 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 16:16:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@
 # define ERROR 1
 // # define PATH_MAX_LEN 256
 
-#define PARSER_LIMITS_CHARS ";|<> "
+# define PARSER_LIMITS_CHARS ";|<> "
 
 /*
 ** -- DATA STRUCTURES --
@@ -58,14 +58,22 @@ enum	e_search
 	NOT_FOUND = -1
 };
 
+/*
+** FLG_EO			// end of line
+** FLG_EO_CMD		// `;'
+** FLG_PIPE			// `|'
+** FLG_OUTPUT		// `>'
+** FLG_APPEND		// `>>'
+** FLG_INPUT		// `<'
+*/
 enum	e_flags
 {
-	FLG_EOL =  0U,				// end of line
-	FLG_EO_CMD = (1U << 0),		// `;'
-	FLG_PIPE = (1U << 1),		// `|'
-	FLG_OUTPUT = (1U << 2),		// `>'
-	FLG_APPEND = (1U << 3),		// `>>'
-	FLG_INPUT = (1U << 4)		// `<'
+	FLG_EOL =  0U,
+	FLG_EO_CMD = (1U << 0),
+	FLG_PIPE = (1U << 1),
+	FLG_OUTPUT = (1U << 2),
+	FLG_APPEND = (1U << 3),
+	FLG_INPUT = (1U << 4)
 };
 
 typedef struct s_cmd
@@ -137,19 +145,19 @@ char		*search_builtin_executable(char *command);
 int			quotes2close(unsigned char c, int reinit);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
-void 		ft_list_sort(t_list **begin_list, int (*cmp)());
-t_list  	*search_env(char *tofind, t_list **env);
+void		ft_list_sort(t_list **begin_list, int (*cmp)());
+t_list		*search_env(char *tofind, t_list **env);
 
 /*
 ** Builtin
 */
-int		ft_echo(char **cmds);
-int    	ft_cd(char **cmds);
-int		ft_pwd(void);
-int   	ft_env(char **cmds);
-int    	ft_export(char **cmds);
-int 	ft_unset(char **cmds);
-int   	ft_exit(void);// __attribute__((noreturn));
-int		ft_clear(void);
+int			ft_echo(char **cmds);
+int			ft_cd(char **cmds);
+int			ft_pwd(void);
+int			ft_env(char **cmds);
+int			ft_export(char **cmds);
+int			ft_unset(char **cmds);
+int			ft_exit(void) __attribute__((noreturn));
+int			ft_clear(void);
 
 #endif

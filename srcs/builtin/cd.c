@@ -3,31 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:11:08 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/24 16:55:53 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 16:21:07 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int    ft_cd(char **cmds)
+int	ft_cd(char **cmds)
 {
-    if (!cmds || !*cmds)
-        return (ERROR);
-    if (*cmds && !*(cmds + 1))
-    {
-        if(chdir(getenv("HOME")) == -1)
-        {
-            ft_dprintf(STDERR_FILENO, "%s: cd: HOME not set\n", PROG_NAME);
-            return (ERROR);
-        }
-    }
-    if (*cmds && *(cmds + 1) && chdir(cmds[1]) == -1)
-    {
-        ft_dprintf(STDERR_FILENO, "%s: cd: %s: %s\n", PROG_NAME, cmds[1], strerror(errno));
-        return (ERROR);
-    }
-    return (SUCCESS);
+	if (!cmds || !*cmds)
+		return (ERROR);
+	if (*cmds && !*(cmds + 1))
+	{
+		if (chdir(getenv("HOME")) == -1)
+		{
+			ft_dprintf(STDERR_FILENO, "%s: cd: HOME not set\n", PROG_NAME);
+			return (ERROR);
+		}
+	}
+	if (*cmds && *(cmds + 1) && chdir(cmds[1]) == -1)
+	{
+		ft_dprintf(STDERR_FILENO, "%s: cd: %s: %s\n",
+			PROG_NAME, cmds[1], strerror(errno));
+		return (ERROR);
+	}
+	return (SUCCESS);
 }

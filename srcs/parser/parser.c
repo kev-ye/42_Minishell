@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 15:38:01 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 16:07:15 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 // 		j = i;
 // 		while (s[j])
 // 		{
-// 			ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
+// 			ft_dprintf(STDERR_FILENO, "[%c]", s[j]);
 // 			// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
 // 			// {
 // 			// 	// s[j] = ' '; // replace `\' (backslash) by a space
@@ -40,7 +40,7 @@
 // 				break ;
 // 			++j;
 // 		}
-// 		ft_putstr_fd("\n", STDIN_FILENO);
+// 		ft_putstr_fd("\n", STDERR_FILENO);
 // 		i = j + 1;
 // 	}
 // 	// ft_lstprint_cmd(singleton()->lst);
@@ -394,6 +394,6 @@ echo \""''\"""bonjour"
 echo \""''\"""bonjour"
 
 ls -la; echo bonjour >> out; ls | grep srcs ;
-echo ' bonjour "" "a\" $LESS\toi'\"\'
-echo " bonjour '' 'a\' $LESS\toi"\"\'
+ls -la; ec"ho" bo"njo"ur >> out ;echo ' bonjour "" "a\" $LESS\toi'\"\' > out
+ls -la; ec"ho" bo"njo"ur >> out ;echo " bonjour '' 'a\' $LESS\toi"\"\' > out
 */
