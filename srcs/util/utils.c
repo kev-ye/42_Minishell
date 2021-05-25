@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 01:23:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 11:38:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	ft_lstprint(t_list *lst, char sep)
 	}
 }
 
-void	ft_lstprint_cmd(t_list *lst, char sep)
+void	ft_lstprint_cmd(t_list *lst)
 {
 	t_list	*tmp;
 	t_cmd	*cmd;
@@ -43,12 +43,14 @@ void	ft_lstprint_cmd(t_list *lst, char sep)
 	tmp = lst;
 	while (tmp)
 	{
-		ft_putendl("####");
+		ft_putendl(B_RED "#### START" CLR_COLOR);
 		cmd = tmp->content;
+		ft_printf("stat[%.8b]\n", cmd->status_flag);
+		ft_putendl("args:");
 		i = 0;
 		while (cmd->args[i])
-			ft_printf("arg[%s] stat[%.16b]%c", cmd->args[i++], cmd->status_flag, sep);
-		ft_putstr("\n");
+			ft_printf("[%s]", cmd->args[i++]);
+		ft_putendl(B_RED "\nEND ####\n" CLR_COLOR);
 		tmp = tmp->next;
 	}
 }

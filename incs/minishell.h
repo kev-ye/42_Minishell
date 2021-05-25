@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 10:56:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 12:44:50 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,16 +92,24 @@ typedef struct s_builtin
 	int (*f2)(void);
 }	t_builtin;
 
+struct s_redirections
+{
+	char	*redir;
+	uint8_t	flag;
+};
+
 enum e_quote_flags
 {
 	QUOTE_FLG_SINGLE = (1U << 0),
 	QUOTE_FLG_DOUBLE = (1U << 1)
 };
 
-struct s_redirections
+struct s_quotes
 {
-	char	*redir;
-	uint8_t	flag;
+	int	s_quote;
+	int	d_quote;
+	int	first;
+	int	last;
 };
 
 /*
@@ -113,7 +121,7 @@ struct s_redirections
 */
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
-void		ft_lstprint_cmd(t_list *lst, char sep);
+void		ft_lstprint_cmd(t_list *lst);
 int			ft_find_in_strs(char *s, const char **strs);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);

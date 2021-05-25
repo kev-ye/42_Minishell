@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 11:09:29 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 11:37:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,5 +143,5 @@ void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
 void	ft_exec_each_cmd(void)
 {
 	ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
-	// ft_lstprint_cmd(singleton()->lst, '\n');
+	// ft_lstprint_cmd(singleton()->lst);
 }

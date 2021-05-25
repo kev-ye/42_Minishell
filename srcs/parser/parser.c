@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 10:56:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 13:05:55 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,37 @@
 
 #define COMPLETE_METACHARACTERS "|&;()<> \t"
 #define METACHARACTERS "|;<> \t"
+
+// void	ft_parse(char *s)
+// {
+// 	size_t	i;
+// 	size_t	j;
+
+// 	// ft_lstiter(singleton()->lst, free);		// free all `void *content' nodes
+// 	ft_lstclear(&singleton()->lst, free);	// free the list containing all parsed commands
+// 	quotes2close(0, RESET_FLAG);			// reinit the quote test
+// 	i = 0;
+// 	while (s[i])
+// 	{
+// 		j = i;
+// 		while (s[j])
+// 		{
+// 			ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
+// 			// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
+// 			// {
+// 			// 	// s[j] = ' '; // replace `\' (backslash) by a space
+// 			// 	j += 2;
+// 			// }
+// 			quotes2close(s[j], SET_FLAG);	// add quote test on this char
+// 			if ((!quotes2close(0, SET_FLAG) && found_str_limit(s, i, j)))
+// 				break ;
+// 			++j;
+// 		}
+// 		ft_putstr_fd("\n", STDIN_FILENO);
+// 		i = j + 1;
+// 	}
+// 	// ft_lstprint_cmd(singleton()->lst);
+// }
 
 
 // RESET_FLAG is used to reset static variables in `quotes2close'
@@ -47,6 +78,58 @@ int	quotes2close(unsigned char c, int status)
 	return (last != ((s_quote == 1) || (d_quote == 1)));
 }
 
+
+// int	quotes2close(unsigned char c, int status)
+// {
+// 	static int	s_quote = 0;
+// 	static int	d_quote = 0;
+// 	int			last;
+
+// 	last = (s_quote == 1) || (d_quote == 1);
+// 	if (RESET_FLAG == status)
+// 	{
+// 		s_quote = 0;
+// 		d_quote = 0;
+// 	}
+// 	else if (SET_FLAG == status)
+// 	{
+// 		if ('\'' == c && d_quote == 0)
+// 			s_quote = (s_quote == 0);
+// 		else if ('"' == c && s_quote == 0)
+// 			d_quote = (d_quote == 0);
+// 	}
+// 	return (last != ((s_quote == 1) || (d_quote == 1)));
+// }
+
+char	**ft_lst2strs(t_list *lst, const char *sep)
+{
+	const size_t	sep_len = ft_strlen(sep);
+	char			**new;
+	t_list			*tmp;
+	size_t			i;
+
+	if (!lst || !sep)
+		return (NULL);
+	new = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
+	if (!new)
+		return (NULL);
+	i = 0;
+	tmp = lst;
+	while (tmp)
+	{
+		new[i] = ft_calloc(ft_strlen(tmp->content) + sep_len + 1, sizeof(char));
+		if (!new[i])
+			return (ft_strsfree(i, new));
+		ft_memcpy(new[i], tmp->content, ft_strlen(tmp->content));
+		if (tmp->next)
+			ft_memcpy(new[i], sep, sep_len);
+		++i;
+		tmp = tmp->next;
+	}
+	new[i] = NULL;
+	return (new);
+}
+
 t_cmd	*new_cmd(char *s, uint16_t status)
 {
 	t_cmd	*cmd;
@@ -58,6 +141,7 @@ t_cmd	*new_cmd(char *s, uint16_t status)
 		exit(1);
 		return (NULL);
 	}
+	// ft_lst2strs()
 	cmd->args = ft_split(s, ' '); 		// ############ TEMPORARY ##############
 	cmd->args_len = ft_strslen(cmd->args);
 	cmd->status_flag = status;
@@ -69,7 +153,7 @@ int	found_str_limit(char *s, size_t i, size_t j)
 	// static - no use to redefine it at each call
 	static struct s_redirections	limits[] = {
 		{";", FLG_EO_CMD}, {"|", FLG_PIPE}, {">>", FLG_APPEND},
-		{">", FLG_OUTPUT}, {"<", FLG_INPUT}, {NULL, 0U}
+		{">", FLG_OUTPUT}, {"<", FLG_INPUT}, {NULL, 0}
 	};
 	t_cmd		*new;
 	size_t		k;
@@ -94,37 +178,6 @@ int	found_str_limit(char *s, size_t i, size_t j)
 	return (0);
 }
 
-// void	ft_parse(char *s)
-// {
-// 	size_t	i;
-// 	size_t	j;
-
-// 	// ft_lstiter(singleton()->lst, free);		// free all `void *content' nodes
-// 	ft_lstclear(&singleton()->lst, free);	// free the list containing all parsed commands
-// 	quotes2close(0, RESET_FLAG);			// reinit the quote test
-// 	i = 0;
-// 	while (s[i])
-// 	{
-// 		j = i;
-// 		while (s[j])
-// 		{
-// 			ft_dprintf(STDIN_FILENO, "[%c]", s[j]);
-// 			// if (s[j] == '\\' && ft_incharset(" $'\"", s[j + 1]))
-// 			// {
-// 			// 	// s[j] = ' '; // replace `\' (backslash) by a space
-// 			// 	j += 2;
-// 			// }
-// 			quotes2close(s[j], SET_FLAG);	// add quote test on this char
-// 			if ((!quotes2close(0, SET_FLAG) && found_str_limit(s, i, j)))
-// 				break ;
-// 			++j;
-// 		}
-// 		ft_putstr_fd("\n", STDIN_FILENO);
-// 		i = j + 1;
-// 	}
-// 	// ft_lstprint_cmd(singleton()->lst, '\n');
-// }
-
 int	len_variable(char *s)
 {
 	int	i;
@@ -137,7 +190,6 @@ int	len_variable(char *s)
 	++i;
 	while (s[i] && (ft_isalnum(s[i]) || s[i] == '_'))
 		++i;
-	// if (!s[i] || ft_incharset(PARSER_LIMITS_CHARS "'\"\\$", s[i]))
 	if (!s[i] || !(ft_isalnum(s[i]) || s[i] == '_'))
 		return (i);
 	else
@@ -152,7 +204,7 @@ size_t	get_env_var(char **s, size_t i)
 	char		*ptr;
 	char		*new;
 
-	// if (*(*s + i) == '?')
+	// if (*(*s + i) == '?')	// case: echo $?
 	// {
 	// 	*s = ft_itoa(singleton()->last_return_value);
 	// 	return (ft_nblen(singleton()->last_return_value) - 1);
@@ -187,8 +239,12 @@ size_t	get_env_var(char **s, size_t i)
 
 void	ft_parse(char *s)
 {
-	size_t	i;
+	// struct s_quotes	quotes;
+	// t_list			*args;
+	size_t			i;
 
+	// ft_bzero(&quotes, sizeof(struct s_quotes));
+	// args = NULL;
 	ft_lstclear(&singleton()->lst, free);
 	quotes2close(0, RESET_FLAG);
 	i = 0;
@@ -206,6 +262,11 @@ void	ft_parse(char *s)
 		}
 		else
 		{
+			// if ((('"' == s[i]) || ('\'' == s[i])) && quotes.first == 0)
+			// {
+			// 	quotes.first = (('"' == s[i]) << 0) | (('\'' == s[i]) << 1);
+			// }
+
 			quotes2close(s[i], SET_FLAG);
 			if ((('"' == s[i]) || ('\'' == s[i])) && !quotes2close(0, STATUS_FLAG))
 			{
@@ -224,6 +285,14 @@ void	ft_parse(char *s)
 			else
 				++i;
 		}
+		// if (!s[i] || (ft_incharset(" \t", s[i]) && !quotes2close(0, STATUS_FLAG)))
+		// {
+		// 	ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+		// 	while (s[i] && s[i] == ' ')
+		// 		++i;
+		// 	ft_printf(B_GREEN "content: %s\n" CLR_COLOR, ft_lstlast(args)->content);
+		// 	// ft_strnclean(s + i, s[i], 1);
+		// }
 		if (found_str_limit(s, 0, i))
 		{
 			s += i;
@@ -236,20 +305,17 @@ void	ft_parse(char *s)
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
 	// ft_printf("FINAL: [%s]\n", s);
-	// ft_lstprint_cmd(singleton()->lst, '\n');
+	// ft_lstprint_cmd(singleton()->lst);
 }
 
 
-// echo \""''\"""bonjour"
-// "''"bonjour
-// "''"""bonjour
-
-// echo \""''\"""bonjour"
-
 /*
+TESTS TO DO:
 
+echo \""''\"""bonjour"
+"''"bonjour
+"''"""bonjour
 
-
-
+echo \""''\"""bonjour"
 
 */
