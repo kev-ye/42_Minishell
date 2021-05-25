@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/24 15:16:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/24 19:16:49 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,17 @@ int ft_exec_builtin_cmd(char **cmds)
 }
 //////////////////////////////////////////////////////
 
-int	ft_exec_cmd(char *file, char **cmds)
+int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
 	const pid_t	id = fork();
 
 	if (id == 0)
 	{
+		// (cmds->status_flag & FLG_PIPE)
 		// signal(SIGQUIT, ft_quit);
 		// signal(SIGINT, ft_interrupt);
 		// signal(SIGKILL, ft_interrupt);
-		return (execve(file, cmds, NULL));
+		return (execve(file, cmds->args, NULL));
 	}
 	else
 	{
@@ -114,7 +115,7 @@ void	ft_pre_exec_cmd(void *ptr)
 	else if (ex)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-		singleton()->last_return_value = ft_exec_cmd(ex, cmd->args);
+		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
 		ft_memdel((void **)&ex);
 	}
 	else
@@ -124,21 +125,36 @@ void	ft_pre_exec_cmd(void *ptr)
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 
-void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
+// void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
+// {
+// 	t_list	*tmp;
+
+// 	tmp = lst;
+// 	while (tmp)
+// 	{
+// 		if ((*f))
+// 			tmp->content = (*f)(tmp->content);
+// 		tmp = tmp->next;
+// 	}
+// }
+
+
+void	ft_kaye(t_list *lst)
 {
 	t_list	*tmp;
 
 	tmp = lst;
 	while (tmp)
 	{
-		if ((*f))
-			tmp->content = (*f)(tmp->content);
+		ft_pre_exec_cmd(tmp->content);
 		tmp = tmp->next;
 	}
 }
 
+
 void	ft_exec_each_cmd(void)
 {
-	ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
+	ft_kaye(singleton()->lst);
+	// ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
 	// ft_lstprint_cmd(singleton()->lst, '\n');
 }
