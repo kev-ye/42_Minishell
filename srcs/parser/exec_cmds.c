@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 14:25:38 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 15:22:35 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,11 @@ int ft_exec_builtin_cmd(char **cmds)
 
 int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
-	return (execve(file, cmds->args, NULL));
+	int i = execve(file, cmds->args, NULL);
+	if (i == -1)
+		return (ERROR);
+	else
+		return (i);
 }
 
 
@@ -117,12 +121,16 @@ void	ft_pre_exec_cmd(void *ptr)
 	{
 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+		if (singleton()->last_return_value == ERROR)
+			exit(1);
 	}
 	else if (ex)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
 		ft_memdel((void **)&ex);
+		if (singleton()->last_return_value == ERROR)
+			exit(1);
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
@@ -151,26 +159,28 @@ void set_io(int read_fd, int write_fd)
 	{
         dup2(write_fd, STDOUT_FILENO);
         close(write_fd);
-    }
+	}
 }
 
-void	kaye_exec(t_list *lst)
+void	multi_cmd_exec(t_list *lst)
 {
 	pid_t	id;
 	int fd[2];
 	int read_fd;
 	int write_fd;
 
-	if (!lst->next)
+	if (lst && !lst->next)
 	{
 		set_io(STDIN_FILENO, STDOUT_FILENO);
 		ft_pre_exec_cmd(lst->content);
 		return ;
 	}
-    pipe(fd);
 	id = fork();
+    pipe(fd);
 	read_fd = fd[0];
 	write_fd = fd[1];
+	// if (id < 0)
+	// 	exit(ERROR);
 	if (id == 0)
 	{
 		close(read_fd);
@@ -183,7 +193,7 @@ void	kaye_exec(t_list *lst)
 		lst = lst->next;
 		close(write_fd);
         set_io(read_fd, STDOUT_FILENO);  
-		kaye_exec(lst);
+		multi_cmd_exec(lst);
 	}
 }
 
@@ -191,9 +201,11 @@ void	ft_exec_each_cmd(void)
 {
 	pid_t	id;
 	id = fork();
+	// if (id < 0)
+	// 	exit(ERROR);
 	if (id == 0)
 	{
-		kaye_exec(singleton()->lst);
+		multi_cmd_exec(singleton()->lst);
 	}
 	else
 		wait(NULL);
