@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 13:05:55 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 15:24:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ t_cmd	*new_cmd(char *s, uint16_t status)
 	return (cmd);
 }
 
-int	found_str_limit(char *s, size_t i, size_t j)
+int	found_str_limit(char *s, size_t i)
 {
 	// static - no use to redefine it at each call
 	static struct s_redirections	limits[] = {
@@ -167,11 +167,11 @@ int	found_str_limit(char *s, size_t i, size_t j)
 	k = 0;
 	while (limits[k].redir)
 	{
-		if (ft_strncmp(s + j, limits[k].redir, ft_strlen(limits[k].redir)) == 0)
+		if (ft_strncmp(s + i, limits[k].redir, ft_strlen(limits[k].redir)) == 0)
 		{
-			new = new_cmd(ft_substr(s, i, j - i), limits[k].flag);
+			new = new_cmd(ft_substr(s, 0, i), limits[k].flag);
 			ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
-			return (1);
+			return (ft_strlen(limits[k].redir));
 		}
 		++k;
 	}
@@ -293,9 +293,10 @@ void	ft_parse(char *s)
 		// 	ft_printf(B_GREEN "content: %s\n" CLR_COLOR, ft_lstlast(args)->content);
 		// 	// ft_strnclean(s + i, s[i], 1);
 		// }
-		if (found_str_limit(s, 0, i))
+		int	limit = found_str_limit(s, i);
+		if (limit)
 		{
-			s += i;
+			s += i + limit;
 			i = 0;
 		}
 	}
@@ -305,8 +306,82 @@ void	ft_parse(char *s)
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
 	// ft_printf("FINAL: [%s]\n", s);
-	// ft_lstprint_cmd(singleton()->lst);
+	ft_lstprint_cmd(singleton()->lst);
+	ft_printf("\n");
 }
+
+
+
+// void	ft_parse(char *s)
+// {
+// 	// struct s_quotes	quotes;
+// 	// t_list			*args;
+// 	size_t			i;
+
+// 	// ft_bzero(&quotes, sizeof(struct s_quotes));
+// 	// args = NULL;
+// 	ft_lstclear(&singleton()->lst, free);
+// 	quotes2close(0, RESET_FLAG);
+// 	i = 0;
+// 	while (s[i])
+// 	{
+	
+// 		// ft_printf("%s:%d: [%s]\n", __FILE__, __LINE__, s + i);
+
+// 		if (s[i] == '\\')
+// 		{
+// 			ft_strnclean(s + i++, "\\", 1);	// remove `\' (backslash) from `s'
+// 			if (ft_incharset(SPEC_CHARS, s[i]))
+// 				++i;
+// 			continue ;
+// 		}
+// 		else
+// 		{
+// 			// if ((('"' == s[i]) || ('\'' == s[i])) && quotes.first == 0)
+// 			// {
+// 			// 	quotes.first = (('"' == s[i]) << 0) | (('\'' == s[i]) << 1);
+// 			// }
+
+// 			quotes2close(s[i], SET_FLAG);
+// 			if ((('"' == s[i]) || ('\'' == s[i])) && !quotes2close(0, STATUS_FLAG))
+// 			{
+// 				ft_strnclean(s + i, "'\"", 1); // remove ``'"`` from `s'
+// 				continue ;
+// 			}
+
+// 			if (s[i] == '$')
+// 			{
+// 				/*
+// 				** search in env variables to replace `$' by its value
+// 				*/
+// 				++i;
+// 				i += get_env_var(&s, i);
+// 			}
+// 			else
+// 				++i;
+// 		}
+// 		// if (!s[i] || (ft_incharset(" \t", s[i]) && !quotes2close(0, STATUS_FLAG)))
+// 		// {
+// 		// 	ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+// 		// 	while (s[i] && s[i] == ' ')
+// 		// 		++i;
+// 		// 	ft_printf(B_GREEN "content: %s\n" CLR_COLOR, ft_lstlast(args)->content);
+// 		// 	// ft_strnclean(s + i, s[i], 1);
+// 		// }
+// 		if (found_str_limit(s, 0, i))
+// 		{
+// 			s += i;
+// 			i = 0;
+// 		}
+// 	}
+// 	if (!s[i])
+// 	{
+// 		t_cmd	*new = new_cmd(ft_substr(s, 0, i), FLG_EOL);
+// 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
+// 	}
+// 	// ft_printf("FINAL: [%s]\n", s);
+// 	// ft_lstprint_cmd(singleton()->lst);
+// }
 
 
 /*
@@ -318,4 +393,7 @@ echo \""''\"""bonjour"
 
 echo \""''\"""bonjour"
 
+ls -la; echo bonjour >> out; ls | grep srcs ;
+echo ' bonjour "" "a\" $LESS\toi'\"\'
+echo " bonjour '' 'a\' $LESS\toi"\"\'
 */

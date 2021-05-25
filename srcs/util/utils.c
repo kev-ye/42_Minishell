@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 11:38:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 15:12:57 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,19 @@ void	ft_lstprint_cmd(t_list *lst)
 	t_cmd	*cmd;
 	size_t	i;
 
+	ft_putendl(B_RED "#### START" B_GREEN);
 	tmp = lst;
 	while (tmp)
 	{
-		ft_putendl(B_RED "#### START" CLR_COLOR);
 		cmd = tmp->content;
-		ft_printf("stat[%.8b]\n", cmd->status_flag);
-		ft_putendl("args:");
+		ft_printf("stat[%.8b] args: ", cmd->status_flag);
 		i = 0;
 		while (cmd->args[i])
 			ft_printf("[%s]", cmd->args[i++]);
-		ft_putendl(B_RED "\nEND ####\n" CLR_COLOR);
+		ft_putendl("");
 		tmp = tmp->next;
 	}
+	ft_putendl(B_RED "END ####" CLR_COLOR);
 }
 
 int		ft_find_in_strs(char *s, const char **strs)
