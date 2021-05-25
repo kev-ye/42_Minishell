@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 15:22:35 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 15:39:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,33 +52,33 @@ int ft_exec_builtin_cmd(char **cmds)
 }
 //////////////////////////////////////////////////////
 
-// int	ft_exec_cmd(char *file, t_cmd *cmds)
-// {
-// 	const pid_t	id = fork();
-
-// 	if (id == 0)
-// 	{
-// 		// (cmds->status_flag & FLG_PIPE)
-// 		// signal(SIGQUIT, ft_quit);
-// 		// signal(SIGINT, ft_interrupt);
-// 		// signal(SIGKILL, ft_interrupt);
-// 		return (execve(file, cmds->args, NULL));
-// 	}
-// 	else
-// 	{
-// 		wait(NULL);
-// 	}
-// 	return (ERROR);
-// }
-
 int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
-	int i = execve(file, cmds->args, NULL);
-	if (i == -1)
-		return (ERROR);
+	const pid_t	id = fork();
+
+	if (id == 0)
+	{
+		// (cmds->status_flag & FLG_PIPE)
+		// signal(SIGQUIT, ft_quit);
+		// signal(SIGINT, ft_interrupt);
+		// signal(SIGKILL, ft_interrupt);
+		return (execve(file, cmds->args, NULL));
+	}
 	else
-		return (i);
+	{
+		wait(NULL);
+	}
+	return (ERROR);
 }
+
+// int	ft_exec_cmd(char *file, t_cmd *cmds)
+// {
+// 	int i = execve(file, cmds->args, NULL);
+// 	if (i == -1)
+// 		return (ERROR);
+// 	else
+// 		return (i);
+// }
 
 
 // char	**ft_lst_to_strs(t_list *lst)
@@ -121,16 +121,16 @@ void	ft_pre_exec_cmd(void *ptr)
 	{
 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-		if (singleton()->last_return_value == ERROR)
-			exit(1);
+		// if (singleton()->last_return_value == ERROR)
+		// 	exit(1);
 	}
 	else if (ex)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
 		ft_memdel((void **)&ex);
-		if (singleton()->last_return_value == ERROR)
-			exit(1);
+		// if (singleton()->last_return_value == ERROR)
+		// 	exit(1);
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
@@ -162,53 +162,64 @@ void set_io(int read_fd, int write_fd)
 	}
 }
 
-void	multi_cmd_exec(t_list *lst)
-{
-	pid_t	id;
-	int fd[2];
-	int read_fd;
-	int write_fd;
+// void	multi_cmd_exec(t_list *lst)
+// {
+// 	pid_t	id;
+// 	int fd[2];
+// 	int read_fd;
+// 	int write_fd;
 
-	if (lst && !lst->next)
-	{
-		set_io(STDIN_FILENO, STDOUT_FILENO);
-		ft_pre_exec_cmd(lst->content);
-		return ;
-	}
-	id = fork();
-    pipe(fd);
-	read_fd = fd[0];
-	write_fd = fd[1];
-	// if (id < 0)
-	// 	exit(ERROR);
-	if (id == 0)
-	{
-		close(read_fd);
-        set_io(STDIN_FILENO, write_fd);
-		ft_pre_exec_cmd(lst->content);
-	}
-	else
-	{
-		wait(NULL);
-		lst = lst->next;
-		close(write_fd);
-        set_io(read_fd, STDOUT_FILENO);  
-		multi_cmd_exec(lst);
-	}
-}
+// 	pid_t id2 = fork();
+// 	if (id2 < 0)
+// 		exit(ERROR);
+// 	else if (id2 == 0)
+// 	{
+// 		if (lst && !lst->next)
+// 		{
+// 			set_io(STDIN_FILENO, STDOUT_FILENO);
+// 			ft_pre_exec_cmd(lst->content);
+// 			return ;
+// 		}
+// 		id = fork();
+// 		pipe(fd);
+// 		read_fd = fd[0];
+// 		write_fd = fd[1];
+// 		if (id < 0)
+// 			exit(ERROR);
+// 		if (id == 0)
+// 		{
+// 			close(read_fd);
+// 			set_io(STDIN_FILENO, write_fd);
+// 			ft_pre_exec_cmd(lst->content);
+// 			exit(1);
+// 		}
+// 		else
+// 		{
+// 			wait(NULL);
+// 			lst = lst->next;
+// 			close(write_fd);
+// 			set_io(read_fd, STDOUT_FILENO);  
+// 			multi_cmd_exec(lst);
+// 		}
+// 	}
+// 	else
+// 	{
+// 		wait(NULL);
+// 	}
+// }
 
 void	ft_exec_each_cmd(void)
 {
-	pid_t	id;
-	id = fork();
+	// pid_t	id;
+	// id = fork();
 	// if (id < 0)
 	// 	exit(ERROR);
-	if (id == 0)
-	{
-		multi_cmd_exec(singleton()->lst);
-	}
-	else
-		wait(NULL);
-	// ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
+	// if (id == 0)
+	// {
+		// multi_cmd_exec(singleton()->lst);
+	// }
+	// else
+		// wait(NULL);
+	ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
 	// ft_lstprint_cmd(singleton()->lst, '\n');
 }
