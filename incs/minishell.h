@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 18:26:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 00:15:51 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,13 @@
 // # define PATH_MAX_LEN 256
 
 # define PARSER_LIMITS_CHARS ";|<> "
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
+						":\e[0m " s "\n");
+// #define PRINT_ERR(s) (void)s;
+
 
 /*
 ** -- DATA STRUCTURES --
@@ -103,6 +110,7 @@ typedef struct s_builtin
 struct s_redirections
 {
 	char	*redir;
+	int		len;
 	uint8_t	flag;
 };
 
@@ -131,7 +139,7 @@ typedef struct s_quotes
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 void		ft_lstprint_cmd(t_list *lst);
-char		**ft_lst2strs(t_list *lst);
+char		**ft_lst2strs(t_list **lst);
 void		ft_list_sort(t_list **begin_list, int (*cmp)());
 int			ft_find_in_strs(char *s, const char **strs);
 char		*ft_strclean(char *s, const char *charset);

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 18:26:16 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 23:43:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,13 @@ void	ft_lstprint(t_list *lst, char sep)
 {
 	t_list	*tmp;
 
+	if (!lst)
+		return ;
 	tmp = lst;
 	while (tmp)
 	{
-		ft_printf("%s%c", tmp->content, sep);
+		if (tmp->content)
+			ft_printf("%s%c", tmp->content, sep);
 		tmp = tmp->next;
 	}
 }
@@ -40,6 +43,8 @@ void	ft_lstprint_cmd(t_list *lst)
 	t_cmd	*cmd;
 	size_t	i;
 
+	if (!lst)
+		return ;
 	ft_putendl(B_RED "#### START" B_GREEN);
 	tmp = lst;
 	while (tmp)
@@ -47,7 +52,7 @@ void	ft_lstprint_cmd(t_list *lst)
 		cmd = tmp->content;
 		ft_printf("stat[%.8b] args: ", cmd->status_flag);
 		i = 0;
-		while (cmd->args[i])
+		while (cmd->args && cmd->args[i])
 			ft_printf("[%s]", cmd->args[i++]);
 		ft_putendl("");
 		tmp = tmp->next;
@@ -154,20 +159,20 @@ void ft_list_sort(t_list **begin_list, int (*cmp)())
     }
 }
 
-char	**ft_lst2strs(t_list *lst)
+char	**ft_lst2strs(t_list **lst)
 {
 	size_t	tmp_len;
 	char	**new;
 	t_list	*tmp;
 	size_t	i;
 
-	if (!lst)
+	if (!lst || !*lst)
 		return (NULL);
-	new = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
+	new = ft_calloc(ft_lstsize(*lst) + 1, sizeof(char *));
 	if (!new)
 		return (NULL);
 	i = 0;
-	tmp = lst;
+	tmp = *lst;
 	while (tmp)
 	{
 		tmp_len = ft_strlen(tmp->content);
