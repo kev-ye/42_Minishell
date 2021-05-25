@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 15:12:57 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 18:26:16 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,8 @@ char		*ft_strnclean(char *s, const char *charset, size_t end)
 void	ft_free_exit(void)
 {
 	ft_lstclear(&singleton()->lst, free);
+	if (singleton()->cwd)
+		ft_memdel((void **)(&singleton()->cwd));
 	free(singleton());
 	exit(0);
 }
@@ -150,6 +152,33 @@ void ft_list_sort(t_list **begin_list, int (*cmp)())
         else
             list = list->next;
     }
+}
+
+char	**ft_lst2strs(t_list *lst)
+{
+	size_t	tmp_len;
+	char	**new;
+	t_list	*tmp;
+	size_t	i;
+
+	if (!lst)
+		return (NULL);
+	new = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
+	if (!new)
+		return (NULL);
+	i = 0;
+	tmp = lst;
+	while (tmp)
+	{
+		tmp_len = ft_strlen(tmp->content);
+		new[i] = (char *)ft_calloc(tmp_len + 1, sizeof(char));
+		if (!new[i])
+			return (ft_strsfree(i, new));
+		ft_memcpy(new[i++], tmp->content, tmp_len);
+		tmp = tmp->next;
+	}
+	new[i] = NULL;
+	return (new);
 }
 
 t_list  *search_env(char *tofind, t_list **env)

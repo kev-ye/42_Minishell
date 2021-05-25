@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 16:16:24 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 18:26:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,13 +112,14 @@ enum e_quote_flags
 	QUOTE_FLG_DOUBLE = (1U << 1)
 };
 
-struct s_quotes
+typedef struct s_quotes
 {
 	int	s_quote;
 	int	d_quote;
 	int	first;
 	int	last;
-};
+	int	did_change;
+}	t_quotes;
 
 /*
 ** -- PROTOTYPES --
@@ -130,6 +131,8 @@ struct s_quotes
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 void		ft_lstprint_cmd(t_list *lst);
+char		**ft_lst2strs(t_list *lst);
+void		ft_list_sort(t_list **begin_list, int (*cmp)());
 int			ft_find_in_strs(char *s, const char **strs);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
@@ -142,10 +145,9 @@ void		*ft_malloc_error(char *file, int line);
 t_minishl	*singleton(void);
 char		*search_executable(char *command);
 char		*search_builtin_executable(char *command);
-int			quotes2close(unsigned char c, int reinit);
+int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
-void		ft_list_sort(t_list **begin_list, int (*cmp)());
 t_list		*search_env(char *tofind, t_list **env);
 
 /*

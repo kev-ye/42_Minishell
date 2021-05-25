@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 16:08:40 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 18:22:44 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,10 @@ void	prompt(void)
 		ft_exec_each_cmd();
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
+		{
+			ft_free_exit();
 			break ;
+		}
 	}
 }
 

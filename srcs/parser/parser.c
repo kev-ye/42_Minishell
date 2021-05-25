@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 16:07:15 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 18:32:38 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,81 +56,42 @@
 // STATUS_FLAG used to get the status of the static variables in `quotes2close'
 #define STATUS_FLAG -1
 
-int	quotes2close(unsigned char c, int status)
-{
-	static int	s_quote = 0;
-	static int	d_quote = 0;
-	int			last;
+#define DBL_BSHFT 0
+#define SGL_BSHFT 1
 
-	last = (s_quote == 1) || (d_quote == 1);
+/*
+** But de la fonction:
+**
+** savoir si on a deja eu un quote
+** savoir quel quote est deja passe
+** savoir quel quote etait le premier
+** savoir si un quote doit etre ferme
+*/
+int	quotes2close(unsigned char c, t_quotes *q, int status)
+{
+	q->did_change = ((q->d_quote == 1) || (q->s_quote == 1));
 	if (RESET_FLAG == status)
 	{
-		s_quote = 0;
-		d_quote = 0;
+		ft_bzero(q, sizeof(t_quotes));
+		return (0);
 	}
 	else if (SET_FLAG == status)
 	{
-		if ('\'' == c && d_quote == 0)
-			s_quote = (s_quote == 0);
-		else if ('"' == c && s_quote == 0)
-			d_quote = (d_quote == 0);
+		if ((('"' == c) && (('"' == c) << DBL_BSHFT) & q->first)
+		|| (('\'' == c) && (('\'' == c) << SGL_BSHFT) & q->first))
+			q->first = 0;
+		else if (q->d_quote == 0 && q->s_quote == 0)
+			q->first = (('"' == c) << DBL_BSHFT) | (('\'' == c) << SGL_BSHFT);
+		if (('\'' == c) && 0 == q->d_quote)
+			q->s_quote = (0 == q->s_quote);
+		else if (('"' == c) && 0 == q->s_quote)
+			q->d_quote = (0 == q->d_quote);
 	}
-	return (last != ((s_quote == 1) || (d_quote == 1)));
+	q->did_change = q->did_change != ((q->d_quote == 1) || (q->s_quote == 1));
+	return (q->first != 0);
 }
 
-
-// int	quotes2close(unsigned char c, int status)
-// {
-// 	static int	s_quote = 0;
-// 	static int	d_quote = 0;
-// 	int			last;
-
-// 	last = (s_quote == 1) || (d_quote == 1);
-// 	if (RESET_FLAG == status)
-// 	{
-// 		s_quote = 0;
-// 		d_quote = 0;
-// 	}
-// 	else if (SET_FLAG == status)
-// 	{
-// 		if ('\'' == c && d_quote == 0)
-// 			s_quote = (s_quote == 0);
-// 		else if ('"' == c && s_quote == 0)
-// 			d_quote = (d_quote == 0);
-// 	}
-// 	return (last != ((s_quote == 1) || (d_quote == 1)));
-// }
-
-char	**ft_lst2strs(t_list *lst, const char *sep)
-{
-	const size_t	sep_len = ft_strlen(sep);
-	char			**new;
-	t_list			*tmp;
-	size_t			i;
-
-	if (!lst || !sep)
-		return (NULL);
-	new = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
-	if (!new)
-		return (NULL);
-	i = 0;
-	tmp = lst;
-	while (tmp)
-	{
-		new[i] = ft_calloc(ft_strlen(tmp->content) + sep_len + 1, sizeof(char));
-		if (!new[i])
-			return (ft_strsfree(i, new));
-		ft_memcpy(new[i], tmp->content, ft_strlen(tmp->content));
-		if (tmp->next)
-			ft_memcpy(new[i], sep, sep_len);
-		++i;
-		tmp = tmp->next;
-	}
-	new[i] = NULL;
-	return (new);
-}
-
-t_cmd	*new_cmd(char *s, uint16_t status)
+t_cmd	*new_cmd(uint16_t status, t_list *args)
 {
 	t_cmd	*cmd;
 
@@ -141,14 +102,21 @@ t_cmd	*new_cmd(char *s, uint16_t status)
 		exit(1);
 		return (NULL);
 	}
-	// ft_lst2strs()
-	cmd->args = ft_split(s, ' '); 		// ############ TEMPORARY ##############
+
+	// NEW PART
+	cmd->args = ft_lst2strs(args);
+	ft_lstclear(&args, free);
+	if (!cmd->args)
+		return (ft_malloc_error(__FILE__, __LINE__));
+	// END NEW PART
+
+	// cmd->args = ft_split(s, ' '); 		// ############ TEMPORARY ##############
 	cmd->args_len = ft_strslen(cmd->args);
 	cmd->status_flag = status;
 	return (cmd);
 }
 
-int	found_str_limit(char *s, size_t i)
+int	found_str_limit(char *s, size_t i, t_list *args)
 {
 	// static - no use to redefine it at each call
 	static struct s_redirections	limits[] = {
@@ -169,7 +137,8 @@ int	found_str_limit(char *s, size_t i)
 	{
 		if (ft_strncmp(s + i, limits[k].redir, ft_strlen(limits[k].redir)) == 0)
 		{
-			new = new_cmd(ft_substr(s, 0, i), limits[k].flag);
+			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+			new = new_cmd(limits[k].flag, args);
 			ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 			return (ft_strlen(limits[k].redir));
 		}
@@ -239,21 +208,24 @@ size_t	get_env_var(char **s, size_t i)
 
 void	ft_parse(char *s)
 {
-	// struct s_quotes	quotes;
-	// t_list			*args;
-	size_t			i;
+	t_quotes	quotes;
+	t_list		*args;
+	size_t		i;
 
-	// ft_bzero(&quotes, sizeof(struct s_quotes));
-	// args = NULL;
+	args = NULL;
 	ft_lstclear(&singleton()->lst, free);
-	quotes2close(0, RESET_FLAG);
+	quotes2close(0, &quotes, RESET_FLAG);
 	i = 0;
 	while (s[i])
 	{
-	
-		// ft_printf("%s:%d: [%s]\n", __FILE__, __LINE__, s + i);
+		while (s[i] && s[i] == ' ' && quotes.first == 0)
+			++s;
+		if (!s[i])
+			break ;
+		
+		ft_printf("%s:%d: [%.4b] [%s]\n", __FILE__, __LINE__, quotes.first, s + i);
 
-		if (s[i] == '\\')
+		if (s[i] == '\\' && quotes.first == 0)
 		{
 			ft_strnclean(s + i++, "\\", 1);	// remove `\' (backslash) from `s'
 			if (ft_incharset(SPEC_CHARS, s[i]))
@@ -262,19 +234,16 @@ void	ft_parse(char *s)
 		}
 		else
 		{
-			// if ((('"' == s[i]) || ('\'' == s[i])) && quotes.first == 0)
-			// {
-			// 	quotes.first = (('"' == s[i]) << 0) | (('\'' == s[i]) << 1);
-			// }
-
-			quotes2close(s[i], SET_FLAG);
-			if ((('"' == s[i]) || ('\'' == s[i])) && !quotes2close(0, STATUS_FLAG))
+			quotes2close(s[i], &quotes, SET_FLAG);
+			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change != 0)
 			{
 				ft_strnclean(s + i, "'\"", 1); // remove ``'"`` from `s'
+				if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
+					|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
+					ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
 				continue ;
 			}
-
-			if (s[i] == '$')
+			if (s[i] == '$' && (quotes.first & (1 << DBL_BSHFT)))
 			{
 				/*
 				** search in env variables to replace `$' by its value
@@ -285,104 +254,37 @@ void	ft_parse(char *s)
 			else
 				++i;
 		}
-		// if (!s[i] || (ft_incharset(" \t", s[i]) && !quotes2close(0, STATUS_FLAG)))
-		// {
-		// 	ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
-		// 	while (s[i] && s[i] == ' ')
-		// 		++i;
-		// 	ft_printf(B_GREEN "content: %s\n" CLR_COLOR, ft_lstlast(args)->content);
-		// 	// ft_strnclean(s + i, s[i], 1);
-		// }
-		int	limit = found_str_limit(s, i);
+		if ((ft_incharset(" \t", s[i]) && quotes.first == 0))
+		{
+			// while (s[i] && s[i] == ' ')
+			// 	++i;
+			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+			s += i;
+			i = 0;
+			ft_printf(B_GREEN "content: [%s]\n" CLR_COLOR,
+				ft_lstlast(args)->content);
+			// ft_strnclean(s + i, s[i], 1);
+		}
+		int	limit = found_str_limit(s, i, args);
 		if (limit)
 		{
+			quotes2close(0, &quotes, RESET_FLAG);
 			s += i + limit;
 			i = 0;
 		}
 	}
 	if (!s[i])
 	{
-		t_cmd	*new = new_cmd(ft_substr(s, 0, i), FLG_EOL);
+		t_cmd	*new;
+
+		if (i > 0 && s[i - 1])
+			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+		new = new_cmd(FLG_EOL, args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
-	// ft_printf("FINAL: [%s]\n", s);
 	ft_lstprint_cmd(singleton()->lst);
 	ft_printf("\n");
 }
-
-
-
-// void	ft_parse(char *s)
-// {
-// 	// struct s_quotes	quotes;
-// 	// t_list			*args;
-// 	size_t			i;
-
-// 	// ft_bzero(&quotes, sizeof(struct s_quotes));
-// 	// args = NULL;
-// 	ft_lstclear(&singleton()->lst, free);
-// 	quotes2close(0, RESET_FLAG);
-// 	i = 0;
-// 	while (s[i])
-// 	{
-	
-// 		// ft_printf("%s:%d: [%s]\n", __FILE__, __LINE__, s + i);
-
-// 		if (s[i] == '\\')
-// 		{
-// 			ft_strnclean(s + i++, "\\", 1);	// remove `\' (backslash) from `s'
-// 			if (ft_incharset(SPEC_CHARS, s[i]))
-// 				++i;
-// 			continue ;
-// 		}
-// 		else
-// 		{
-// 			// if ((('"' == s[i]) || ('\'' == s[i])) && quotes.first == 0)
-// 			// {
-// 			// 	quotes.first = (('"' == s[i]) << 0) | (('\'' == s[i]) << 1);
-// 			// }
-
-// 			quotes2close(s[i], SET_FLAG);
-// 			if ((('"' == s[i]) || ('\'' == s[i])) && !quotes2close(0, STATUS_FLAG))
-// 			{
-// 				ft_strnclean(s + i, "'\"", 1); // remove ``'"`` from `s'
-// 				continue ;
-// 			}
-
-// 			if (s[i] == '$')
-// 			{
-// 				/*
-// 				** search in env variables to replace `$' by its value
-// 				*/
-// 				++i;
-// 				i += get_env_var(&s, i);
-// 			}
-// 			else
-// 				++i;
-// 		}
-// 		// if (!s[i] || (ft_incharset(" \t", s[i]) && !quotes2close(0, STATUS_FLAG)))
-// 		// {
-// 		// 	ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
-// 		// 	while (s[i] && s[i] == ' ')
-// 		// 		++i;
-// 		// 	ft_printf(B_GREEN "content: %s\n" CLR_COLOR, ft_lstlast(args)->content);
-// 		// 	// ft_strnclean(s + i, s[i], 1);
-// 		// }
-// 		if (found_str_limit(s, 0, i))
-// 		{
-// 			s += i;
-// 			i = 0;
-// 		}
-// 	}
-// 	if (!s[i])
-// 	{
-// 		t_cmd	*new = new_cmd(ft_substr(s, 0, i), FLG_EOL);
-// 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
-// 	}
-// 	// ft_printf("FINAL: [%s]\n", s);
-// 	// ft_lstprint_cmd(singleton()->lst);
-// }
-
 
 /*
 TESTS TO DO:
