@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 14:14:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 14:23:48 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,6 @@ void	prompt(void)
 
 	while (1)
 	{
-		pid_t pid = fork();
-		if (pid == 0)
-		{
 		print_prompt();
 		r = get_next_line(STDIN_FILENO, &ret);
 		ft_parse(ret);
@@ -67,9 +64,6 @@ void	prompt(void)
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 			break ;
-		}
-		else
-			wait(NULL);
 	}
 }
 
