@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 14:09:21 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 14:14:29 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,6 +174,32 @@ int	ft_exec_cmd(char *file, char **cmds)
 // 	}
 // }
 
+
+// char	**ft_lst_to_strs(t_list *lst)
+// {
+// 	char	**s;
+// 	t_list	*tmp;
+// 	size_t	i;
+
+// 	if (!lst)
+// 		return (NULL);
+// 	s = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
+// 	if (!s)
+// 		return (NULL);
+// 	tmp = lst;
+// 	i = 0;
+// 	while (tmp)
+// 	{
+// 		s[i] = ft_calloc(ft_strlen(tmp->content) + 1, sizeof(char));
+// 		if (!s[i])
+// 			return (ft_strsfree(i, s));
+// 		ft_memcpy(s[i++], tmp->content, ft_strlen(tmp->content));
+// 		tmp = tmp->next;
+// 	}
+// 	s[i] = NULL;
+// 	return (s);
+// }
+
 void	ft_pre_exec_cmd(void *ptr)
 {
 	t_cmd	*cmd;
@@ -246,17 +272,29 @@ void	kaye_exec(t_list *lst)
 	// return (ERROR);
 }
 
-void	ft_kaye(t_list *lst)
-{
-	t_list	*tmp;
+// void	ft_kaye(t_list *lst)
+// {
+// 	pid_t	id;
+// 	int fd[2];
+// 	int read_fd;
+// 	int write_fd;
 
-	tmp = lst;
-	while (tmp)
-	{
-		kaye_exec(tmp);
-		tmp = tmp->next;
-	}
-}
+// 	if (!lst->next)
+// 	{
+// 		set_io(STDIN_FILENO, STDOUT_FILENO);
+// 		ft_pre_exec_cmd(lst->content);
+// 		return ;
+// 	}
+//     pipe(fd);
+// 	id = fork();
+// 	read_fd = fd[0];
+// 	write_fd = fd[1];
+// 	if (id == 0)
+// 	{
+// 		kaye_exec(tmp);
+// 		tmp = tmp->next;
+// 	}
+// }
 
 void	ft_exec_each_cmd(void)
 {

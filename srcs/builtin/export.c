@@ -6,13 +6,13 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/24 20:53:04 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/25 14:13:40 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *head_env(char *env)
+static char *head_env(char *env)
 {
     char *env_head;
     int len;
@@ -38,7 +38,7 @@ char *head_env(char *env)
     return (env_head);
 }
 
-void add_quote(t_list **lst_env)
+static void add_quote(t_list **lst_env)
 {
     t_list *tmp;
     char *new_env;
@@ -78,7 +78,7 @@ void add_quote(t_list **lst_env)
     }
 }
 
-void new_shell_env(char *new_env, t_list *to_change, int to_add)
+static void new_shell_env(char *new_env, t_list *to_change, int to_add)
 {
     if (to_change)
     {
@@ -89,7 +89,16 @@ void new_shell_env(char *new_env, t_list *to_change, int to_add)
         ft_lstadd_back(&singleton()->env, ft_lstnew((void *)new_env));
 }
 
-void add_env(char **cmds)
+static int cmds_check(char *cmd)
+{
+    if (ft_isalpha(cmd[0]) || cmd[0] == '_')
+        return (1);
+    else
+        ft_dprintf(STDERR_FILENO, "%s: export: `%s\': not a valid identifier\n", PROG_NAME, cmd);
+    return (0);
+}
+
+static void add_env(char **cmds)
 {
     t_list  *to_change;
     char *new_env;
@@ -98,17 +107,20 @@ void add_env(char **cmds)
     i = 1;
     while (cmds[i])
     {
-        to_change = search_env(cmds[i], &singleton()->env);
-        new_env = ft_strdup(cmds[i]);
-        if (!new_env)
-            return ;
-        if (to_change)
+        if (cmds_check(cmds[i]))
         {
-            new_shell_env(new_env, to_change, 0);
-            return ;
+            to_change = search_env(cmds[i], &singleton()->env);
+            new_env = ft_strdup(cmds[i]);
+            if (!new_env)
+                return ;
+            if (to_change)
+            {
+                new_shell_env(new_env, to_change, 0);
+                return ;
+            }
+            else
+                new_shell_env(new_env, NULL, 1);
         }
-        else
-            new_shell_env(new_env, NULL, 1);
         ++i;
     }
 }
