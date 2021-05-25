@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/24 16:57:51 by besellem         ###   ########.fr        #
+#    Updated: 2021/05/25 10:58:01 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ SUB_SRC	:= exec_cmds.c \
 		   sig.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
+		   clear.c \
 		   echo.c \
 		   env.c \
 		   exit.c \

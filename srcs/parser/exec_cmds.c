@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 01:22:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 11:09:29 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,13 @@ void	ft_interrupt(int code)
 //////////////////////////////////////////////////kaye
 int ft_exec_builtin_cmd(char **cmds)
 {
-	const t_builtin builtin[] = {{"echo", ft_echo, NULL}, 
-				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
-				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-				{"export", ft_export, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
-	int i;
+	const t_builtin	builtin[] = {
+		{"echo", ft_echo, NULL}, {"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
+		{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
+		{"export", ft_export, NULL}, {"exit", NULL, ft_exit},
+		{"clear", NULL, ft_clear}, {NULL, NULL, NULL}
+	};
+	int				i;
 
 	i = 0;
 	while (builtin[i].cmd)
@@ -115,12 +117,13 @@ void	ft_pre_exec_cmd(void *ptr)
 	{
 		// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd->args);
-		ft_memdel((void **)&ex);
 	}
 	else
 	{
 		
 	}
+	if (ex)
+		ft_memdel((void **)&ex);
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 

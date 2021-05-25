@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 01:24:22 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/25 10:56:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,7 @@ int		ft_pwd(void);
 int   	ft_env(char **cmds);
 int    	ft_export(char **cmds);
 int 	ft_unset(char **cmds);
-int   	ft_exit(void) __attribute__((noreturn));
+int   	ft_exit(void);// __attribute__((noreturn));
+int		ft_clear(void);
 
 #endif
