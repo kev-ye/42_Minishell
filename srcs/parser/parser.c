@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 15:30:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 16:15:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,7 @@ void	ft_parse(char *s)
 			ft_strnclean(s + i, "\\", 1);	// remove `\' (backslash) from `s'
 			if (ft_incharset(SPEC_CHARS, s[i]))
 				++i;
+			quotes2close(s[i], &quotes, SET_FLAG);
 			continue ;
 		}
 		else
