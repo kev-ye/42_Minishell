@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 10:58:08 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 11:58:06 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	ft_exec_cmd(char *file, t_cmd *cmds)
 		// signal(SIGQUIT, ft_quit);
 		// signal(SIGINT, ft_interrupt);
 		// signal(SIGKILL, ft_interrupt);
-		return (execve(file, cmds->args, NULL));
+		return (execve(file, cmds->args, ft_lst2strs(&singleton()->env)));
 	}
 	else
 	{

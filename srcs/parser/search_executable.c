@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 11:09:06 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 11:47:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,25 +18,41 @@ static char	*find_exec(char **exectbl, char *command)
 	int		fd;
 	size_t	i;
 
-	i = 0;
-	while (exectbl[i])
+	cmd = NULL;
+	if (ft_strchr(command, '/'))
 	{
-		ft_asprintf(&cmd, "%s/%s", exectbl[i++], command);
-		if (!cmd)	// may want to exit() minishell when this happens
-			continue ;
+		ft_asprintf(&cmd, "%s", command);
 		fd = open(cmd, O_RDONLY);
 		if (fd != -1)
 		{
 			close(fd);
 			return (cmd);
 		}
-		///////////////////////////////kaye
-		//printf("cmd : %s\n", cmd); /// dont underst why can open if file no exist
-		///////////////////////////////////
-		ft_memdel((void **)&cmd);
+	}
+	else
+	{
+		i = 0;
+		while (exectbl[i])
+		{
+			ft_asprintf(&cmd, "%s/%s", exectbl[i++], command);
+			if (!cmd)	// may want to exit() minishell when this happens
+				continue ;
+			// struct stat	s;
+			// stat()
+			fd = open(cmd, O_RDONLY);
+			if (fd != -1)
+			{
+				close(fd);
+				return (cmd);
+			}
+			///////////////////////////////kaye
+			//printf("cmd : %s\n", cmd); /// dont underst why can open if file no exist
+			///////////////////////////////////
+			ft_memdel((void **)&cmd);
+		}
 	}
 	ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", PROG_NAME, command, strerror(errno));
-	return (NULL);
+	return (cmd);
 }
 
 char	*search_executable(char *command)
@@ -47,6 +63,7 @@ char	*search_executable(char *command)
 
 	if (!path)
 	{
+		PRINT_ERR("HERE");
 		printf("%s: %s: %s\n", PROG_NAME, command, strerror(errno));
 		///////////////// kaye
 		// printf("Path are unset ... maybe here need add some check function\n"); // need add check function for no found message
