@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 00:15:51 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 10:59:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@
 
 # define SUCCESS 0
 # define ERROR 1
+
+# define FOUND 0
+# define NOT_FOUND -1
 // # define PATH_MAX_LEN 256
 
 # define PARSER_LIMITS_CHARS ";|<> "
@@ -59,11 +62,6 @@
 /*
 ** -- DATA STRUCTURES --
 */
-enum	e_search
-{
-	FOUND,
-	NOT_FOUND = -1
-};
 
 /*
 ** FLG_EO			// end of line
@@ -114,19 +112,12 @@ struct s_redirections
 	uint8_t	flag;
 };
 
-enum e_quote_flags
-{
-	QUOTE_FLG_SINGLE = (1U << 0),
-	QUOTE_FLG_DOUBLE = (1U << 1)
-};
-
 typedef struct s_quotes
 {
-	int	s_quote;
-	int	d_quote;
-	int	first;
-	int	last;
-	int	did_change;
+	int	s_quote;	// got a single quote
+	int	d_quote;	// got a double quote
+	int	first;		// got a quote
+	int	did_change;	// did the entry quote has been found again ? (so it's the end of a string)
 }	t_quotes;
 
 /*
@@ -169,5 +160,10 @@ int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
 int			ft_exit(void) __attribute__((noreturn));
 int			ft_clear(void);
+
+/*
+** Signals
+*/
+void		ft_interrupt(int code);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 00:30:51 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 11:05:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ size_t	get_env_var(char **s, size_t i)
 	// 	*s = ft_itoa(singleton()->last_return_value);
 	// 	return (ft_nblen(singleton()->last_return_value) - 1);
 	// }
-	if (len_str < 0)
+	if (NOT_FOUND == len_str)
 	{
 		// ft_printf(B_RED "VAR WRONG FORMAT\n" CLR_COLOR, __LINE__, len_str, i);
 		return (0);
@@ -204,6 +204,7 @@ size_t	get_env_var(char **s, size_t i)
 
 #define SPEC_CHARS " \\$'\""
 #define SPACES " \t"
+#define QUOTES "\"'"
 
 void	ft_parse(char *s)
 {
@@ -248,15 +249,22 @@ void	ft_parse(char *s)
 		else
 		{
 			quotes2close(s[i], &quotes, SET_FLAG);
-			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change != 0)
+			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change)
 			{
-				ft_strnclean(s + i, "'\"", 1); // remove ``'"`` from `s'
-				if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
-					|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
-					ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
-				continue ;
+				ft_strnclean(s + i, QUOTES, 1);	// remove ``'"`` from `s'
+				// if (quotes.first)
+				// {
+				// 	ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+				// 	s += i;
+				// 	i = 0;
+				// 	continue ;
+				// }
+				// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
+				// 	|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
+				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
+				// continue ;
 			}
-			if (s[i] == '$' && (!quotes.first || (quotes.first & (1 << DBL_BSHFT))))
+			else if (s[i] == '$' && (!quotes.first || (quotes.first & (1 << DBL_BSHFT))))
 			{
 				/*
 				** search in env variables to replace `$' by its value
@@ -273,6 +281,9 @@ void	ft_parse(char *s)
 			s += i;
 			i = 0;
 		}
+		if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
+		|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
+			ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
 	}
 	if (!s[i])
 	{

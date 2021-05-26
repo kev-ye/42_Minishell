@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 15:39:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 10:58:08 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 // seems that it must be used on forked commands - not on the main program
 void	ft_quit(int code)
 {
-	ft_dprintf(STDIN_FILENO, B_RED "SIGNAL\n" CLR_COLOR);
-	ft_dprintf(2, "Quit: %d\n", code);
+	ft_dprintf(STDERR_FILENO, B_RED "SIGNAL: Quit: %d\n" CLR_COLOR, code);
 	// exit(code);
 }
 
 void	ft_interrupt(int code)
 {
-	ft_dprintf(STDIN_FILENO, B_RED "SIGNAL\n" CLR_COLOR);
-	ft_dprintf(STDIN_FILENO, "interrupt: %d\n", code);
+	ft_dprintf(STDERR_FILENO, B_RED "SIGNAL: Interrupt[%d]\n" CLR_COLOR, code);
+	// kill(singleton()->thread_pid, code);
+	
 	// exit(code);
 }
 

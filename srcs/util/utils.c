@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/25 23:43:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 09:07:47 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,19 +45,26 @@ void	ft_lstprint_cmd(t_list *lst)
 
 	if (!lst)
 		return ;
-	ft_putendl(B_RED "#### START" B_GREEN);
+	ft_putendl(B_RED "# START");
 	tmp = lst;
 	while (tmp)
 	{
 		cmd = tmp->content;
-		ft_printf("stat[%.8b] args: ", cmd->status_flag);
-		i = 0;
-		while (cmd->args && cmd->args[i])
-			ft_printf("[%s]", cmd->args[i++]);
+		ft_printf(B_GREEN "stat[%.8b] args_len[%2d] ",
+			cmd->status_flag, cmd->args_len);
+		if (cmd->args)
+		{
+			ft_putstr("args: ");
+			i = 0;
+			while (cmd->args && cmd->args[i])
+				ft_printf("[%s]", cmd->args[i++]);
+		}
+		else
+			ft_putstr(B_BLUE "no args");
 		ft_putendl("");
 		tmp = tmp->next;
 	}
-	ft_putendl(B_RED "END ####" CLR_COLOR);
+	ft_putendl(B_RED "# END" CLR_COLOR);
 }
 
 int		ft_find_in_strs(char *s, const char **strs)
