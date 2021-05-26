@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 11:29:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 14:21:03 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,5 +165,7 @@ int			ft_clear(void);
 ** Signals
 */
 void		ft_interrupt(int code);
+
+void		print_prompt(void);
 
 #endif

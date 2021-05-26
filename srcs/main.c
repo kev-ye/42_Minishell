@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 11:57:37 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 14:18:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	prompt(void)
 	char	*ret;
 	int		r;
 
+	signal(SIGINT, ft_interrupt);
 	while (1)
 	{
 		print_prompt();
@@ -64,7 +65,7 @@ void	prompt(void)
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{
-			ft_free_exit();
+			ft_exit();
 			break ;
 		}
 	}
@@ -103,6 +104,7 @@ int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) char **env)
 {
 	singleton()->env = get_env(env);
+	// ft_export({"SHLVL", NULL});
 	prompt();
 	return (0);
 }

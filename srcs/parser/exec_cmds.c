@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 11:58:06 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 14:44:18 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,12 @@ void	ft_quit(int code)
 
 void	ft_interrupt(int code)
 {
-	ft_dprintf(STDERR_FILENO, B_RED "SIGNAL: Interrupt[%d]\n" CLR_COLOR, code);
-	// kill(singleton()->thread_pid, code);
-	
+	// kill(singleton()->thread_pid, code);	
 	// exit(code);
+	(void)code;
+	// print_prompt();
+	ft_putstr_fd("\n", STDERR_FILENO);
+	print_prompt();
 }
 
 //////////////////////////////////////////////////kaye
@@ -123,6 +125,8 @@ void	ft_pre_exec_cmd(void *ptr)
 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
 		// if (singleton()->last_return_value == ERROR)
 		// 	exit(1);
+		// if (singleton()->last_return_value == ERROR)
+		// 	ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", PROG_NAME, cmd->args[0], strerror(errno));
 	}
 	else if (ex)
 	{
@@ -131,6 +135,10 @@ void	ft_pre_exec_cmd(void *ptr)
 		ft_memdel((void **)&ex);
 		// if (singleton()->last_return_value == ERROR)
 		// 	exit(1);
+	}
+	else
+	{
+		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n", cmd->args[0]);
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }

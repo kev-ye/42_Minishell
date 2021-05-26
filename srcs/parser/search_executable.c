@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 11:47:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/26 14:10:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ static char	*find_exec(char **exectbl, char *command)
 	int		fd;
 	size_t	i;
 
-	cmd = NULL;
 	if (ft_strchr(command, '/'))
 	{
 		ft_asprintf(&cmd, "%s", command);
@@ -45,14 +44,11 @@ static char	*find_exec(char **exectbl, char *command)
 				close(fd);
 				return (cmd);
 			}
-			///////////////////////////////kaye
-			//printf("cmd : %s\n", cmd); /// dont underst why can open if file no exist
-			///////////////////////////////////
 			ft_memdel((void **)&cmd);
 		}
 	}
-	ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", PROG_NAME, command, strerror(errno));
-	return (cmd);
+	// ft_dprintf(STDERR_FILENO, "%s: %s: command not found\n", PROG_NAME, command);
+	return (NULL);
 }
 
 char	*search_executable(char *command)
