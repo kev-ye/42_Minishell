@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 13:32:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 14:24:55 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,19 @@ void	ft_interrupt(int code)
 	// kill(singleton()->thread_pid, code);	
 	// exit(code);
 	(void)code;
-	// print_prompt();
 	ft_putstr_fd("\n", STDERR_FILENO);
 	print_prompt();
 }
 
-//////////////////////////////////////////////////kaye
 int ft_exec_builtin_cmd(char **cmds)
 {
-	const t_builtin builtin[] = {{"echo", ft_echo, NULL}, 
-				{"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd}, 
-				{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-				{"export", ft_export, NULL}, {"exit", NULL, ft_exit}, {NULL, NULL, NULL}};
-	int i;
+	static t_builtin	builtin[] = {
+		{"echo", ft_echo, NULL}, {"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd},
+		{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
+		{"export", ft_export, NULL}, {"exit", NULL, ft_exit},
+		{"clear", NULL, ft_clear}, {NULL, NULL, NULL}
+	};
+	int					i;
 
 	i = 0;
 	while (builtin[i].cmd)
@@ -50,9 +50,8 @@ int ft_exec_builtin_cmd(char **cmds)
 		}
 		++i;
 	}
-	return (ERROR);
+	return (NOT_FOUND);
 }
-//////////////////////////////////////////////////////
 
 int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
@@ -60,7 +59,6 @@ int	ft_exec_cmd(char *file, t_cmd *cmds)
 
 	if (id == 0)
 	{
-		// (cmds->status_flag & FLG_PIPE)
 		// signal(SIGQUIT, ft_quit);
 		// signal(SIGINT, ft_interrupt);
 		// signal(SIGKILL, ft_interrupt);
@@ -82,65 +80,30 @@ int	ft_exec_cmd(char *file, t_cmd *cmds)
 // 		return (i);
 // }
 
-
-// char	**ft_lst_to_strs(t_list *lst)
-// {
-// 	char	**s;
-// 	t_list	*tmp;
-// 	size_t	i;
-
-// 	if (!lst)
-// 		return (NULL);
-// 	s = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
-// 	if (!s)
-// 		return (NULL);
-// 	tmp = lst;
-// 	i = 0;
-// 	while (tmp)
-// 	{
-// 		s[i] = ft_calloc(ft_strlen(tmp->content) + 1, sizeof(char));
-// 		if (!s[i])
-// 			return (ft_strsfree(i, s));
-// 		ft_memcpy(s[i++], tmp->content, ft_strlen(tmp->content));
-// 		tmp = tmp->next;
-// 	}
-// 	s[i] = NULL;
-// 	return (s);
-// }
-
 void	ft_pre_exec_cmd(void *ptr)
 {
 	t_cmd	*cmd;
 	char	*ex;
-	char	*bl;
 
 	cmd = ptr;
 	if (!cmd->args || !*cmd->args)
 		return ;
-	ex = search_executable(cmd->args[0]);
-	bl = search_builtin_executable(cmd->args[0]);
-	if (bl)
+	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+	if (singleton()->last_return_value == NOT_FOUND)
 	{
-		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
-		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-		// if (singleton()->last_return_value == ERROR)
-		// 	exit(1);
-		// if (singleton()->last_return_value == ERROR)
-		// 	ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", PROG_NAME, cmd->args[0], strerror(errno));
+		ex = search_executable(cmd->args[0]);
+		if (ex)
+		{
+			// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
+			singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+			ft_memdel((void **)&ex);
+		}
+		else
+		{
+			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
+				cmd->args[0]);
+		}
 	}
-	else if (ex)
-	{
-		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
-		// if (singleton()->last_return_value == ERROR)
-		// 	exit(1);
-	}
-	else
-	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n", cmd->args[0]);
-	}
-	if (ex)
-		ft_memdel((void **)&ex);
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 13:29:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 14:04:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,34 +99,6 @@ t_list	*get_env(char **env)
 	return (new_env);
 }
 
-char	*get_env_value(char *env)
-{
-	t_list	*tmp;
-	int		idx;
-	char	*ptr;
-
-	if (!env)
-		return (NULL);
-	tmp = singleton()->env;
-	while (tmp)
-	{
-		ptr = ft_strchr(tmp->content, '=');
-		if (ptr)
-		{
-			idx = ft_stridx(tmp->content, "=");
-			if (idx != -1 && ft_strncmp(env, tmp->content, idx) == 0)
-				return (ft_strdup(ptr + 1));
-		}
-		else
-		{
-			if (ft_strcmp(env, tmp->content) == 0)
-				return (ft_strdup(""));
-		}
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
 static int	ft_init(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
@@ -138,7 +110,7 @@ static int	ft_init(char **env)
 	singleton()->env = get_env(env);
 	if (singleton()->env == NULL)
 		return ((int)ft_malloc_error(__FILE__, __LINE__));
-	shlvl = get_env_value("SHLVL");
+	shlvl = ft_getenv("SHLVL");
 	if (!shlvl)
 		return ((int)ft_malloc_error(__FILE__, __LINE__));
 	ft_asprintf(&ret, "SHLVL=%d", ft_atoi(shlvl) + 1);

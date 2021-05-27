@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 13:27:27 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 14:06:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	ft_lstprint_cmd(t_list *lst)
 	ft_putendl(B_RED "# END" CLR_COLOR);
 }
 
-int		ft_find_in_strs(char *s, const char **strs)
+int	ft_find_in_strs(char *s, const char **strs)
 {
 	size_t	i;
 
@@ -110,7 +110,7 @@ char	*ft_strclean(char *s, const char *charset)
 	return (s);
 }
 
-char		*ft_strnclean(char *s, const char *charset, size_t end)
+char	*ft_strnclean(char *s, const char *charset, size_t end)
 {
 	size_t	i;
 	size_t	j;
@@ -148,24 +148,24 @@ void	*ft_malloc_error(char *file, int line)
 	return (NULL);
 }
 
-void ft_list_sort(t_list **begin_list, int (*cmp)())
+void	ft_list_sort(t_list **begin_list, int (*cmp)())
 {
-    t_list *list;
-    void *content;
+	t_list	*list;
+	void	*content;
 
-    list = *begin_list;
-    while (list && list->next)
-    {
-        if (cmp(list->content, list->next->content) > 0)
-        {
-            content = list->content;
-            list->content = list->next->content;
-            list->next->content = content;
-            list = *begin_list;
-        }
-        else
-            list = list->next;
-    }
+	list = *begin_list;
+	while (list && list->next)
+	{
+		if (cmp(list->content, list->next->content) > 0)
+		{
+			content = list->content;
+			list->content = list->next->content;
+			list->next->content = content;
+			list = *begin_list;
+		}
+		else
+			list = list->next;
+	}
 }
 
 char	**ft_lst2strs(t_list **lst)
@@ -195,23 +195,51 @@ char	**ft_lst2strs(t_list **lst)
 	return (new);
 }
 
-t_list  *search_env(char *tofind, t_list **env)
+t_list	*search_env(char *tofind, t_list **env)
 {
-    t_list *tmp;
-    size_t len_tofind;
+	t_list	*tmp;
+	size_t	len_tofind;
 
-    len_tofind = 0;
-    while (tofind[len_tofind] && tofind[len_tofind] != '=')
-        ++len_tofind;
-    tmp = *env;
-    while (tmp)
-    {
-        if ((char *)tmp->content
-            && !ft_strncmp((char *)tmp->content, tofind, len_tofind)
-            && (((char *)(tmp->content))[len_tofind] == '='
+	len_tofind = 0;
+	while (tofind[len_tofind] && tofind[len_tofind] != '=')
+		++len_tofind;
+	tmp = *env;
+	while (tmp)
+	{
+		if ((char *)tmp->content
+			&& !ft_strncmp((char *)tmp->content, tofind, len_tofind)
+			&& (((char *)(tmp->content))[len_tofind] == '='
 			|| ((char *)(tmp->content))[len_tofind] == '\0'))
-            return (tmp);
-        tmp = tmp->next;
-    }
-    return (NULL);
+			return (tmp);
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
+char	*ft_getenv(const char *name)
+{
+	t_list	*tmp;
+	int		idx;
+	char	*ptr;
+
+	if (!name)
+		return (NULL);
+	tmp = singleton()->env;
+	while (tmp)
+	{
+		ptr = ft_strchr(tmp->content, '=');
+		if (ptr)
+		{
+			idx = ft_stridx(tmp->content, "=");
+			if (idx != -1 && ft_strncmp(name, tmp->content, idx) == 0)
+				return (ft_strdup(ptr + 1));
+		}
+		else
+		{
+			if (ft_strcmp(name, tmp->content) == 0)
+				return (ft_strdup(""));
+		}
+		tmp = tmp->next;
+	}
+	return (NULL);
 }

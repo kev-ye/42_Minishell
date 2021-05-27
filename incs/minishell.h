@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 13:28:38 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 14:23:16 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void		ft_lstprint_cmd(t_list *lst);
 char		**ft_lst2strs(t_list **lst);
 void		ft_list_sort(t_list **begin_list, int (*cmp)());
 int			ft_find_in_strs(char *s, const char **strs);
+char		*ft_getenv(const char *name);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_free_exit(void) __attribute__((noreturn));
@@ -142,7 +143,6 @@ void		*ft_malloc_error(char *file, int line);
 */
 t_minishl	*singleton(void);
 char		*search_executable(char *command);
-char		*search_builtin_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
 void		ft_exec_each_cmd(void);
