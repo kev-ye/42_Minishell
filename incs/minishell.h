@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 14:23:16 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 16:19:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,16 @@
 # define ERROR 1
 
 # define FOUND 0
-# define NOT_FOUND -1
+# define NOT_FOUND (-1)
 // # define PATH_MAX_LEN 256
 
 # define PARSER_LIMITS_CHARS ";|<> "
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
-						":\e[0m " s "\n");
+// #define STRINGIFY(x) #x
+// #define TOSTRING(x) STRINGIFY(x)
+// #define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
+// 						":\e[0m " s "\n");
 // #define PRINT_ERR(s) (void)s;
-
 
 /*
 ** -- DATA STRUCTURES --
@@ -73,7 +72,7 @@
 */
 enum	e_flags
 {
-	FLG_EOL =  0U,
+	FLG_EOL = 0U,
 	FLG_EO_CMD = (1U << 0),
 	FLG_PIPE = (1U << 1),
 	FLG_OUTPUT = (1U << 2),
@@ -81,27 +80,39 @@ enum	e_flags
 	FLG_INPUT = (1U << 4)
 };
 
+/*
+** args:			arguments of a command
+** args_len:		len of all the arguments of the command
+** status_flag:		used with e_flags's flags
+** fd:				for bonus (aggregation fd)
+*/
 typedef struct s_cmd
 {
 	char		**args;
 	int			args_len;
-	uint8_t		status_flag;	// used with e_flags's flags
-	int			fd;				// for bonus (aggregation fd)
+	uint8_t		status_flag;
+	int			fd;
 }	t_cmd;
 
+/*
+** env:						env list
+** lst:						main list containing all parsed commands
+** last_return_value:		last return value ($?)
+** cwd:						pwd (mainly for `prompt' function)
+*/
 typedef struct s_minishl
 {
-	t_list	*env;				// env list
-	t_list	*lst;				// main list containing all parsed commands
-	int		last_return_value;	// last return value ($?)
-	char	*cwd;				// pwd (mainly for `prompt' function)
+	t_list	*env;
+	t_list	*lst;
+	int		last_return_value;
+	char	*cwd;
 }	t_minishl;
 
 typedef struct s_builtin
 {
-	char *cmd;
-	int (*f1)(char **cmds);
-	int (*f2)(void);
+	char	*cmd;
+	int		(*f1)(char **cmds);
+	int		(*f2)(void);
 }	t_builtin;
 
 struct s_redirections
@@ -111,12 +122,19 @@ struct s_redirections
 	uint8_t	flag;
 };
 
+/*
+** s_quote:		got a single quote
+** d_quote:		got a double quote
+** first:		got a quote
+** did_change:	did the entry quote has been found again?
+				(so it's the end of a string)
+*/
 typedef struct s_quotes
 {
-	int	s_quote;	// got a single quote
-	int	d_quote;	// got a double quote
-	int	first;		// got a quote
-	int	did_change;	// did the entry quote has been found again ? (so it's the end of a string)
+	int	s_quote;
+	int	d_quote;
+	int	first;
+	int	did_change;
 }	t_quotes;
 
 /*
