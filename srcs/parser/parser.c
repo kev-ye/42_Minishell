@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 23:40:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 13:34:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,13 @@
 */
 int	quotes2close(unsigned char c, t_quotes *q, int status)
 {
-	q->did_change = ((q->d_quote == 1) || (q->s_quote == 1));
 	if (RESET_FLAG == status)
 	{
 		ft_bzero(q, sizeof(t_quotes));
 		return (0);
 	}
-	else if (SET_FLAG == status)
+	q->did_change = ((q->d_quote == 1) || (q->s_quote == 1));
+	if (SET_FLAG == status)
 	{
 		if ((('"' == c) && (('"' == c) << DBL_BSHFT) & q->first)
 		|| (('\'' == c) && (('\'' == c) << SGL_BSHFT) & q->first))

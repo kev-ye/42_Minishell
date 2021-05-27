@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 14:44:18 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 13:32:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ void	ft_pre_exec_cmd(void *ptr)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
-		ft_memdel((void **)&ex);
 		// if (singleton()->last_return_value == ERROR)
 		// 	exit(1);
 	}
@@ -140,6 +139,8 @@ void	ft_pre_exec_cmd(void *ptr)
 	{
 		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n", cmd->args[0]);
 	}
+	if (ex)
+		ft_memdel((void **)&ex);
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 

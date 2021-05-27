@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 14:21:03 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 13:28:38 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ typedef struct s_cmd
 typedef struct s_minishl
 {
 	t_list	*env;				// env list
-	// char	**cmds;
 	t_list	*lst;				// main list containing all parsed commands
 	int		last_return_value;	// last return value ($?)
 	char	*cwd;				// pwd (mainly for `prompt' function)

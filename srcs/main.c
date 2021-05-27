@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 14:18:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/27 13:29:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,12 +99,64 @@ t_list	*get_env(char **env)
 	return (new_env);
 }
 
+char	*get_env_value(char *env)
+{
+	t_list	*tmp;
+	int		idx;
+	char	*ptr;
+
+	if (!env)
+		return (NULL);
+	tmp = singleton()->env;
+	while (tmp)
+	{
+		ptr = ft_strchr(tmp->content, '=');
+		if (ptr)
+		{
+			idx = ft_stridx(tmp->content, "=");
+			if (idx != -1 && ft_strncmp(env, tmp->content, idx) == 0)
+				return (ft_strdup(ptr + 1));
+		}
+		else
+		{
+			if (ft_strcmp(env, tmp->content) == 0)
+				return (ft_strdup(""));
+		}
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
+static int	ft_init(char **env)
+{
+	const char	*args[] = {"export", NULL, NULL};
+	char		*shlvl;
+	char		*ret;
+
+	if (singleton() == NULL)
+		return ((int)ft_malloc_error(__FILE__, __LINE__));
+	singleton()->env = get_env(env);
+	if (singleton()->env == NULL)
+		return ((int)ft_malloc_error(__FILE__, __LINE__));
+	shlvl = get_env_value("SHLVL");
+	if (!shlvl)
+		return ((int)ft_malloc_error(__FILE__, __LINE__));
+	ft_asprintf(&ret, "SHLVL=%d", ft_atoi(shlvl) + 1);
+	if (!ret && ft_memdel((void **)&shlvl) == NULL)
+		return ((int)ft_malloc_error(__FILE__, __LINE__));
+	args[1] = ret;
+	ft_export((char **)args);
+	ft_memdel((void **)&ret);
+	ft_memdel((void **)&shlvl);
+	return (1);
+}
+
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
-{
-	singleton()->env = get_env(env);
-	// ft_export({"SHLVL", NULL});
+{	
+	if (!ft_init(env))
+		return (1);
 	prompt();
 	return (0);
 }
