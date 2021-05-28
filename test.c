@@ -1,5 +1,5 @@
 #include <libc.h>
-#include "libft.h"
+// #include "libft.h"
 #include <term.h>
 #include <curses.h>
 #include <errno.h>
@@ -151,8 +151,8 @@
 //     return 0;
 // }
 
-int main()
-{
+// int main()
+// {
 	// int ret = init_term();
 	// int r;
 	// char *line;
@@ -209,4 +209,4 @@ int main()
 	// char *cl_cap = tgetstr("cl", NULL);
 	// tputs (tgetstr("cl", NULL), 1, putchar);
 	// dprintf(STDOUT_FILENO, "%s", cl_cap);
-}
+// }

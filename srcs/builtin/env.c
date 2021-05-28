@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:43 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/25 16:17:42 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/28 20:49:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	show_env(t_list **env)
 	while (tmp)
 	{
 		if (ft_strchr((char *)tmp->content, '='))
-			ft_dprintf(STDIN_FILENO, "%s\n", (char *)tmp->content);
+			ft_dprintf(STDOUT_FILENO, "%s\n", (char *)tmp->content);
 		tmp = tmp->next;
 	}
 }

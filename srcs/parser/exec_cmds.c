@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 21:05:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/28 20:45:35 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,59 +52,29 @@ int ft_exec_builtin_cmd(char **cmds)
 }
 //////////////////////////////////////////////////////
 
-int	ft_exec_cmd(char *file, t_cmd *cmds)
-{
-	const pid_t	id = fork();
-
-	if (id == 0)
-	{
-		// (cmds->status_flag & FLG_PIPE)
-		// signal(SIGQUIT, ft_quit);
-		// signal(SIGINT, ft_interrupt);
-		// signal(SIGKILL, ft_interrupt);
-		return (execve(file, cmds->args, ft_lst2strs(&singleton()->env)));
-	}
-	else
-	{
-		wait(NULL);
-	}
-	return (ERROR);
-}
-
 // int	ft_exec_cmd(char *file, t_cmd *cmds)
 // {
-// 	int i = execve(file, cmds->args, NULL);
-// 	if (i == -1)
-// 		return (ERROR);
-// 	else
-// 		return (i);
-// }
+// 	const pid_t	id = fork();
 
-
-// char	**ft_lst_to_strs(t_list *lst)
-// {
-// 	char	**s;
-// 	t_list	*tmp;
-// 	size_t	i;
-
-// 	if (!lst)
-// 		return (NULL);
-// 	s = ft_calloc(ft_lstsize(lst) + 1, sizeof(char *));
-// 	if (!s)
-// 		return (NULL);
-// 	tmp = lst;
-// 	i = 0;
-// 	while (tmp)
+// 	if (id == 0)
 // 	{
-// 		s[i] = ft_calloc(ft_strlen(tmp->content) + 1, sizeof(char));
-// 		if (!s[i])
-// 			return (ft_strsfree(i, s));
-// 		ft_memcpy(s[i++], tmp->content, ft_strlen(tmp->content));
-// 		tmp = tmp->next;
+// 		return (execve(file, cmds->args, ft_lst2strs(&singleton()->env)));
 // 	}
-// 	s[i] = NULL;
-// 	return (s);
+// 	else
+// 	{
+// 		wait(NULL);
+// 	}
+// 	return (ERROR);
 // }
+
+int	ft_exec_cmd(char *file, t_cmd *cmds)
+{
+	int i = execve(file, cmds->args, NULL);
+	if (i == -1)
+		return (ERROR);
+	else
+		return (i);
+}
 
 void	ft_pre_exec_cmd(void *ptr)
 {
@@ -121,105 +91,124 @@ void	ft_pre_exec_cmd(void *ptr)
 	{
 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-		// if (singleton()->last_return_value == ERROR)
-		// 	exit(1);
 	}
 	else if (ex)
 	{
 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
 		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
 		ft_memdel((void **)&ex);
-		// if (singleton()->last_return_value == ERROR)
-		// 	exit(1);
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 
-// void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
-// {
-// 	t_list	*tmp;
+void	set_io(int read_fd, int write_fd)
+{
+	if(read_fd != STDIN_FILENO)
+	{
+		dup2(read_fd, STDIN_FILENO);
+		close(read_fd);
+	}
+	if(write_fd != STDOUT_FILENO)
+	{
+		dup2(write_fd, STDOUT_FILENO);
+		close(write_fd);
+	}
+}
 
-// 	tmp = lst;
-// 	while (tmp)
+// void	simple_cmd_exec(t_list *lst)
+// {
+// 	const pid_t pid = fork();
+
+// 	if (pid < 0)
+// 		exit(ERROR);
+// 	else if (pid == 0)
 // 	{
-// 		if ((*f))
-// 			tmp->content = (*f)(tmp->content);
-// 		tmp = tmp->next;
+// 		ft_pre_exec_cmd(lst->content);
+// 		exit(1);
 // 	}
+// 	else
+// 		wait(NULL);
 // }
 
-void set_io(int read_fd, int write_fd)
+void	multi_cmd_exec(t_list *lst)
 {
-	if (read_fd != STDIN_FILENO)
+	pid_t	pid;
+	int fd[2];
+
+	if (lst && !lst->next)
 	{
-        dup2(read_fd, STDIN_FILENO);
-        close(read_fd);
-    }
-    if (write_fd != STDOUT_FILENO)
+		set_io(STDIN_FILENO, STDOUT_FILENO);
+		ft_pre_exec_cmd(lst->content);
+		exit(1);
+	}
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+		exit(ERROR);
+	else if (pid == 0)
 	{
-        dup2(write_fd, STDOUT_FILENO);
-        close(write_fd);
+		close(fd[0]);
+		set_io(STDIN_FILENO, fd[1]);
+		ft_pre_exec_cmd(lst->content);
+		exit(1);
+	}
+	else
+	{
+		wait(NULL);
+		lst = lst->next;
+		close(fd[1]);
+		set_io(fd[0], STDOUT_FILENO);
+		multi_cmd_exec(lst);
 	}
 }
 
 // void	multi_cmd_exec(t_list *lst)
 // {
-// 	pid_t	id;
+// 	pid_t	pid;
 // 	int fd[2];
 // 	int read_fd;
 // 	int write_fd;
 
-// 	pid_t id2 = fork();
-// 	if (id2 < 0)
-// 		exit(ERROR);
-// 	else if (id2 == 0)
+// 	read_fd = fd[0];
+// 	write_fd = fd[1];
+// 	pipe(fd);
+// 	for (; lst != NULL; lst = lst->next)
 // 	{
-// 		if (lst && !lst->next)
-// 		{
-// 			set_io(STDIN_FILENO, STDOUT_FILENO);
-// 			ft_pre_exec_cmd(lst->content);
-// 			return ;
-// 		}
-// 		id = fork();
-// 		pipe(fd);
-// 		read_fd = fd[0];
-// 		write_fd = fd[1];
-// 		if (id < 0)
+// 		pid = fork();
+// 		if (pid < 0)
 // 			exit(ERROR);
-// 		if (id == 0)
+// 		else if (pid == 0)
 // 		{
-// 			close(read_fd);
-// 			set_io(STDIN_FILENO, write_fd);
+// 			if (((t_cmd *)lst->content)->status_flag & FLG_PIPE)
+// 			{
+// 				close(read_fd);
+// 				dup2(write_fd, STDOUT_FILENO);
+// 			}
 // 			ft_pre_exec_cmd(lst->content);
 // 			exit(1);
 // 		}
 // 		else
 // 		{
 // 			wait(NULL);
-// 			lst = lst->next;
 // 			close(write_fd);
-// 			set_io(read_fd, STDOUT_FILENO);  
-// 			multi_cmd_exec(lst);
+// 			dup2(read_fd, STDIN_FILENO);
 // 		}
-// 	}
-// 	else
-// 	{
-// 		wait(NULL);
+// 		// lst = lst->next;
 // 	}
 // }
 
 void	ft_exec_each_cmd(void)
 {
-	// pid_t	id;
-	// id = fork();
-	// if (id < 0)
-	// 	exit(ERROR);
-	// if (id == 0)
-	// {
-		// multi_cmd_exec(singleton()->lst);
-	// }
-	// else
-		// wait(NULL);
-	ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
+	pid_t	id;
+	id = fork();
+	if (id < 0)
+		exit(ERROR);
+	if (id == 0)
+	{
+		multi_cmd_exec(singleton()->lst);
+	}
+	else
+		wait(NULL);
+	// ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
 	// ft_lstprint_cmd(singleton()->lst, '\n');
 }

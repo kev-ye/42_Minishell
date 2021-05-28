@@ -1,50 +1,74 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "libft.h"
+
+char *cmds1[3] = {"/bin/ls",".", NULL};
+char *cmds2[3] = {"/bin/cat", NULL};
+char *cmds3[3] = {"/usr/bin/wc", NULL};
 
 void	exec1()
 {
-
-	char *argv1[] = {".", NULL};
-	execve("/bin/ls", argv1, NULL);
+	execve(cmds1[0], cmds1, NULL);
 }
 
 void	exec2()
 {
-	execve("/usr/bin/wc", NULL, NULL);
+	execve(cmds2[0], cmds2, NULL);
+}
+
+void	exec3()
+{
+	execve(cmds3[0], cmds3, NULL);
 }
 
 int main()
 {
 	int fd[2];
-
-	char *argv1[] = {".", NULL};
+	int fd2[2];
+	pid_t	pid;
 
 	pipe(fd);
-	for (int i = 0; i < 2; i++)
+	pipe(fd2);
+	for (int i = 0; i < 3; i++)
 	{
-		if (fork() == 0)
+		pid = fork();
+		if (pid < 0)
+			exit(1);
+		else if (pid == 0)
 		{
-			// printf("child\n");
-			close(1);
-			dup2(fd[1], 1);
-			close(fd[0]);
 			if (i == 0)
+			{
+				close(fd[0]);
+				dup2(fd[1], STDOUT_FILENO);
 				exec1();
-			else
+				exit(1);
+			}
+			else if (i == 1)
+			{
+				close(fd[1]);
+				dup2(fd[0], STDIN_FILENO);
+
+				close(fd2[0]);
+				dup2(fd2[1], STDOUT_FILENO);
 				exec2();
-			// execve("/bin/ls", argv1, NULL);
-			// execlp( "ls", "ls", "-1", NULL );
+				exit(1);
+			}
+			else if (i == 2)
+			{
+				close(fd2[1]);
+				dup2(fd2[0], STDIN_FILENO);
+				exec3();
+				exit(1);
+			}
 		}
 		else
 		{
-			// printf("parent\n");
-			close(0);
-			dup2(fd[0], 0);
 			close(fd[1]);
-			// exec2();
-			// execve("/usr/bin/wc", NULL, NULL);
-			// execlp( "wc", "wc", "-l", NULL );
+			close(fd2[1]);
+			wait(NULL);
+			close(fd2[1]);
+			dup2(fd2[0], STDIN_FILENO);
 		}
 	}
 	return (0);
@@ -73,4 +97,42 @@ int main()
 //     }
 //     printf("当前进程 currentPid = %d, Count = %d \n", getpid(), count);
 //     return 0;
+// }
+ 
+// int main()
+// {
+//     pid_t pid;
+//     char buffer[32];
+// 	int pipe_default[2];
+ 
+//     memset(buffer, 0, 32);
+//     if(pipe(pipe_default) < 0)
+//     {
+//         printf("Failed to create pipe!\n");
+//         return 0;
+//     }
+ 
+//     if(0 == (pid = fork()))
+//     {
+// 		printf("Child :\n");
+// 		close(1);
+// 		if(-1 != write(0, buffer, sizeof(buffer)))
+//         {
+//             printf("Send data to parent: hello!\n");
+//         }
+//         close(0);
+//     }
+//     else
+//     {
+// 		wait(NULL);
+// 		printf("Parent :\n");
+//         close(0);
+//         if(read(1, buffer, 32) > 0)
+//         {
+//             printf("Receive data from child: %s!\n", buffer);
+//         }
+//         close(1);
+//     }
+ 
+//     return 1;
 // }
