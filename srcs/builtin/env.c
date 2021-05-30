@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:43 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 15:53:03 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:54:10 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ int	ft_env(char **cmds)
 
 	i = 0;
 	if (!cmds || !*cmds)
-		return (ERROR);
+		// return (ERROR);
+		exit(1);
 	while (cmds[i])
 		++i;
 	len_cmd = i;
@@ -42,7 +43,8 @@ int	ft_env(char **cmds)
 	// else if (cmd->ac >= 2)
 	// {
 	// 	// coming soon ...
-	// 	return ;
+		// return ;
 	// }
-	return (SUCCESS);
+	// return (SUCCESS);
+	exit(0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 15:42:51 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:56:23 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,143 +55,232 @@ int ft_exec_builtin_cmd(char **cmds)
 
 int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
-	const pid_t	id = fork();
-
-	if (id == 0)
-	{
-		// signal(SIGQUIT, ft_quit);
-		// signal(SIGINT, ft_interrupt);
-		// signal(SIGKILL, ft_interrupt);
-		return (execve(file, cmds->args, ft_lst2strs(&singleton()->env)));
-	}
+	int i = execve(file, cmds->args, ft_lst2strs(&singleton()->env));
+	if (i == -1)
+		return (ERROR);
 	else
-	{
-		wait(NULL);
-	}
-	return (ERROR);
+		return (i);
 }
 
-// int	ft_exec_cmd(char *file, t_cmd *cmds)
+// void	ft_pre_exec_cmd(void *ptr)
 // {
-// 	int i = execve(file, cmds->args, NULL);
-// 	if (i == -1)
-// 		return (ERROR);
-// 	else
-// 		return (i);
+// 	t_cmd	*cmd;
+// 	char	*ex;
+// 	int bl;
+
+// 	cmd = ptr;
+// 	if (!cmd->args || !*cmd->args)
+// 		return ;
+// 	ex = search_executable(cmd->args[0]);
+// 	bl = ft_exec_builtin_cmd(char **cmds)
+// 	if (bl)
+// 	{
+// 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
+// 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+// 	}
+// 	else if (ex)
+// 	{
+// 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
+// 		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+// 		ft_memdel((void **)&ex);
+// 	}
+// 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 // }
 
-void	ft_pre_exec_cmd(void *ptr)
+void    ft_pre_exec_cmd(void *ptr)
 {
-	t_cmd	*cmd;
-	char	*ex;
+    t_cmd    *cmd;
+    char    *ex;
 
-	cmd = ptr;
-	if (!cmd->args || !*cmd->args)
-		return ;
-	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-	if (singleton()->last_return_value == NOT_FOUND)
-	{
-		ex = search_executable(cmd->args[0]);
-		if (ex)
-		{
-			// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-			singleton()->last_return_value = ft_exec_cmd(ex, cmd);
-			ft_memdel((void **)&ex);
-		}
-		else
-		{
-			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
-				cmd->args[0]);
-		}
-	}
-	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
+    cmd = ptr;
+    if (!cmd->args || !cmd->args)
+        return ;
+    singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+    if (singleton()->last_return_value == NOT_FOUND)
+    {
+        ex = search_executable(cmd->args[0]);
+        if (ex)
+        {
+            // ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
+            singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+            ft_memdel((void **)&ex);
+        }
+        else
+        {
+            ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
+                cmd->args[0]);
+        }
+    }
+    ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 
-// void	ft_lstiter_replace(t_list *lst, void *(*f)(void *))
+// void	set_io(int read_fd, int write_fd)
 // {
-// 	t_list	*tmp;
-
-// 	tmp = lst;
-// 	while (tmp)
+// 	if(read_fd != STDIN_FILENO)
 // 	{
-// 		if ((*f))
-// 			tmp->content = (*f)(tmp->content);
-// 		tmp = tmp->next;
+// 		dup2(read_fd, STDIN_FILENO);
+// 		close(read_fd);
+// 	}
+// 	if(write_fd != STDOUT_FILENO)
+// 	{
+// 		dup2(write_fd, STDOUT_FILENO);
+// 		close(write_fd);
 // 	}
 // }
 
-void set_io(int read_fd, int write_fd)
+int	*first_cmd_with_pipe(void *cmd)
 {
-	if (read_fd != STDIN_FILENO)
+	pid_t pid;
+	int *fd = malloc(sizeof(int) * 2);
+	if (!fd)
+		return (NULL);
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
 	{
-        dup2(read_fd, STDIN_FILENO);
-        close(read_fd);
-    }
-    if (write_fd != STDOUT_FILENO)
-	{
-        dup2(write_fd, STDOUT_FILENO);
-        close(write_fd);
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		ft_pre_exec_cmd(cmd);
+		close(fd[1]);
 	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+	return (fd);
+}
+
+int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
+{
+	pid_t pid;
+	int *tmp = get_fd;
+	int *fd = malloc(sizeof(int) * 2);
+	if (!fd)
+		return (NULL);
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(get_fd[1]);
+		dup2(get_fd[0], STDIN_FILENO);
+		close(get_fd[0]);
+	
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		ft_pre_exec_cmd(cmd);
+		close(fd[1]);
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+	free(tmp);
+	return (fd);
+}
+
+void	last_cmd_with_pipe(void *cmd, int *get_fd)
+{
+	pid_t pid;
+
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(get_fd[1]);
+		dup2(get_fd[0], STDIN_FILENO);
+		ft_pre_exec_cmd(cmd);
+		close(get_fd[0]);
+	}
+	else
+	{
+		close(get_fd[1]);
+		wait(NULL);
+	}
+}
+
+void	simple_cmd(void *cmd)
+{
+	pid_t pid;
+
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+		ft_pre_exec_cmd(cmd);
+	else
+		wait(NULL);
 }
 
 // void	multi_cmd_exec(t_list *lst)
 // {
-// 	pid_t	id;
-// 	int fd[2];
-// 	int read_fd;
-// 	int write_fd;
-
-// 	pid_t id2 = fork();
-// 	if (id2 < 0)
-// 		exit(ERROR);
-// 	else if (id2 == 0)
-// 	{
-// 		if (lst && !lst->next)
-// 		{
-// 			set_io(STDIN_FILENO, STDOUT_FILENO);
-// 			ft_pre_exec_cmd(lst->content);
-// 			return ;
-// 		}
-// 		id = fork();
-// 		pipe(fd);
-// 		read_fd = fd[0];
-// 		write_fd = fd[1];
-// 		if (id < 0)
-// 			exit(ERROR);
-// 		if (id == 0)
-// 		{
-// 			close(read_fd);
-// 			set_io(STDIN_FILENO, write_fd);
-// 			ft_pre_exec_cmd(lst->content);
-// 			exit(1);
-// 		}
-// 		else
-// 		{
-// 			wait(NULL);
-// 			lst = lst->next;
-// 			close(write_fd);
-// 			set_io(read_fd, STDOUT_FILENO);  
-// 			multi_cmd_exec(lst);
-// 		}
-// 	}
-// 	else
-// 	{
-// 		wait(NULL);
-// 	}
+// 	return ;
 // }
 
-void	ft_exec_each_cmd(void)
+void	ft_exec_each_cmd(t_list *lst)
 {
-	// pid_t	id;
-	// id = fork();
-	// if (id < 0)
-	// 	exit(ERROR);
-	// if (id == 0)
-	// {
-		// multi_cmd_exec(singleton()->lst);
-	// }
-	// else
-		// wait(NULL);
-	ft_lstiter(singleton()->lst, ft_pre_exec_cmd);
-	// ft_lstprint_cmd(singleton()->lst, '\n');
+	t_list	*tmp;
+	int 	first;
+	int 	pipe_flag;
+	int 	*fd;
+	
+	tmp = lst;
+	first = 1;
+	pipe_flag = 0;
+	fd = NULL;
+	while (tmp)
+	{
+		// printf("Actual cmd : %s ---- Status : %d\n", ((t_cmd *)tmp->content)->args[0], ((t_cmd *)tmp->content)->status_flag);
+		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
+		{
+			// printf("fist with pipe\n");
+			fd = first_cmd_with_pipe(tmp->content);
+			first = 0;
+			pipe_flag = 1;
+		}
+		else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
+		{
+			// printf("interm with pipe\n");
+			fd = interm_cmd_with_pipe(tmp->content, fd);
+			pipe_flag = 1;
+		}
+		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
+		{
+			// printf("no with pipe\n");
+			last_cmd_with_pipe(tmp->content, fd);
+			pipe_flag = 1;
+		}
+		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
+		{
+			// printf("last with pipe\n");
+			last_cmd_with_pipe(tmp->content, fd);
+		}
+		else
+		{
+			// printf("simple\n");
+			simple_cmd(tmp->content);
+		}
+		tmp = tmp->next;
+	}
 }
+
+
+// void	ft_exec_each_cmd(void)
+// {
+// 	pid_t	id;
+// 	id = fork();
+// 	if (id < 0)
+// 		exit(ERROR);
+// 	if (id == 0)
+// 	{
+// 		multi_cmd_exec(singleton()->lst);
+// 	}
+// 	else
+// 		wait(NULL);
+// }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/27 14:13:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:52:29 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,12 @@ void	del_env(t_list **lst_env, size_t len, char *cmd)
 int	ft_unset(char **cmds)
 {
 	if (!cmds || !*cmds)
-		return (ERROR);
+		// return (ERROR);
+		exit(1);
 	if (!*(cmds + 1))
-		return (SUCCESS);
+		// return (SUCCESS);
+		exit(0);
 	del_env(&singleton()->env, ft_strlen(cmds[1]), cmds[1]);
-	return (SUCCESS);
+	// return (SUCCESS);
+	exit(0);
 }

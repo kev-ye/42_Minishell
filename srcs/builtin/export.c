@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/25 16:20:39 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:56:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,8 @@ int	ft_export(char **cmds)
 	size_t	len_cmds;
 
 	if (!cmds || !*cmds)
-		return (ERROR);
+		// return (ERROR);
+		exit(1);
 	len_cmds = ft_strslen(cmds);
 	add_env(cmds);
 	if (len_cmds == 1)
@@ -161,5 +162,7 @@ int	ft_export(char **cmds)
 		ft_lstprint(env_to_print, '\n');
 		ft_lstclear(&env_to_print, free);
 	}
+	////////////////////////////////////////////////////// exit prob for builtin kaye
 	return (SUCCESS);
+	// exit(0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 10:17:50 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:44:20 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,12 @@
 */
 enum	e_flags
 {
-	FLG_EOL = 0U,
 	FLG_EO_CMD = (1U << 0),
 	FLG_PIPE = (1U << 1),
 	FLG_OUTPUT = (1U << 2),
 	FLG_APPEND = (1U << 3),
-	FLG_INPUT = (1U << 4)
+	FLG_INPUT = (1U << 4),
+	FLG_EOL = (1U << 5)
 };
 
 /*
@@ -162,7 +162,8 @@ t_minishl	*singleton(void);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
-void		ft_exec_each_cmd(void);
+// void		ft_exec_each_cmd(void);
+void		ft_exec_each_cmd(t_list *lst);
 t_list		*search_env(char *tofind, t_list **env);
 
 /*

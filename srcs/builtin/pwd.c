@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:21:48 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 15:51:02 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:52:34 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,6 @@ int	ft_pwd(void)
 		return (ERROR);
 	ft_dprintf(STDOUT_FILENO, "%s\n", path);
 	free(path);
-	return (SUCCESS);
+	// return (SUCCESS);
+	exit(0);
 }
