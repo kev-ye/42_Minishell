@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 11:31:26 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 19:53:52 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,6 @@
 int	ft_exit(void)
 {
 	ft_putstr_fd("exit\n", STDIN_FILENO);
-	ft_free_exit();
+	// ft_free_exit();
 	exit(0);
 }

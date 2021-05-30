@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 17:56:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/30 19:14:37 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,8 +152,8 @@ int	ft_export(char **cmds)
 	size_t	len_cmds;
 
 	if (!cmds || !*cmds)
-		// return (ERROR);
-		exit(1);
+		return (ERROR);
+		// exit(1);
 	len_cmds = ft_strslen(cmds);
 	add_env(cmds);
 	if (len_cmds == 1)

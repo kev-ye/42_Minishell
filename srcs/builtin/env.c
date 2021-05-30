@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:43 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 17:54:10 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/30 19:14:24 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ int	ft_env(char **cmds)
 
 	i = 0;
 	if (!cmds || !*cmds)
-		// return (ERROR);
-		exit(1);
+		return (ERROR);
+		// exit(1);
 	while (cmds[i])
 		++i;
 	len_cmd = i;
@@ -45,6 +45,6 @@ int	ft_env(char **cmds)
 	// 	// coming soon ...
 		// return ;
 	// }
-	// return (SUCCESS);
-	exit(0);
+	return (SUCCESS);
+	// exit(0);
 }
