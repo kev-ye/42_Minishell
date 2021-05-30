@@ -6,6 +6,8 @@
 char *cmds1[3] = {"/bin/ls",".", NULL};
 char *cmds2[3] = {"/bin/cat", NULL};
 char *cmds3[3] = {"/usr/bin/wc", NULL};
+char *cmds4[3] = {"/usr/bin/grep", "1", NULL};
+char *cmd[2] = {"grep", "incs"};
 
 void	exec1()
 {
@@ -22,117 +24,164 @@ void	exec3()
 	execve(cmds3[0], cmds3, NULL);
 }
 
-int main()
+void	exec4()
 {
-	int fd[2];
-	int fd2[2];
-	pid_t	pid;
-
-	pipe(fd);
-	pipe(fd2);
-	for (int i = 0; i < 3; i++)
-	{
-		pid = fork();
-		if (pid < 0)
-			exit(1);
-		else if (pid == 0)
-		{
-			if (i == 0)
-			{
-				close(fd[0]);
-				dup2(fd[1], STDOUT_FILENO);
-				exec1();
-				exit(1);
-			}
-			else if (i == 1)
-			{
-				close(fd[1]);
-				dup2(fd[0], STDIN_FILENO);
-
-				close(fd2[0]);
-				dup2(fd2[1], STDOUT_FILENO);
-				exec2();
-				exit(1);
-			}
-			else if (i == 2)
-			{
-				close(fd2[1]);
-				dup2(fd2[0], STDIN_FILENO);
-				exec3();
-				exit(1);
-			}
-		}
-		else
-		{
-			close(fd[1]);
-			close(fd2[1]);
-			wait(NULL);
-			close(fd2[1]);
-			dup2(fd2[0], STDIN_FILENO);
-		}
-	}
-	return (0);
+	// execve(cmds4[0], cmds4, NULL);
+	execvp(cmd[0], cmd);
 }
 
-// #include <ntsid.h>
-// #include <unistd.h>
-// #include <printf.h>
-// #include <stdlib.h>
+// void	command_pre_pipe(int fd_in, int fd_out)
+int	*command_pre_pipe(void)
+{
+	pid_t pid;
+	int *fd = malloc(sizeof(int) * 2);
+	if (!fd)
+		return (NULL);
 
-// int main(int argc, char *argv[]) {
-//     pid_t pid;
-//     int count = 0;
-//     //获得当前进程ID
-//     printf("Current Process Id = %d \n", getpid());
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		exec1();
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+	return (fd);
+}
 
-//     if ((pid = fork()) < 0) {
-//         printf("异常退出");
-//         exit(1);
-//     } else if (pid == 0) {
-//         count++;
-//         printf("进入子进程, 当前进程 currentPid = %d, 父进程 parentPid = %d \n", getpid(),getppid());
-//     } else {
-//         count++;
-//         printf("当前进程   当前进程 currentPid = %d, 子进程 childPid = %d \n", getpid(), pid);
-//     }
-//     printf("当前进程 currentPid = %d, Count = %d \n", getpid(), count);
-//     return 0;
-// }
- 
-// int main()
-// {
-//     pid_t pid;
-//     char buffer[32];
-// 	int pipe_default[2];
- 
-//     memset(buffer, 0, 32);
-//     if(pipe(pipe_default) < 0)
-//     {
-//         printf("Failed to create pipe!\n");
-//         return 0;
-//     }
- 
-//     if(0 == (pid = fork()))
-//     {
-// 		printf("Child :\n");
-// 		close(1);
-// 		if(-1 != write(0, buffer, sizeof(buffer)))
-//         {
-//             printf("Send data to parent: hello!\n");
-//         }
-//         close(0);
-//     }
-//     else
-//     {
-// 		wait(NULL);
-// 		printf("Parent :\n");
-//         close(0);
-//         if(read(1, buffer, 32) > 0)
-//         {
-//             printf("Receive data from child: %s!\n", buffer);
-//         }
-//         close(1);
-//     }
- 
-//     return 1;
-// }
+int	*command_pre_pipe2(int *get_fd)
+{
+	pid_t pid;
+	int *tmp = get_fd;
+	int *fd = malloc(sizeof(int) * 2);
+	if (!fd)
+		return (NULL);
+
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(get_fd[1]);
+		dup2(get_fd[0], STDIN_FILENO);
+
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		exec2();
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+	free(tmp);
+	return (fd);
+}
+
+int	*command_pre_pipe3(int *get_fd)
+{
+	pid_t pid;
+	int *tmp = get_fd;
+	int *fd = malloc(sizeof(int) * 2);
+	if (!fd)
+		return (NULL);
+
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(get_fd[1]);
+		dup2(get_fd[0], STDIN_FILENO);
+	
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		exec4();
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+	free(tmp);
+	return (fd);
+}
+
+void	command_need_stdin(int *fd)
+{
+	pid_t pid;
+
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(fd[1]);
+		dup2(fd[0], STDIN_FILENO);
+		exec3();
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+}
+
+int main()
+{
+	// int fd[2];
+	int *fd;
+	pid_t	pid;
+
+	// pipe(fd);
+	int i;
+	// for (int i = 0; i < 2; i++)
+	// {
+		// pid = fork();
+		// if (pid < 0)
+		// 	exit(1);
+		// else if (pid == 0)
+		// {
+	i = 0;
+			if (i == 0)
+			{
+				fd = command_pre_pipe();
+				// exec1();
+			}
+	i = 1;
+			if (i == 1)
+			{
+				fd = command_pre_pipe2(fd);
+				// exec1();
+			}
+	i = 2;
+			if (i == 2)
+			{
+				fd = command_pre_pipe3(fd);
+				// exec3();
+			}
+	i = 3;
+			if (i == 3)
+			{
+				// command_need_stdin(fd[0], fd[1]);
+				command_need_stdin(fd);
+				// exec1();
+			}
+		// }
+		// else
+		// {
+		// 	close(fd[1]);
+		// 	wait(NULL);
+		// }
+	// }
+	return (0);
+}

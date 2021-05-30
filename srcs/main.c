@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/26 22:30:12 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/30 13:31:59 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,7 @@ void	print_prompt(void)
 		ft_dprintf(STDERR_FILENO, PROMPT, basename + 1);
 }
 
+
 void	prompt(void)
 {
 	char	*ret;
@@ -176,7 +177,8 @@ void	prompt(void)
 		// r = get_next_line(STDIN_FILENO, &ret);
 		r = ft_get_next_line(&ret);
 		ft_parse(ret);
-		ft_exec_each_cmd();
+		// ft_exec_each_cmd();
+		ft_exec_each_cmd(singleton()->lst);
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{

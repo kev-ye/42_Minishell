@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/28 20:49:50 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/30 17:31:31 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ int	ft_echo(char **cmds)
 		}
 		ft_dprintf(STDOUT_FILENO, "\n");
 	}
-	return (SUCCESS);
+	// return (SUCCESS);
+	exit(0);
 }
