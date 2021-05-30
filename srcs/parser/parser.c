@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 13:11:19 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 17:20:46 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,8 +274,8 @@ size_t	get_env_var(char **s, size_t i)
 // 		new = new_cmd(FLG_EOL, &args);
 // 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 // 	}
-// 	ft_lstprint_cmd(singleton()->lst);
-// 	ft_printf("\n");
+// 	// ft_lstprint_cmd(singleton()->lst);
+// 	// ft_printf("\n");
 // }
 
 /*******************************************************************************
@@ -339,11 +339,12 @@ void	ft_parse(char *s)
 			{
 				ft_strnclean(s + i, QUOTES, 1);	// remove ``'"`` from `s'
 				quotes2close(s[i], &quotes, SET_FLAG);
-				// ft_printf("(s + i)[%s]\n", s + i);
-				if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
-					|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
-					ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
-				if (quotes.first)
+				// ft_printf("quotes.first[%d] (s + i)[%s] i[%d]\n",
+				// 	quotes.first, s + i, i);
+				// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
+				// 	|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
+				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
+				if (quotes.did_change)
 				{
 					ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 					s += i;

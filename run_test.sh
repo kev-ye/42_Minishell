@@ -78,7 +78,7 @@ print_usage() {
 	echo "usage: ./$__NAME__ [option]"
 	echo
 	echo "Options available:"
-	echo "\`${B_YLW}-c${CLR_COLOR}' or \`${B_YLW}clean${CLR_COLOR}':   Clean log file"
+	echo "\`${B_YLW}-c${CLR_COLOR}' or \`${B_YLW}clean${CLR_COLOR}':   Delete log file"
 	echo "\`${B_YLW}-f${CLR_COLOR}' or \`${B_YLW}fclean${CLR_COLOR}':  Clean all project"
 	echo "\`${B_YLW}-h${CLR_COLOR}' or \`${B_YLW}help${CLR_COLOR}':    Print usage"
 	echo "\`${B_YLW}-a${CLR_COLOR}' or \`${B_YLW}all${CLR_COLOR}':     Do all tests"
@@ -89,6 +89,13 @@ print_usage() {
 
 ### Compile and check if it was done properly 
 init_tester() {
+
+	# Check if the $__SHL_TST_PATH__ exist
+	if [ ! -d "$__SHL_TST_PATH__" ]; then
+		mkdir $__SHL_TST_PATH__
+	fi
+
+	# Compile
 	echo "🛠  ${B_YLW}Compiling your project...${CLR_COLOR} \c"
 	make >/dev/null 2>&1
 	if [ `ls minishell` != "minishell" ]; then
@@ -130,7 +137,8 @@ test_cmd() {
 
 	# Add diffs in the .log file if any
 	if [ $? -ne 0 ]; then
-		echo "❌  "
+		echo "❌  [${1}]"	# debug purpose
+		# echo "❌  "
 		echo "Test #${i}: [$1]" >> $__SHL_TST_PATH__/results.log
 		cat $__SHL_TST_PATH__/diffs >> $__SHL_TST_PATH__/results.log
 		echo >> $__SHL_TST_PATH__/results.log
@@ -139,7 +147,7 @@ test_cmd() {
 		echo "✅  "
 	fi
 
-	# echo "[${1}]"
+	# echo "[${1}]"	# debug purpose
 	
 	# Delete tmp files
 	rm -f $__SHL_TST_PATH__/diffs $__SHL_TST_PATH__/real $__SHL_TST_PATH__/mine
@@ -181,18 +189,40 @@ test_parser() {
 	test_cmd "echo "
 	test_cmd " echo"
 	test_cmd "   	echo 		"
+	test_cmd "echo ''"
 	test_cmd "echo bonjour"
 	test_cmd "echo       bonjour       "
 	test_cmd "echo \\"
 	test_cmd "echo \\"
 	test_cmd "echo \\\\"
 	test_cmd "echo \\\\\\"
+	# test_cmd "ech\"o\""
+	# test_cmd "\e\c\h\o"
+	test_cmd "echo \"\'a\""
+	test_cmd "echo '\"a'"
+	test_cmd "echo \\\"'\"a'"
+	# test_cmd "echo \"\'a\""
+	test_cmd "echo \"\\\"a\""
 	test_cmd "echo \"bonjour\""
 	test_cmd "echo \"''bonjour\""
 	test_cmd "echo '' \"''bonjour\"\"\""
 	test_cmd "echo ''\"''bonjour\""
+	test_cmd "echo \"a\"\"b\""
 	test_cmd "echo \"\\ \""
 	test_cmd "echo \"\\\\\\\\ \""
+	test_cmd "echo '\\'"
+	test_cmd "echo '\\\\\\\\'"
+	test_cmd "echo \$"
+	test_cmd "echo '\$'"
+	test_cmd "echo \"\$\""
+	test_cmd "echo \"\$?\""
+	test_cmd "echo \"\$DOES_NOT_EXIST\""
+	test_cmd "echo \"\$HOME\""
+	test_cmd "echo '\$HOME'"
+	test_cmd "echo \"'\$HOME'\""
+	test_cmd "echo \"Bonjour\$HOME\ toi\""
+	test_cmd "echo \" bonjour '' 'a\' \$LESS\$BONJOUR\moi\"\\\"\'"
+	test_cmd "echo ' bonjour \"\" \"a\\\" \$LESS\$BONJOUR\moi'\\\"\'"
 
 	test_cmd "echo bonjour;"
 	test_cmd "echo bonjour ;"
@@ -203,6 +233,9 @@ test_parser() {
 	test_cmd "echo bonjour ; grep ''"
 	test_cmd "echo bonjour ; grep '' "
 	test_cmd "echo;echo;echo;echo"
+	test_cmd "cd ../../../../../.. ; pwd"
+	test_cmd "cd ; pwd"
+	test_cmd "cd . ; pwd"
 
 	print_stats "parser"
 }
@@ -220,7 +253,6 @@ test_redirections() {
 ################################################################################
 ### Main
 ################################################################################
-mkdir $__SHL_TST_PATH__
 print_header
 clean # delete old log file if exist
 

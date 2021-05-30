@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:21:48 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/25 16:11:52 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 15:51:02 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	ft_pwd(void)
 	path = getcwd(NULL, 0);
 	if (!path)
 		return (ERROR);
-	ft_dprintf(STDERR_FILENO, "%s\n", path);
+	ft_dprintf(STDOUT_FILENO, "%s\n", path);
 	free(path);
 	return (SUCCESS);
 }
