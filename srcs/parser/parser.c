@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 13:34:42 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 13:11:19 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,17 +338,19 @@ void	ft_parse(char *s)
 			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change)
 			{
 				ft_strnclean(s + i, QUOTES, 1);	// remove ``'"`` from `s'
-				// if (quotes.first)
-				// {
-				// 	ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
-				// 	s += i;
-				// 	i = 0;
-				// 	continue ;
-				// }
-				// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
-				// 	|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
-				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
-				// continue ;
+				quotes2close(s[i], &quotes, SET_FLAG);
+				// ft_printf("(s + i)[%s]\n", s + i);
+				if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
+					|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
+					ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
+				if (quotes.first)
+				{
+					ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
+					s += i;
+					i = 0;
+					continue ;
+				}
+				continue ;
 			}
 			else if (s[i] == '$' && (!quotes.first || (quotes.first & (1 << DBL_BSHFT))))
 			{
@@ -364,9 +366,9 @@ void	ft_parse(char *s)
 			s += i;
 			i = 0;
 		}
-		if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
-		|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
-			ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
+		// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
+		// || (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
+		// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
 	}
 	if (!s[i])
 	{

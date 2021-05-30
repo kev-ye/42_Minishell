@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/25 16:12:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 12:26:18 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ int	ft_echo(char **cmds)
 		i = 2;
 		while (i < len_cmd)
 		{
-			ft_dprintf(STDERR_FILENO, "%s", cmds[i++]);
+			ft_dprintf(STDOUT_FILENO, "%s", cmds[i++]);
 			if (i < len_cmd)
-				ft_dprintf(STDERR_FILENO, " ");
+				ft_dprintf(STDOUT_FILENO, " ");
 		}
 	}
 	else
@@ -38,11 +38,11 @@ int	ft_echo(char **cmds)
 		i = 1;
 		while (i < len_cmd && cmds[i])
 		{
-			ft_dprintf(STDERR_FILENO, "%s", cmds[i++]);
+			ft_dprintf(STDOUT_FILENO, "%s", cmds[i++]);
 			if (i < len_cmd)
-				ft_dprintf(STDERR_FILENO, " ");
+				ft_dprintf(STDOUT_FILENO, " ");
 		}
-		ft_dprintf(STDERR_FILENO, "\n");
+		ft_dprintf(STDOUT_FILENO, "\n");
 	}
 	return (SUCCESS);
 }

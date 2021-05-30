@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 16:19:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 10:17:50 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,10 @@
 
 # define PARSER_LIMITS_CHARS ";|<> "
 
-// #define STRINGIFY(x) #x
-// #define TOSTRING(x) STRINGIFY(x)
-// #define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
-// 						":\e[0m " s "\n");
-// #define PRINT_ERR(s) (void)s;
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
+						":\e[0m " s "\n");
 
 /*
 ** -- DATA STRUCTURES --

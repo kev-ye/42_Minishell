@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 14:04:24 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/30 14:48:53 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ void	print_prompt(void)
 	}
 	basename = ft_strrchr(singleton()->cwd, '/');
 	if (!*(basename + 1))
-		ft_dprintf(STDERR_FILENO, PROMPT, "/");
+		ft_dprintf(STDIN_FILENO, PROMPT, "/");
 	else
-		ft_dprintf(STDERR_FILENO, PROMPT, basename + 1);
+		ft_dprintf(STDIN_FILENO, PROMPT, basename + 1);
 }
 
 void	prompt(void)
@@ -99,7 +99,7 @@ t_list	*get_env(char **env)
 	return (new_env);
 }
 
-static int	ft_init(char **env)
+static int	ft_init_minishell(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
 	char		*shlvl;
@@ -126,9 +126,9 @@ static int	ft_init(char **env)
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
-{	
-	if (!ft_init(env))
-		return (1);
+{
+	if (!ft_init_minishell(env))
+		return (ERROR);
 	prompt();
-	return (0);
+	return (SUCCESS);
 }
