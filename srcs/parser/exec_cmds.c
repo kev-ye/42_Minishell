@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 14:21:04 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/31 14:25:28 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,17 @@ int ft_exec_builtin_cmd(char **cmds)
 
 int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
-	int i = execve(file, cmds->args, ft_lst2strs(&singleton()->env));
-	if (i == -1)
-		return (ERROR);
-	else
-		return (i);
+	char	**env;
+	int		ret = 0;
+
+	env = ft_lst2strs(&singleton()->env);
+	singleton()->last_return_value = execve(file, cmds->args, env);
+	ft_memdel((void **)env);	// ne passe jamais ici
+	return (ret);
+	// if (-1 == ret)
+	// 	return (ERROR);
+	// else
+	// 	return (ret);
 }
 
 // void	ft_pre_exec_cmd(void *ptr)
@@ -87,10 +93,10 @@ int	ft_exec_cmd(char *file, t_cmd *cmds)
 // 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 // }
 
-void    ft_pre_exec_cmd(void *ptr)
+void	ft_pre_exec_cmd(void *ptr)
 {
-    t_cmd    *cmd;
-    char    *ex;
+	t_cmd	*cmd;
+	char	*ex;
 
     cmd = ptr;
     if (!cmd->args || !cmd->args)
@@ -117,8 +123,9 @@ void    ft_pre_exec_cmd(void *ptr)
 
 int	*first_cmd_with_pipe(void *cmd)
 {
-	pid_t pid;
-	int *fd = malloc(sizeof(int) * 2);
+	pid_t	pid;
+	int		*fd = malloc(sizeof(int) * 2);
+
 	if (!fd)
 		return (NULL);
 	pipe(fd);
@@ -143,15 +150,16 @@ int	*first_cmd_with_pipe(void *cmd)
 
 int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
 {
-	pid_t pid;
-	int *tmp = get_fd;
-	int *fd = malloc(sizeof(int) * 2);
+	pid_t	pid;
+	int		*tmp = get_fd;
+	int		*fd = malloc(sizeof(int) * 2);
+
 	if (!fd)
 		return (NULL);
 	pipe(fd);
 	pid = fork();
 	if (pid < 0)
-			exit(1);
+		exit(ERROR);
 	else if (pid == 0)
 	{
 		close(get_fd[1]);
@@ -175,12 +183,11 @@ int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
 
 void	last_cmd_with_pipe(void *cmd, int *get_fd)
 {
-	pid_t pid;
+	const pid_t	pid = fork();
 
-	pid = fork();
 	if (pid < 0)
-			exit(1);
-	else if (pid == 0)
+		exit(ERROR);
+	else if (0 == pid)
 	{
 		close(get_fd[1]);
 		dup2(get_fd[0], STDIN_FILENO);
@@ -197,7 +204,7 @@ void	last_cmd_with_pipe(void *cmd, int *get_fd)
 
 void	simple_cmd(void *cmd)
 {
-	pid_t pid;
+	pid_t	pid;
 
 	if (!ft_strcmp(((t_cmd *)cmd)->args[0], "cd"))
 		ft_pre_exec_cmd(cmd);
@@ -219,9 +226,9 @@ void	simple_cmd(void *cmd)
 void	ft_exec_each_cmd(t_list *lst)
 {
 	t_list	*tmp;
-	int 	first;
-	int 	pipe_flag;
-	int 	*fd;
+	int		first;
+	int		pipe_flag;
+	int		*fd;
 	
 	if (!lst || !((t_cmd *)lst->content)->args)
 		return ;
