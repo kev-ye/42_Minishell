@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 10:48:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 17:29:03 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,13 @@ struct s_redirections
 	char	*redir;
 	int		len;
 	uint8_t	flag;
+};
+
+struct s_termcaps
+{
+	char	*termcap;
+	void	(*f)();
+	// uint8_t	flag;
 };
 
 /*

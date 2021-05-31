@@ -64,6 +64,8 @@ clean() {
 
 ### Clean tmp .log file
 fclean() {
+	# delete .DS_Store files
+	find . -type f -name '.DS_Store' -print -delete 2>/dev/null
 	echo "🛠  ${B_YLW}make fclean...${CLR_COLOR} \c"
 	make fclean > /dev/null 2>&1
 	echo "✅ "
@@ -144,8 +146,8 @@ test_cmd() {
 		echo >> $__SHL_TST_PATH__/results.log
 		errors=$((errors+1))
 	else
-		echo "✅ => [${1}]"	# debug purpose
-		# echo "✅  "
+		# echo "✅ => [${1}]"	# debug purpose
+		echo "✅  "
 	fi
 
 	# echo "[${1}]"	# debug purpose
@@ -182,7 +184,7 @@ test_parser() {
 	errors=0
 	i=1
 
-	# Tests
+	# basic
 	test_cmd ""
 	test_cmd "       "
 	test_cmd "    		 "
@@ -190,19 +192,25 @@ test_parser() {
 	test_cmd "echo "
 	test_cmd " echo"
 	test_cmd "   	echo 		"
-	test_cmd "echo ''"
 	test_cmd "echo bonjour"
 	test_cmd "echo       bonjour       "
+
+	# backslashes
 	test_cmd "echo \\"
 	test_cmd "echo \\"
 	test_cmd "echo \\\\"
 	test_cmd "echo \\\\\\"
+	test_cmd "echo \"\\\\\\\""
+	test_cmd "echo '\\\\\\'"
+
+	# quotes
+	test_cmd "echo ''"
 	test_cmd "ech\"o\" test"
 	test_cmd "\\ec\\h\\o"
 	test_cmd "echo \"\'a\""
 	test_cmd "echo '\"a'"
 	test_cmd "echo \\\"'\"a'"
-	# test_cmd "echo \"\'a\""
+	test_cmd "echo \"\\'a\""
 	test_cmd "echo \"\\\"a\""
 	test_cmd "echo \"bonjour\""
 	test_cmd "echo \"''bonjour\""
@@ -214,6 +222,8 @@ test_parser() {
 	test_cmd "echo \"\\\\\\\\ \""
 	test_cmd "echo '\\'"
 	test_cmd "echo '\\\\\\\\'"
+
+	# variables
 	test_cmd "echo \$"
 	test_cmd "echo '\$'"
 	test_cmd "echo \"\$\""
@@ -225,7 +235,12 @@ test_parser() {
 	test_cmd "echo \"Bonjour\$HOME\\\toi\""
 	test_cmd "echo \" bonjour '' 'a\' \$LESS\$BONJOUR\moi\"\\\"\'"
 	test_cmd "echo ' bonjour \"\" \"a\\\" \$LESS\$BONJOUR\moi'\\\"\'"
+	
+	# check if the SHLVL variable is incremented in minishell (not a parser test)
+	test_cmd "env | grep SHLVL=2"
+	test_cmd "echo \"env | grep SHLVL=3\" | ./minishell"
 
+	# multiple commands
 	test_cmd "echo bonjour;"
 	test_cmd "echo bonjour ;"
 	test_cmd "echo bonjour ; "

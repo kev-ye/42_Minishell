@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 13:09:37 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 17:51:23 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,18 +148,18 @@ void	print_prompt(void)
 	char	*pwd;
 	char	*basename;
 
+	pwd = getcwd(NULL, 0);
+	if (pwd)
+	{
+		/*
+		** avoid this problem:
+		** mkdir test && cd test && rm -rf ../test
+		*/
+		ft_memdel((void **)(&singleton()->cwd));
+		singleton()->cwd = pwd;
+	}
 	if (singleton()->isatty_stdin)
 	{
-		pwd = getcwd(NULL, 0);
-		if (pwd)
-		{
-			/*
-			** avoid this problem:
-			** mkdir test && cd test && rm -rf ../test
-			*/
-			ft_memdel((void **)(&singleton()->cwd));
-			singleton()->cwd = pwd;
-		}
 		basename = ft_strrchr(singleton()->cwd, '/');
 		if (!*(basename + 1))
 			ft_dprintf(STDERR_FILENO, PROMPT, "/");
@@ -228,12 +228,11 @@ static int	ft_init_minishell(char **env)
 	if (singleton() == NULL)
 		return ((int)ft_malloc_error(__FILE__, __LINE__));
 	singleton()->env = get_env(env);
-	if (singleton()->env == NULL)
-		return ((int)ft_malloc_error(__FILE__, __LINE__));
 	shlvl = ft_getenv("SHLVL");
-	if (!shlvl)
-		return ((int)ft_malloc_error(__FILE__, __LINE__));
-	ft_asprintf(&ret, "SHLVL=%d", ft_atoi(shlvl) + 1);
+	if (shlvl)
+		ft_asprintf(&ret, "SHLVL=%d", ft_atoi(shlvl) + 1);
+	else
+		ret = ft_strdup("SHLVL=1");
 	if (!ret && ft_memdel((void **)&shlvl) == NULL)
 		return ((int)ft_malloc_error(__FILE__, __LINE__));
 	args[1] = ret;
@@ -244,12 +243,100 @@ static int	ft_init_minishell(char **env)
 	return (1);
 }
 
+#define BUF_SIZE 4096
+
+// Key codes
+#define K_UP "\x1b\x5b\x41"
+#define K_DOWN "\x1b\x5b\x42"
+#define K_RIGHT "\x1b\x5b\x43"
+#define K_LEFT "\x1b\x5b\x44"
+
+void	ft_termcap_history(char *termcap)
+{
+	if (0 == ft_strcmp(termcap, K_UP))
+	{
+		ft_printf("UP\n");
+	}
+	else if (0 == ft_strcmp(termcap, K_DOWN))
+	{
+		ft_printf("DOWN\n");
+	}
+}
+
+void	ft_termcap_edition(char *termcap)
+{
+	if (0 == ft_strcmp(termcap, K_RIGHT))
+	{
+		ft_printf("RIGHT\n");
+	}
+	else if (0 == ft_strcmp(termcap, K_LEFT))
+	{
+		ft_printf("LEFT\n");
+	}
+}
+
+int	check_arrow(char buf[])
+{
+	struct s_termcaps	termcaps[] = {
+		{K_UP, ft_termcap_history}, {K_DOWN, ft_termcap_history},
+		{K_RIGHT, ft_termcap_edition}, {K_LEFT, ft_termcap_edition}, {NULL, 0}
+	};
+	int			i;
+
+	i = 0;
+	while (termcaps[i].termcap)
+	{
+		if (!strncmp(buf, termcaps[i].termcap, ft_strlen(termcaps[i].termcap)))
+			termcaps[i].f(termcaps[i].termcap);
+		++i;
+	}
+	return (1);
+}
+
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
 {
 	if (!ft_init_minishell(env))
 		return (EXIT_FAILURE);
-	prompt();
+	// prompt();
+	
+	char			buf[BUF_SIZE + 1] = {0};
+	struct termios	tattr;
+
+	tcgetattr(STDIN_FILENO, &tattr);
+	tattr.c_lflag &= ~(ICANON|ECHO); /* Clear ICANON and ECHO. */
+	tattr.c_cc[VMIN] = 1;
+	tattr.c_cc[VTIME] = 0;
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &tattr);
+
+	signal(SIGINT, SIG_IGN);
+	int i = 0;
+	while (1)
+	{
+		int		ret = read(STDIN_FILENO, buf + i, 1);
+		
+		if (buf[0] == 0x1b)
+		{
+			if (3 == ++i && check_arrow(buf))
+			{
+				ft_bzero(buf, BUF_SIZE + 1);
+				i = 0;
+			}
+			continue ;
+		}
+		
+		ft_printf("ret[%d], buf[", ret);
+		int _i = 0;
+		while (buf[_i])
+			ft_dprintf(STDERR_FILENO, "%x", buf[_i++]);
+		ft_putendl_fd("]", STDERR_FILENO);
+
+		if (buf[0] == 0x4)
+		{
+			ft_putendl_fd("CTRL-D", STDERR_FILENO);
+			break ;
+		}
+	}
 	return (EXIT_SUCCESS);
 }
