@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 12:48:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/31 14:21:04 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,31 +237,31 @@ void	ft_exec_each_cmd(t_list *lst)
 		// else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
 		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
 		{
-			// printf("fist with pipe\n");
+			printf("fist with pipe\n");
 			fd = first_cmd_with_pipe(tmp->content);
 			first = 0;
 			pipe_flag = 1;
 		}
 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
 		{
-			// printf("interm with pipe\n");
+			printf("interm with pipe\n");
 			fd = interm_cmd_with_pipe(tmp->content, fd);
 			pipe_flag = 1;
 		}
 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
 		{
-			// printf("no with pipe\n");
+			printf("no with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
 			pipe_flag = 1;
 		}
 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
 		{
-			// printf("last with pipe\n");
+			printf("last with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
 		}
 		else if (((t_cmd *)tmp->content)->args)
 		{
-			// printf("simple\n");
+			printf("simple\n");
 			simple_cmd(tmp->content);
 		}
 		tmp = tmp->next;
