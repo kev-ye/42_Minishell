@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 12:30:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 12:38:46 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,9 +248,6 @@ int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
 {
-	ft_printf("in %d\n", isatty(STDIN_FILENO));
-	ft_printf("out %d\n", isatty(STDOUT_FILENO));
-	ft_printf("err %d\n", isatty(STDERR_FILENO));
 	if (!ft_init_minishell(env))
 		return (EXIT_FAILURE);
 	prompt();
