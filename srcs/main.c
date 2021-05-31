@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 17:51:23 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 18:20:05 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,6 +293,61 @@ int	check_arrow(char buf[])
 	return (1);
 }
 
+// special putchar
+int	ft_sputchar_fd(int c, int fd)
+{
+	if (write(fd, &c, sizeof(int)) < 0)
+		return (EOF);
+	return (c);
+}
+
+int	ft_sputchar(int c)
+{
+	return (ft_sputchar_fd(c, STDOUT_FILENO));
+}
+
+#define HISTORY_FILENAME ".minishell_history"
+
+void	create_history(void)
+{
+	char	*path;
+	char	*home;
+	int		fd;
+
+	home = ft_getenv("HOME");
+	if (!home || ft_is_openable(home, O_RDONLY))
+	{
+		if (home)
+			free(home);
+		home = getcwd(NULL, 0);
+	}
+	ft_asprintf(&path, "%s/" HISTORY_FILENAME, home);
+	if (home)
+		ft_memdel((void **)&home);
+	if (!path)
+		ft_malloc_error(__FILE__, __LINE__);
+	fd = open(path, O_RDWR | O_CREAT | O_APPEND);
+	if (fd == -1)
+		ft_malloc_error(__FILE__, __LINE__);
+	ft_memdel((void **)&path);
+
+
+
+
+	///////////////////////////////////////
+	// I WAS HERE THE LAST TIME - ben
+	///////////////////////////////////////
+
+
+
+}
+
+int		add2history(char *cmd)
+{
+	(void)cmd;
+	return (ERROR);
+}
+
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
@@ -316,21 +371,24 @@ int	main(__attribute__((unused)) int ac,
 	{
 		int		ret = read(STDIN_FILENO, buf + i, 1);
 		
+		(void )ret;
+		
 		if (buf[0] == 0x1b)
 		{
-			if (3 == ++i && check_arrow(buf))
+			if (3 == ++i)
 			{
+				check_arrow(buf);
 				ft_bzero(buf, BUF_SIZE + 1);
 				i = 0;
 			}
 			continue ;
 		}
-		
-		ft_printf("ret[%d], buf[", ret);
-		int _i = 0;
-		while (buf[_i])
-			ft_dprintf(STDERR_FILENO, "%x", buf[_i++]);
-		ft_putendl_fd("]", STDERR_FILENO);
+		tputs(buf, 1, ft_sputchar);
+		// ft_printf("ret[%d], buf[", ret);
+		// int _i = 0;
+		// while (buf[_i])
+		// 	ft_dprintf(STDERR_FILENO, "%x", buf[_i++]);
+		// ft_putendl_fd("]", STDERR_FILENO);
 
 		if (buf[0] == 0x4)
 		{

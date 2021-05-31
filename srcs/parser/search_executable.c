@@ -6,22 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 15:43:14 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 18:11:16 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	ft_is_openable(char *path, int flag)
-{
-	int	fd;
-
-	fd = open(path, flag);
-	if (fd == -1)
-		return (0);
-	close(fd);
-	return (1);
-}
 
 static char	*find_exec(char **exectbl, char *command)
 {

@@ -6,11 +6,22 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 14:06:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 18:11:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	ft_is_openable(char *path, int flag)
+{
+	int	fd;
+
+	fd = open(path, flag);
+	if (fd == -1)
+		return (0);
+	close(fd);
+	return (1);
+}
 
 void	ft_printstrs(int fd, char **strs)
 {

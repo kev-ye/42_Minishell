@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 17:29:03 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 18:11:37 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,7 @@ typedef struct s_minishl
 /*
 ** Utils
 */
+int			ft_is_openable(char *path, int flag);
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
 void		ft_lstprint_cmd(t_list *lst);
