@@ -1,212 +1,119 @@
-#include <libc.h>
-// #include "libft.h"
-#include <term.h>
-#include <curses.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <signal.h>
+#define SIZE 128				//缓存区大小	
 
-// static char *ft_join(char *s1, char *s2)
-// {
-// 	size_t len;
-// 	char *s;
-// 	int i;
-
-// 	if (!s1 && !s2)
-// 		return (NULL);
-// 	len = ((s1)? ft_strlen(s1) : 0) + ((s2)? ft_strlen(s2) : 0);
-// 	s = malloc(sizeof(char) * (len + 1));
-// 	if (!s)
-// 		return (NULL);
-// 	i = 0;
-// 	while (s1 && s1[i])
-// 		*s++ = s1[i++];
-// 	i = 0;
-// 	while (s2 && s2[i])
-// 		*s++ = s2[i++];
-// 	*s = '\0';
-// 	if (s1)
-// 		free(s1);
-// 	return (s - len);
-// }
-
-// static int ft_newline(char *s)
-// {
-// 	int i = 0;
-
-// 	if (!s)
-// 		return (0);
-// 	while (s[i])
-// 	{
-// 		if (s[i] == '\n')
-// 			return (1);
-// 		i++;
-// 	}
-// 	return (0);
-// }
-
-// static char *ft_getline(char *s)
-// {
-// 	char *str;
-// 	int i;
-
-// 	if (!s)
-// 		return (NULL);
-// 	i = 0;
-// 	while (s[i] && s[i] != '\n')
-// 		i++;
-// 	str = malloc(sizeof(char) * i + 1);
-// 	if (!str)
-// 		return (NULL);
-// 	i = 0;
-// 	while (s[i] && s[i] != '\n')
-// 	{
-// 		str[i] = s[i];
-// 		i++;
-// 	}
-// 	str[i] = '\0';
-// 	return (str);
-// }
-
-// static char *ft_nextline(char *s)
-// {
-// 	char *str;
-// 	int i = 0;
-// 	int j = 0;
-
-// 	if (!s)
-// 		return (NULL);
-// 	while (s[i] && s[i] != '\n')
-// 		i++;
-// 	if (!s[i])
-// 	{
-// 		free(s);
-// 		return (NULL);
-// 	}
-// 	str = malloc(sizeof(char) * (ft_strlen(s) - i + 1));
-// 	if (!str)
-// 		return (NULL);
-// 	i++;
-// 	while (s[i])
-// 	{
-// 		str[j] = s[i];
-// 		j++;
-// 		i++;
-// 	}
-// 	str[j] = '\0';
-// 	free(s);
-// 	return (str);
-// }
-
-// int				ft_get_next_line(char **line)
-// {
-// 	static char *s;
-// 	int ret = 1;
-// 	char buff[1 + 1];
-
-// 	if (!line)
-// 		return (-1);
-// 	while (!ft_newline(s) && ret != 0)
-// 	{
-// 		ret = read(STDIN_FILENO, buff, 1);
-// 		if (ret < 0)
-// 			return (-1);
-// 		buff[ret] = '\0';
-// 		s = ft_join(s, buff);
-// 		if (ft_strstr(s, "\033[A") != NULL)
-// 		{
-// 			// tputs(tgetstr("cl", NULL), 1, putchar);
-// 			dprintf(STDIN_FILENO, "get in gnl\n");
-
-// 			continue ;
-// 		}
-// 	}
-// 	*line = ft_getline(s);
-// 	s = ft_nextline(s);
-// 	return ((ret) ? 1 : 0);
-// }
-
-// int init_term()
-// {
-//     int ret;
-//     char *term_type = getenv("TERM");
-
-//     if (term_type == NULL)
-//     {
-//         fprintf(stderr, "TERM must be set (see 'env').\n");
-//         return (-1);
-//     }
-
-//     ret = tgetent(NULL, term_type);
-
-//     if (ret == (-1))
-//     {
-//         fprintf(stderr, "Could not access to the termcap database..\n");
-//         return (-1);
-//     }
-//     else if (ret == 0)
-//     {
-//         fprintf(stderr, "Terminal type '%s' is not defined in termcap database (or have too few informations).\n", term_type);
-//         return (-1);
-//     }
-
-//     return 0;
-// }
-
-// int main()
-// {
-	// int ret = init_term();
-	// int r;
-	// char *line;
-
-	// if (ret == 0)
-	// {
-	// 	while (isatty(STDIN_FILENO))
-	// 	{
-	// 		r = ft_get_next_line(&line);
-	// 		// if (line)
-	// 		// {
-	// 		// 	// printf("line : %s\n", line);
-	// 		// 	if (!ft_strcmp(line, "\033[A"))
-	// 		// 		printf("up\n");
-	// 		// 	else
-	// 		// 		printf("Nothing\n");
-	// 		// }
-	// 		if (r <= 0)
-	// 			break ;
-	// 	}
-	// }
-
-	// char buf[8];
-
-	// ft_bzero(buf, 8);
-	// while (1)
-	// {
-	// 	if (read(0, buf, 8) < 0)
-	// 		return 0 ;
-	// 	if (!ft_strcmp(buf, "\033[D"))
-	// 		tputs(tgetstr("le", NULL), 1, putchar);
-	// }
-
-	// struct termios term;
-	// int err;
-
-	// if (tcgetattr(STDIN_FILENO, &term) == -1)
-	// {
-	// 	printf("error\n");
-	// 	return (-1);
-	// }
-
-	// term.c_cc[VEOF]=(cc_t)0x07;
-	// err = tcsetattr(STDIN_FILENO,TCSAFLUSH,&term);
-
-	// if(err==-1 && err == EINTR)
-	// {
-	// 	perror("Failed to change EOF character");
-	// 	return 1;
-	// }
-
-	// return 0;
-
-	// char *cl_cap = tgetstr("cl", NULL);
-	// tputs (tgetstr("cl", NULL), 1, putchar);
-	// dprintf(STDOUT_FILENO, "%s", cl_cap);
-// }
+void read_from_pipe(int fd[],int err_fd[]);	//从管道读数据
+void write_to_pipe(int fd[],int err_fd[]);	//向管道写数据
+void handle(int signo);			//信号处理函数
+int main()
+{
+	int fd[2];//文件描述符数组，数据管道，传输shell命令执行返回的结果
+	int err_fd[2];//文件描述符数组，错误管道，传输shell命令执行产生的错误信息
+	int ret;
+	int err_ret;
+	pid_t pid;
+	char s[3];
+	do
+	{
+		ret=pipe(fd);//创建无名管道fd[0]读端,fd[1]写端
+		if(ret!=0)
+		{
+			perror("pipe error");
+			exit(1);
+		}
+		err_ret=pipe(err_fd);
+		if(err_ret!=0)
+		{
+			perror("pipe error");
+			exit(1);
+		}
+		signal(SIGCHLD,handle);//子进程退出信号捕捉函数
+		pid=fork();//创建进程
+		if(pid==0)//子进程
+		{	
+			write_to_pipe(fd,err_fd);	
+			exit(1);
+		}
+		else if(pid>0)//父进程
+		{	
+			wait(NULL);
+			read_from_pipe(fd,err_fd);
+		}
+		else
+		{
+			perror("fork error");
+			exit(1);
+		}
+		printf("<y or n>--->");
+		fgets(s,3,stdin);
+	}while(strcmp("y\n",s)==0);
+	return 0;
+}
+void read_from_pipe(int fd[],int err_fd[])
+{
+    // int test_fd;
+    // test_fd = open((, O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	char buf_read[SIZE];
+	memset(buf_read,'\0',SIZE);
+	char buf_err[SIZE];
+	memset(buf_err,'\0',SIZE);
+	close(fd[1]);
+	close(err_fd[1]);
+	if(read(fd[0],buf_read,SIZE)>=0 && read(err_fd[0],buf_err,SIZE)==0)
+	{
+		printf("命令正确\n");
+		if(strlen(buf_read)==0)
+		{
+			printf("此操作没有数据可写\n");
+		}
+		else
+		{
+			printf("data:\n");
+			printf("%s",buf_read);
+		}
+		printf("=========================\n");
+	}
+	else
+	{	
+		printf("命令错误\n");	
+		printf("error info:\n");
+		printf("%s",buf_err);
+		printf("=========================\n");
+	}
+	close(fd[0]);
+	close(err_fd[0]);
+}
+void write_to_pipe(int fd[],int err_fd[])
+{
+	char buf_write[SIZE];
+	int len;int ret;
+	memset(buf_write,'\0',SIZE);//分配内存空间
+	close(fd[0]);//关闭数据管道读端
+	close(err_fd[0]);//关闭错误管道读端
+	printf("input:");
+	fflush(stdout);//缓存清空（注意！！！）
+	dup2(fd[1],1);//标准输出重定向到数据管道写端
+	dup2(err_fd[1],2);//标准错误重定向到错误管道写端
+	fgets(buf_write,SIZE,stdin);
+	len=strlen(buf_write);
+	buf_write[len-1]='\0';
+	ret=execlp("sh","sh","-c",buf_write,NULL);//执行shell命令
+	if(ret==-1)
+	{
+		perror("execlp error");
+		exit(1);
+	}
+	close(fd[1]);
+	close(err_fd[1]);
+}
+void handle(int signo)
+{
+	if(signo==SIGCHLD)
+	printf("子进程退出\n");
+}

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 14:25:28 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/31 18:08:44 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,8 @@ void	ft_pre_exec_cmd(void *ptr)
     ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////// start pipe
+
 int	*first_cmd_with_pipe(void *cmd)
 {
 	pid_t	pid;
@@ -145,6 +147,11 @@ int	*first_cmd_with_pipe(void *cmd)
 		close(fd[1]);
 		wait(NULL);
 	}
+	// char buff[1000];
+	// int ret = read(fd[0], buff, 1000);
+	// if (ret != -1)
+	// 	buff[ret] = '\0';
+	// printf("-> buff :\n%s ---- \n->ret : %d\n", buff, ret);
 	return (fd);
 }
 
@@ -223,48 +230,148 @@ void	simple_cmd(void *cmd)
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////// end pipe
+
+/////////////////////////////////////////////////////////////////////////////////////////////// start direction
+
+int	*first_cmd_with_redir(void *cmd)
+{
+	pid_t	pid;
+	int		*fd = malloc(sizeof(int) * 2);
+
+	if (!fd)
+		return (NULL);
+	pipe(fd);
+	pid = fork();
+	if (pid < 0)
+			exit(1);
+	else if (pid == 0)
+	{
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		ft_pre_exec_cmd(cmd);
+		close(fd[1]);
+		exit(0);
+	}
+	else
+	{
+		close(fd[1]);
+		wait(NULL);
+	}
+	// char buff[1000];
+	// int ret = read(fd[0], buff, 1000);
+	// if (ret != -1)
+	// 	buff[ret] = '\0';
+	// printf("-> buff :\n%s ---- \n->ret : %d\n", buff, ret);
+	return (fd);
+}
+
+// int	*interm_cmd_with_redir(void *cmd, int *get_fd)
+// {
+// 	pid_t	pid;
+// 	int		*tmp = get_fd;
+// 	int		*fd = malloc(sizeof(int) * 2);
+
+// 	if (!fd)
+// 		return (NULL);
+// 	pipe(fd);
+// 	pid = fork();
+// 	if (pid < 0)
+// 		exit(ERROR);
+// 	else if (pid == 0)
+// 	{
+// 		close(get_fd[1]);
+// 		dup2(get_fd[0], STDIN_FILENO);
+// 		close(get_fd[0]);
+	
+// 		close(fd[0]);
+// 		dup2(fd[1], STDOUT_FILENO);
+// 		close(fd[1]);
+// 		exit(0);
+// 	}
+// 	else
+// 	{
+// 		close(fd[1]);
+// 		wait(NULL);
+// 	}
+// 	free(tmp);
+// 	return (fd);
+// }
+
+void	last_cmd_with_redir(void *cmd, int *get_fd)
+{
+	const pid_t	pid = fork();
+	int write_fd;
+	char *test = "lol";
+
+	//
+	(void)cmd;
+	(void)get_fd;
+	//
+
+	write_fd = -1;
+	if (pid < 0)
+		exit(ERROR);
+	else if (0 == pid)
+	{
+		write_fd = open(((t_cmd *)cmd)->args[0] , O_WRONLY | O_CREAT, 0666);
+		if (write_fd == -1)
+		{
+			printf("write fd down\n");
+			exit(0);
+		}
+		// close(get_fd[1]);
+		// dup2(write_fd, get_fd[0]);
+		write(write_fd, test, strlen(test));
+		// close(get_fd[0]);
+		exit(0);
+
+
+		// int fd = open("file" , O_WRONLY | O_TRUNC |O_CREAT, 0666);
+		// if (fd == -1)
+		// {
+		// 	printf("write fd down\n");
+		// 	exit(0);
+		// }
+		// write(fd, test, strlen(test));
+		// exit(0);
+	}
+	else
+	{
+		// close(get_fd[1]);
+		wait(NULL);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////// end direction
+
 void	ft_exec_each_cmd(t_list *lst)
 {
 	t_list	*tmp;
 	int		first;
-	int		pipe_flag;
+	int		redir_flag;
 	int		*fd;
+	// int fd;
 	
 	if (!lst || !((t_cmd *)lst->content)->args)
 		return ;
 	tmp = lst;
 	first = 1;
-	pipe_flag = 0;
+	redir_flag = 0;
 	fd = NULL;
 	while (tmp)
 	{
-		// printf("Actual cmd : %s ---- Status : %d\n", ((t_cmd *)tmp->content)->args[0], ((t_cmd *)tmp->content)->status_flag);
-		// if (!ft_strcmp(((t_cmd *)tmp->content)->args[0], "cd"))
-		// 	ft_pre_exec_cmd(tmp->content);
-		// else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
-		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
+		if ((((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT) && first == 1)
 		{
-			printf("fist with pipe\n");
-			fd = first_cmd_with_pipe(tmp->content);
+			printf("fist with redir\n");
+			fd = first_cmd_with_redir(tmp->content);
 			first = 0;
-			pipe_flag = 1;
+			redir_flag = 1;
 		}
-		else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
+		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && redir_flag == 1)
 		{
-			printf("interm with pipe\n");
-			fd = interm_cmd_with_pipe(tmp->content, fd);
-			pipe_flag = 1;
-		}
-		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
-		{
-			printf("no with pipe\n");
-			last_cmd_with_pipe(tmp->content, fd);
-			pipe_flag = 1;
-		}
-		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
-		{
-			printf("last with pipe\n");
-			last_cmd_with_pipe(tmp->content, fd);
+			printf("last with redir\n");
+			last_cmd_with_redir(tmp->content, fd);
 		}
 		else if (((t_cmd *)tmp->content)->args)
 		{
@@ -275,6 +382,53 @@ void	ft_exec_each_cmd(t_list *lst)
 	}
 }
 
+// void	ft_exec_each_cmd(t_list *lst)
+// {
+// 	t_list	*tmp;
+// 	int		first;
+// 	int		pipe_flag;
+// 	int		*fd;
+	
+// 	if (!lst || !((t_cmd *)lst->content)->args)
+// 		return ;
+// 	tmp = lst;
+// 	first = 1;
+// 	pipe_flag = 0;
+// 	fd = NULL;
+// 	while (tmp)
+// 	{
+// 		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
+// 		{
+// 			printf("fist with pipe\n");
+// 			fd = first_cmd_with_pipe(tmp->content);
+// 			first = 0;
+// 			pipe_flag = 1;
+// 		}
+// 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
+// 		{
+// 			printf("interm with pipe\n");
+// 			fd = interm_cmd_with_pipe(tmp->content, fd);
+// 			pipe_flag = 1;
+// 		}
+// 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
+// 		{
+// 			printf("with ;\n");
+// 			last_cmd_with_pipe(tmp->content, fd);
+// 			pipe_flag = 0;
+// 		}
+// 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
+// 		{
+// 			printf("last with pipe\n");
+// 			last_cmd_with_pipe(tmp->content, fd);
+// 		}
+// 		else if (((t_cmd *)tmp->content)->args)
+// 		{
+// 			printf("simple\n");
+// 			simple_cmd(tmp->content);
+// 		}
+// 		tmp = tmp->next;
+// 	}
+// }
 
 // void	ft_exec_each_cmd(void)
 // {
