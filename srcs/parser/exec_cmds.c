@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 20:05:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/31 12:47:51 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void    ft_pre_exec_cmd(void *ptr)
     singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
     if (singleton()->last_return_value == NOT_FOUND)
     {
-		printf("\n\n\n\n\n\nim here\n\n\n\n\n\n");
+		// printf("\n\n\n\n\n\nim here\n\n\n\n\n\n");
         ex = search_executable(cmd->args[0]);
         if (ex)
         {
@@ -259,7 +259,7 @@ void	ft_exec_each_cmd(t_list *lst)
 			// printf("last with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
 		}
-		else
+		else if (((t_cmd *)tmp->content)->args)
 		{
 			// printf("simple\n");
 			simple_cmd(tmp->content);
