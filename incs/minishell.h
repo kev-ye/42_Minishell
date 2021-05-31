@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 17:44:20 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/31 10:48:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,42 @@
 */
 
 /*
+** Used for builtin's execution
+*/
+typedef struct s_builtin
+{
+	char	*cmd;
+	int		(*f1)(char **cmds);
+	int		(*f2)(void);
+}	t_builtin;
+
+struct s_redirections
+{
+	char	*redir;
+	int		len;
+	uint8_t	flag;
+};
+
+/*
+** Used for the parsing
+**
+** s_quote:		got a single quote
+** d_quote:		got a double quote
+** first:		got a quote
+** did_change:	did the entry quote has been found again?
+				(so it's the end of a string)
+*/
+typedef struct s_quotes
+{
+	int	s_quote;
+	int	d_quote;
+	int	first;
+	int	did_change;
+}	t_quotes;
+
+/*
+** Used for the parsing to cut the commands when the following chars are found
+**
 ** FLG_EO			// end of line
 ** FLG_EO_CMD		// `;'
 ** FLG_PIPE			// `|'
@@ -80,6 +116,8 @@ enum	e_flags
 };
 
 /*
+** Actual commands parsed, almost ready to be executed
+**
 ** args:			arguments of a command
 ** args_len:		len of all the arguments of the command
 ** status_flag:		used with e_flags's flags
@@ -94,6 +132,8 @@ typedef struct s_cmd
 }	t_cmd;
 
 /*
+** Main stucture. Called with a singleton
+**
 ** env:						env list
 ** lst:						main list containing all parsed commands
 ** last_return_value:		last return value ($?)
@@ -101,40 +141,12 @@ typedef struct s_cmd
 */
 typedef struct s_minishl
 {
-	t_list	*env;
-	t_list	*lst;
+	int		isatty_stdin;
 	int		last_return_value;
 	char	*cwd;
+	t_list	*env;
+	t_list	*lst;
 }	t_minishl;
-
-typedef struct s_builtin
-{
-	char	*cmd;
-	int		(*f1)(char **cmds);
-	int		(*f2)(void);
-}	t_builtin;
-
-struct s_redirections
-{
-	char	*redir;
-	int		len;
-	uint8_t	flag;
-};
-
-/*
-** s_quote:		got a single quote
-** d_quote:		got a double quote
-** first:		got a quote
-** did_change:	did the entry quote has been found again?
-				(so it's the end of a string)
-*/
-typedef struct s_quotes
-{
-	int	s_quote;
-	int	d_quote;
-	int	first;
-	int	did_change;
-}	t_quotes;
 
 /*
 ** -- PROTOTYPES --

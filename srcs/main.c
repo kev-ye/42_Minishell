@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/30 17:43:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/05/31 12:30:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,23 +148,25 @@ void	print_prompt(void)
 	char	*pwd;
 	char	*basename;
 
-	pwd = getcwd(NULL, 0);
-	if (pwd)
+	if (singleton()->isatty_stdin)
 	{
-		/*
-		** avoid this problem:
-		** mkdir test && cd test && rm -rf ../test
-		*/
-		ft_memdel((void **)(&singleton()->cwd));
-		singleton()->cwd = pwd;
+		pwd = getcwd(NULL, 0);
+		if (pwd)
+		{
+			/*
+			** avoid this problem:
+			** mkdir test && cd test && rm -rf ../test
+			*/
+			ft_memdel((void **)(&singleton()->cwd));
+			singleton()->cwd = pwd;
+		}
+		basename = ft_strrchr(singleton()->cwd, '/');
+		if (!*(basename + 1))
+			ft_dprintf(STDERR_FILENO, PROMPT, "/");
+		else
+			ft_dprintf(STDERR_FILENO, PROMPT, basename + 1);
 	}
-	basename = ft_strrchr(singleton()->cwd, '/');
-	if (!*(basename + 1))
-		ft_dprintf(STDIN_FILENO, PROMPT, "/");
-	else
-		ft_dprintf(STDIN_FILENO, PROMPT, basename + 1);
 }
-
 
 void	prompt(void)
 {
@@ -238,6 +240,7 @@ static int	ft_init_minishell(char **env)
 	ft_export((char **)args);
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
+	singleton()->isatty_stdin = isatty(STDIN_FILENO);
 	return (1);
 }
 
@@ -245,8 +248,11 @@ int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
 {
+	ft_printf("in %d\n", isatty(STDIN_FILENO));
+	ft_printf("out %d\n", isatty(STDOUT_FILENO));
+	ft_printf("err %d\n", isatty(STDERR_FILENO));
 	if (!ft_init_minishell(env))
-		return (ERROR);
+		return (EXIT_FAILURE);
 	prompt();
-	return (SUCCESS);
+	return (EXIT_SUCCESS);
 }

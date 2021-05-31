@@ -128,23 +128,24 @@ test_cmd() {
 	printf "Test #%2d " $i
 	# echo "Test #${i} \c"
 
-	# Make test
-	echo $1 | bash > $__SHL_TST_PATH__/real
-	echo $1 | ./minishell > $__SHL_TST_PATH__/mine
+	# Make test (redirect all output to the file)
+	echo $1 | bash > $__SHL_TST_PATH__/real 2>&1
+	echo $1 | ./minishell > $__SHL_TST_PATH__/mine 2>&1
 
 	# Add diff between two files in a `diffs' file
 	diff $__SHL_TST_PATH__/real $__SHL_TST_PATH__/mine > $__SHL_TST_PATH__/diffs
 
 	# Add diffs in the .log file if any
 	if [ $? -ne 0 ]; then
-		echo "❌  [${1}]"	# debug purpose
+		echo "❌ => [${1}]"	# debug purpose
 		# echo "❌  "
 		echo "Test #${i}: [$1]" >> $__SHL_TST_PATH__/results.log
 		cat $__SHL_TST_PATH__/diffs >> $__SHL_TST_PATH__/results.log
 		echo >> $__SHL_TST_PATH__/results.log
 		errors=$((errors+1))
 	else
-		echo "✅  "
+		echo "✅ => [${1}]"	# debug purpose
+		# echo "✅  "
 	fi
 
 	# echo "[${1}]"	# debug purpose
@@ -196,8 +197,8 @@ test_parser() {
 	test_cmd "echo \\"
 	test_cmd "echo \\\\"
 	test_cmd "echo \\\\\\"
-	# test_cmd "ech\"o\""
-	# test_cmd "\e\c\h\o"
+	test_cmd "ech\"o\" test"
+	test_cmd "\\ec\\h\\o"
 	test_cmd "echo \"\'a\""
 	test_cmd "echo '\"a'"
 	test_cmd "echo \\\"'\"a'"
@@ -206,7 +207,8 @@ test_parser() {
 	test_cmd "echo \"bonjour\""
 	test_cmd "echo \"''bonjour\""
 	test_cmd "echo '' \"''bonjour\"\"\""
-	test_cmd "echo ''\"''bonjour\""
+	test_cmd "echo ''\"''bonjour\"''"
+	test_cmd "echo \\\"\"''\\\"\"\"bonjour\""
 	test_cmd "echo \"a\"\"b\""
 	test_cmd "echo \"\\ \""
 	test_cmd "echo \"\\\\\\\\ \""
@@ -220,7 +222,7 @@ test_parser() {
 	test_cmd "echo \"\$HOME\""
 	test_cmd "echo '\$HOME'"
 	test_cmd "echo \"'\$HOME'\""
-	test_cmd "echo \"Bonjour\$HOME\ toi\""
+	test_cmd "echo \"Bonjour\$HOME\\\toi\""
 	test_cmd "echo \" bonjour '' 'a\' \$LESS\$BONJOUR\moi\"\\\"\'"
 	test_cmd "echo ' bonjour \"\" \"a\\\" \$LESS\$BONJOUR\moi'\\\"\'"
 
