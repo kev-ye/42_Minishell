@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 11:34:45 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 13:11:00 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,48 +98,28 @@ void	ft_pre_exec_cmd(void *ptr)
 	t_cmd	*cmd;
 	char	*ex;
 
-	cmd = ptr;
-	if (!cmd->args)
-	{
-		ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
-		exit(singleton()->last_return_value);
-	}
-	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-	if (NOT_FOUND == singleton()->last_return_value)
-	{
-		ex = search_executable(cmd->args[0]);
-		if (ex)
-		{
-			// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-			// singleton()->last_return_value = ft_exec_cmd(ex, cmd);
-			// ft_dprintf(1, "LAST: [%d]\n", singleton()->last_return_value);
-			ft_exec_cmd(ex, cmd);
-			// ft_dprintf(1, "LAST: [%d]\n", singleton()->last_return_value);
-			ft_memdel((void **)&ex);
-		}
-		else
-		{
-			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
-				cmd->args[0]);
-		}
-	}
-	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
-	exit(singleton()->last_return_value);
+    cmd = ptr;
+    if (!cmd->args || !cmd->args)
+        return ;
+    singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+    if (singleton()->last_return_value == NOT_FOUND)
+    {
+		// printf("\n\n\n\n\n\nim here\n\n\n\n\n\n");
+        ex = search_executable(cmd->args[0]);
+        if (ex)
+        {
+            // ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
+            singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+            ft_memdel((void **)&ex);
+        }
+        else
+        {
+            ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
+                cmd->args[0]);
+        }
+    }
+    ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
-
-// void	set_io(int read_fd, int write_fd)
-// {
-// 	if(read_fd != STDIN_FILENO)
-// 	{
-// 		dup2(read_fd, STDIN_FILENO);
-// 		close(read_fd);
-// 	}
-// 	if(write_fd != STDOUT_FILENO)
-// 	{
-// 		dup2(write_fd, STDOUT_FILENO);
-// 		close(write_fd);
-// 	}
-// }
 
 int	*first_cmd_with_pipe(void *cmd)
 {
@@ -158,6 +138,7 @@ int	*first_cmd_with_pipe(void *cmd)
 		dup2(fd[1], STDOUT_FILENO);
 		ft_pre_exec_cmd(cmd);
 		close(fd[1]);
+		exit(0);
 	}
 	else
 	{
@@ -189,6 +170,7 @@ int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
 		dup2(fd[1], STDOUT_FILENO);
 		ft_pre_exec_cmd(cmd);
 		close(fd[1]);
+		exit(0);
 	}
 	else
 	{
@@ -211,6 +193,7 @@ void	last_cmd_with_pipe(void *cmd, int *get_fd)
 		dup2(get_fd[0], STDIN_FILENO);
 		ft_pre_exec_cmd(cmd);
 		close(get_fd[0]);
+		exit(0);
 	}
 	else
 	{
@@ -221,20 +204,24 @@ void	last_cmd_with_pipe(void *cmd, int *get_fd)
 
 void	simple_cmd(void *cmd)
 {
-	const pid_t	pid = fork();
+	pid_t	pid;
 
-	if (pid < 0)
-		exit(ERROR);
-	else if (0 == pid)
+	if (!ft_strcmp(((t_cmd *)cmd)->args[0], "cd"))
 		ft_pre_exec_cmd(cmd);
 	else
-		wait(NULL);
+	{	
+		pid = fork();
+		if (pid < 0)
+				exit(1);
+		else if (pid == 0)
+		{
+			ft_pre_exec_cmd(cmd);
+			exit(0);
+		}
+		else
+			wait(NULL);
+	}
 }
-
-// void	multi_cmd_exec(t_list *lst)
-// {
-// 	return ;
-// }
 
 void	ft_exec_each_cmd(t_list *lst)
 {
@@ -243,6 +230,8 @@ void	ft_exec_each_cmd(t_list *lst)
 	int		pipe_flag;
 	int		*fd;
 	
+	if (!lst || !((t_cmd *)lst->content)->args)
+		return ;
 	tmp = lst;
 	first = 1;
 	pipe_flag = 0;
@@ -250,6 +239,9 @@ void	ft_exec_each_cmd(t_list *lst)
 	while (tmp)
 	{
 		// printf("Actual cmd : %s ---- Status : %d\n", ((t_cmd *)tmp->content)->args[0], ((t_cmd *)tmp->content)->status_flag);
+		// if (!ft_strcmp(((t_cmd *)tmp->content)->args[0], "cd"))
+		// 	ft_pre_exec_cmd(tmp->content);
+		// else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
 		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
 		{
 			// printf("fist with pipe\n");
@@ -274,7 +266,7 @@ void	ft_exec_each_cmd(t_list *lst)
 			// printf("last with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
 		}
-		else
+		else if (((t_cmd *)tmp->content)->args)
 		{
 			// printf("simple\n");
 			simple_cmd(tmp->content);

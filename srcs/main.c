@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 12:38:46 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 13:09:37 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,8 +177,8 @@ void	prompt(void)
 	while (1)
 	{
 		print_prompt();
-		// r = get_next_line(STDIN_FILENO, &ret);
-		r = ft_get_next_line(&ret);
+		r = get_next_line(STDIN_FILENO, &ret);
+		// r = ft_get_next_line(&ret);
 		ft_parse(ret);
 		// ft_exec_each_cmd();
 		ft_exec_each_cmd(singleton()->lst);
