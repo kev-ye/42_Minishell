@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 18:20:05 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/01 17:41:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,16 +251,40 @@ static int	ft_init_minishell(char **env)
 #define K_RIGHT "\x1b\x5b\x43"
 #define K_LEFT "\x1b\x5b\x44"
 
+// return the nth node of the list
+t_list	*ft_lstindex(t_list *lst, size_t index)
+{
+	t_list	*tmp;
+	size_t	i;
+
+	i = 0;
+	tmp = lst;
+	while (tmp)
+	{
+		if (index == i)
+			return (tmp);
+		++i;
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
 void	ft_termcap_history(char *termcap)
 {
+	t_list	*tmp;
+
+	tmp = NULL;
 	if (0 == ft_strcmp(termcap, K_UP))
-	{
-		ft_printf("UP\n");
-	}
+		singleton()->hist.current--;
 	else if (0 == ft_strcmp(termcap, K_DOWN))
-	{
-		ft_printf("DOWN\n");
-	}
+		singleton()->hist.current++;
+	else
+		return ;
+	if (singleton()->hist.current > singleton()->hist.size)
+		singleton()->hist.current = singleton()->hist.size;
+	tmp = ft_lstindex(singleton()->hist.history, singleton()->hist.current);
+	if (tmp)
+		ft_dprintf(STDIN_FILENO, CLR_LINE "%s", tmp->content);
 }
 
 void	ft_termcap_edition(char *termcap)
@@ -312,9 +336,8 @@ void	create_history(void)
 {
 	char	*path;
 	char	*home;
-	int		fd;
 
-	home = ft_getenv("HOME");
+	home = NULL;	// ft_getenv("HOME");
 	if (!home || ft_is_openable(home, O_RDONLY))
 	{
 		if (home)
@@ -326,26 +349,47 @@ void	create_history(void)
 		ft_memdel((void **)&home);
 	if (!path)
 		ft_malloc_error(__FILE__, __LINE__);
-	fd = open(path, O_RDWR | O_CREAT | O_APPEND);
-	if (fd == -1)
+	singleton()->hist.fd = open(path, O_RDWR | O_CREAT | O_APPEND, 0644);
+	if (singleton()->hist.fd == -1)
 		ft_malloc_error(__FILE__, __LINE__);
 	ft_memdel((void **)&path);
+}
 
+void	init_history(void)
+{
+	char	*ret;
+	int		check;
+	t_list	*new;
 
-
-
-	///////////////////////////////////////
-	// I WAS HERE THE LAST TIME - ben
-	///////////////////////////////////////
-
-
-
+	while (1)
+	{
+		check = get_next_line(singleton()->hist.fd, &ret);
+		new = ft_lstnew(ret);
+		if (!new)
+			ft_malloc_error(__FILE__, __LINE__);
+		ft_lstadd_back(&singleton()->hist.history, new);
+		// ft_memdel((void **)(&ret)); // used by the list history
+		if (0 == check)
+		{
+			break ;
+		}
+	}
+	singleton()->hist.size = ft_lstsize(singleton()->hist.history) - 1;
+	singleton()->hist.current = singleton()->hist.size;
 }
 
 int		add2history(char *cmd)
 {
-	(void)cmd;
-	return (ERROR);
+	t_list	*new;
+
+	ft_putstr_fd(cmd, singleton()->hist.fd);
+	new = ft_lstnew(cmd);	// maybe ft_strdup(cmd) before passing it to the list
+	if (!new)
+		return ((int)ft_malloc_error(__FILE__, __LINE__));
+	ft_lstadd_back(&singleton()->hist.history, new);
+	singleton()->hist.size++;
+	singleton()->hist.current = singleton()->hist.size;
+	return (SUCCESS);
 }
 
 int	main(__attribute__((unused)) int ac,
@@ -360,10 +404,13 @@ int	main(__attribute__((unused)) int ac,
 	struct termios	tattr;
 
 	tcgetattr(STDIN_FILENO, &tattr);
-	tattr.c_lflag &= ~(ICANON|ECHO); /* Clear ICANON and ECHO. */
+	tattr.c_lflag &= ~(ICANON | ECHO); /* Clear ICANON and ECHO. */
 	tattr.c_cc[VMIN] = 1;
 	tattr.c_cc[VTIME] = 0;
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &tattr);
+
+	create_history();
+	init_history();
 
 	signal(SIGINT, SIG_IGN);
 	int i = 0;
@@ -396,5 +443,7 @@ int	main(__attribute__((unused)) int ac,
 			break ;
 		}
 	}
+	close(singleton()->hist.fd);
+	ft_lstclear(&singleton()->hist.history, free);
 	return (EXIT_SUCCESS);
 }

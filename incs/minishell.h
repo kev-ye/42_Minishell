@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 18:11:37 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/01 17:12:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,14 @@ typedef struct s_cmd
 	int			fd;
 }	t_cmd;
 
+typedef struct s_history
+{
+	int		fd;
+	size_t	current;
+	size_t	size;
+	t_list	*history;
+}	t_history;
+
 /*
 ** Main stucture. Called with a singleton
 **
@@ -148,11 +156,12 @@ typedef struct s_cmd
 */
 typedef struct s_minishl
 {
-	int		isatty_stdin;
-	int		last_return_value;
-	char	*cwd;
-	t_list	*env;
-	t_list	*lst;
+	int			isatty_stdin;
+	int			last_return_value;
+	char		*cwd;
+	t_list		*env;
+	t_list		*lst;
+	t_history	hist;
 }	t_minishl;
 
 /*
