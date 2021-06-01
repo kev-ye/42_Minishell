@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/01 17:41:42 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/01 18:44:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,17 +364,28 @@ void	init_history(void)
 	while (1)
 	{
 		check = get_next_line(singleton()->hist.fd, &ret);
-		new = ft_lstnew(ret);
-		if (!new)
-			ft_malloc_error(__FILE__, __LINE__);
-		ft_lstadd_back(&singleton()->hist.history, new);
-		// ft_memdel((void **)(&ret)); // used by the list history
-		if (0 == check)
+		if (check > 0 && (0 == ft_strlen(ret) || ft_strisall(ret, ft_isspace)))
 		{
-			break ;
+			ft_memdel((void **)&ret);
+			continue ;
 		}
+		new = ft_lstnew(ret);
+		if (check < 0 || !new)
+		{
+			ft_lstclear(&singleton()->hist.history, free);
+			ft_malloc_error(__FILE__, __LINE__);
+		}
+
+		/////////////////////////////////////////////
+		// HERE LAST TIME - ben
+		/////////////////////////////////////////////
+
+
+		ft_lstadd_back(&singleton()->hist.history, new);
+		if (0 == check)
+			break ;
 	}
-	singleton()->hist.size = ft_lstsize(singleton()->hist.history) - 1;
+	singleton()->hist.size = ft_lstsize(singleton()->hist.history);
 	singleton()->hist.current = singleton()->hist.size;
 }
 
