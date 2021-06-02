@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 19:14:37 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/02 23:32:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,18 @@ static char	*head_env(char *env)
 		++len;
 	if (env[len] && env[len] == '=')
 	{
-		env_head = malloc(sizeof(char) * len + 1);
+		env_head = ft_calloc(len + 2, sizeof(char));
 		if (!env_head)
 			return (NULL);
-		ft_strncpy(env_head, env, len + 1);
+		ft_memcpy(env_head, env, len + 1);
 	}
 	else
 	{
-		env_head = malloc(sizeof(char) * len);
+		// env_head = ft_strdup(env);
+		env_head = ft_calloc(len, sizeof(char));
 		if (!env_head)
 			return (NULL);
-		ft_strncpy(env_head, env, len);
+		ft_memcpy(env_head, env, len);
 	}
 	return (env_head);
 }
