@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/31 17:58:10 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/02 13:51:25 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,8 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 NAME	:= minishell
 SRC		:= main.c
 SUB_SRC	:= exec_cmds.c \
+		   ft_gnl.c \
+		   ft_termcaps.c \
 		   parser.c \
 		   search_executable.c \
 		   sig.c

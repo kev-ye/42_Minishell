@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 18:11:22 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 13:52:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,24 @@ void	ft_lstprint(t_list *lst, char sep)
 			ft_printf("%s%c", tmp->content, sep);
 		tmp = tmp->next;
 	}
+}
+
+// return the nth node of the list
+t_list	*ft_lstindex(t_list *lst, size_t index)
+{
+	t_list	*tmp;
+	size_t	i;
+
+	i = 0;
+	tmp = lst;
+	while (tmp)
+	{
+		if (index == i)
+			return (tmp);
+		++i;
+		tmp = tmp->next;
+	}
+	return (NULL);
 }
 
 void	ft_lstprint_cmd(t_list *lst)

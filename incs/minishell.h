@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/01 17:12:14 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 14:03:00 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,14 @@
 # include <sys/ioctl.h>
 // # include <sys/param.h>
 
-# define CUSTOM_T_LIST
 # include "libft.h"
+# include "ft_termcaps.h"
 
 /*
 ** -- DEFINES --
 */
 # define PROG_NAME "minishell"
 # define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-# define BUILTIN 7
 
 # define SUCCESS 0
 # define ERROR 1
@@ -52,10 +51,12 @@
 
 # define PARSER_LIMITS_CHARS ";|<> "
 
+// DEBUGGING PURPOSE - TO REMOVE
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
 						":\e[0m " s "\n");
+// END DEBUGGING PURPOSE - TO REMOVE
 
 /*
 ** -- DATA STRUCTURES --
@@ -156,12 +157,13 @@ typedef struct s_history
 */
 typedef struct s_minishl
 {
-	int			isatty_stdin;
-	int			last_return_value;
-	char		*cwd;
-	t_list		*env;
-	t_list		*lst;
-	t_history	hist;
+	int				isatty_stdin;
+	int				last_return_value;
+	char			*cwd;
+	t_list			*env;
+	t_list			*lst;
+	t_history		hist;
+	struct termios	tattr;
 }	t_minishl;
 
 /*
@@ -174,6 +176,7 @@ typedef struct s_minishl
 int			ft_is_openable(char *path, int flag);
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
+t_list		*ft_lstindex(t_list *lst, size_t index);
 void		ft_lstprint_cmd(t_list *lst);
 char		**ft_lst2strs(t_list **lst);
 void		ft_list_sort(t_list **begin_list, int (*cmp)());
@@ -188,6 +191,7 @@ void		*ft_malloc_error(char *file, int line);
 ** Parser
 */
 t_minishl	*singleton(void);
+int			ft_gnl_stdin(char **line);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
