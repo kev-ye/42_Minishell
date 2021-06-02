@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:24:23 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 14:37:02 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 16:59:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@
 #define K_RIGHT "\x1b\x5b\x43"
 #define K_LEFT "\x1b\x5b\x44"
 
-void	ft_termcap_history(char *termcap);
-void	ft_termcap_edition(char *termcap);
+void	ft_termcap_history(char **ptr, char *termcap);
+void	ft_termcap_edition(char **ptr, char *termcap);
+void	ft_termcap_delete_char(char **ptr);
+void	ft_termcap_clear_line(char **ptr);
+void	ft_termcap_clear_screen(char **ptr);
+void	ft_termcap_esc(char **ptr);
 
 #endif

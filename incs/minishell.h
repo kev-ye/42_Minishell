@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 14:03:00 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 18:02:39 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,30 @@
 
 # define FOUND 0
 # define NOT_FOUND (-1)
+
+// Define TRUE macro to 1
+#ifndef TRUE
+# define TRUE 1
+#endif
+#if defined(TRUE) && 1 != TRUE
+# undef TRUE
+# define TRUE 1
+#endif
+
+// Define FALSE macro to 0
+#ifndef FALSE
+# define FALSE 0
+#endif
+#if defined(FALSE) && 0 != FALSE
+# undef FALSE
+# define FALSE 0
+#endif
+
+// SET BONUS TO 0 BY DEFAULT
+#ifndef BONUS
+# define BONUS 0
+#endif
+
 // # define PATH_MAX_LEN 256
 
 # define PARSER_LIMITS_CHARS ";|<> "
@@ -144,6 +168,7 @@ typedef struct s_history
 	int		fd;
 	size_t	current;
 	size_t	size;
+	char	*path;
 	t_list	*history;
 }	t_history;
 
@@ -195,7 +220,6 @@ int			ft_gnl_stdin(char **line);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
-// void		ft_exec_each_cmd(void);
 void		ft_exec_each_cmd(t_list *lst);
 t_list		*search_env(char *tofind, t_list **env);
 

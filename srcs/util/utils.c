@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 13:52:42 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 18:07:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ t_list	*ft_lstindex(t_list *lst, size_t index)
 	tmp = lst;
 	while (tmp)
 	{
-		if (index == i)
+		if (i == index)
 			return (tmp);
 		++i;
 		tmp = tmp->next;
@@ -165,6 +165,10 @@ void	ft_free_exit(void)
 		ft_memdel((void **)(&singleton()->cwd));
 	if (singleton()->env)
 		ft_lstclear(&singleton()->env, free);
+	if (singleton()->hist.history)
+		ft_lstclear(&singleton()->hist.history, free);
+	if (singleton()->hist.path)
+		ft_memdel((void **)(&singleton()->hist.path));
 	free(singleton());
 	exit(0);
 }

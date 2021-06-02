@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 14:45:03 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 18:19:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,9 @@ void	create_history(void)
 		ft_memdel((void **)&home);
 	if (!path)
 		ft_malloc_error(__FILE__, __LINE__);
-	singleton()->hist.fd = open(path, O_RDWR | O_CREAT | O_APPEND, 0644);
+	singleton()->hist.path = path;
+	singleton()->hist.fd = open(singleton()->hist.path,
+		O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (singleton()->hist.fd == -1)
 		ft_malloc_error(__FILE__, __LINE__);
 	ft_memdel((void **)&path);
@@ -224,24 +226,27 @@ void	init_history(void)
 	singleton()->hist.current = singleton()->hist.size;
 }
 
-int		add2history(char *cmd)
+void	add2history(char *cmd)
 {
 	t_list	*new;
 
 	singleton()->hist.current = singleton()->hist.size;
 	if (!cmd || ft_strisall(cmd, ft_isspace) || 0 == ft_strlen(cmd))
+		return ;
+	if (!ft_is_openable(singleton()->hist.path, O_RDONLY))
 	{
-		// ft_memdel((void **)&cmd);	// malloc'ed in gnl
-		return (SUCCESS);
+		singleton()->hist.fd = open(singleton()->hist.path,
+			O_RDWR | O_CREAT | O_APPEND, 0644);
+		if (singleton()->hist.fd == -1)
+			ft_malloc_error(__FILE__, __LINE__);
 	}
-	ft_putstr_fd(cmd, singleton()->hist.fd);
+	ft_putendl_fd(cmd, singleton()->hist.fd);
 	new = ft_lstnew(cmd);
 	if (!new)
-		return ((int)ft_malloc_error(__FILE__, __LINE__));
+		ft_malloc_error(__FILE__, __LINE__);
 	ft_lstadd_back(&singleton()->hist.history, new);
 	singleton()->hist.size++;
 	singleton()->hist.current = singleton()->hist.size;
-	return (SUCCESS);
 }
 
 void	prompt(void)
@@ -255,15 +260,13 @@ void	prompt(void)
 		// char *s = tgetstr("al", NULL);
 		// tputs(s, 1, ft_sputchar);
 		print_prompt();	
-
 		r = ft_gnl_stdin(&ret);
 		add2history(ret);
 		// tputs(ret, 1, ft_sputchar);
 		// ft_sputchar_fd('\n', STDERR_FILENO);
-		ft_printf("[%s]\n", ret);
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
-		ft_memdel((void **)(&ret));
+		// ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{
 			ft_exit();

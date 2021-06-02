@@ -6,14 +6,14 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 14:46:33 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 18:20:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // termcaps lookup table declaration
-const struct s_termcaps	g_terms[] = {
+static struct s_termcaps	g_terms[] = {
 	{K_UP, ft_termcap_history},
 	{K_DOWN, ft_termcap_history},
 	{K_RIGHT, ft_termcap_edition},
@@ -21,8 +21,9 @@ const struct s_termcaps	g_terms[] = {
 	{NULL, 0}
 };
 
+// READ 1 BYTE AT A TIME
 #ifndef __TMP_BUF_SZ
-# define __TMP_BUF_SZ 1
+# define __TMP_BUF_SZ _TERMCAPS_ARROW_LEN
 #endif	/* ifndef __TMP_BUF_SZ */
 
 static char	*ft_mcat(char *s1, char *s2)
@@ -67,30 +68,53 @@ static char	*ft_realloc_str(char *str, char **line, int *check)
 	}
 	return (new);
 }
-//static 
-int	is_arrow_pressed(char *s)
+
+static int	is_arrow_pressed(char **ptr, char *s)
 {
 	int	i;
 
 	i = 0;
 	while (g_terms[i].termcap)
 	{
-		// if (ft_strstr(s, g_terms[i].termcap))
 		if (!strncmp(s, g_terms[i].termcap, ft_strlen(g_terms[i].termcap)))
-			g_terms[i].f(g_terms[i].termcap);
+		{
+			g_terms[i].f(ptr, g_terms[i].termcap);
+			return (FOUND);
+		}
 		++i;
 	}
-	return (1);
+	return (NOT_FOUND);
+}
+
+static int	ft_istermcap(char **ptr, char *read_buffer)
+{
+	char	buf[_TERMCAPS_ARROW_LEN + 1];
+
+	ft_bzero(buf, _TERMCAPS_ARROW_LEN + 1);
+	ft_memcpy(buf, read_buffer, ft_strlen(read_buffer));
+	if (ft_strchr(buf, 0x7F))			// if (c == 127) (delete)
+		ft_termcap_delete_char(ptr);
+	else if (ft_strchr(buf, 0x4))		// if (c == 4) (CTRL-D)
+		ft_exit();
+	else if (ft_strchr(buf, 0xC))		// if (c == 12) (CTRL-L)
+		ft_termcap_clear_screen(ptr);
+	else if (ft_strchr(buf, 0x15))		// if (c == 21) (CTRL-U)
+		ft_termcap_clear_line(ptr);
+	else if (ft_strchr(buf, 0x1B))		// may be ESC or one of the arrow keys
+	{
+		if (is_arrow_pressed(ptr, buf) == NOT_FOUND)
+			ft_termcap_esc(ptr);
+	}
+	else
+		return (FALSE);
+	return (TRUE);
 }
 
 static char	*ft_read_line(int fd, char *str, char **line, int *check)
 {
 	char	buffer[__TMP_BUF_SZ + 1];
-	char	term_buf[_TERMCAPS_ARROW_LEN + 1] = {0};
 	char	*tmp;
 	int		r;
-
-	int		i = 0;
 	
 	r = 1;
 	while (r > 0)
@@ -99,19 +123,9 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 		if (r <= 0)
 			break ;
 		buffer[r] = '\0';
-		term_buf[i] = buffer[0];
-		if (0x1b == term_buf[0])
-		{
-			if (3 == ++i)
-			{
-				is_arrow_pressed(term_buf);
-				ft_bzero(term_buf, __TMP_BUF_SZ + 1);
-				i = 0;
-			}
+		if (ft_istermcap(&str, buffer))
 			continue ;
-		}
 		ft_putchar_fd(buffer[0], STDIN_FILENO);
-
 		tmp = str;
 		str = ft_mcat(str, buffer);
 		ft_memdel((void **)&tmp);
