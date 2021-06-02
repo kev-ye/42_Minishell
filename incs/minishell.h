@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 18:02:39 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 20:57:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,10 @@
 # define PROG_NAME "minishell"
 # define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
 
+# ifndef HISTORY_FILENAME
+#  define HISTORY_FILENAME ".minishell_history"
+# endif
+
 # define SUCCESS 0
 # define ERROR 1
 
@@ -49,27 +53,27 @@
 # define NOT_FOUND (-1)
 
 // Define TRUE macro to 1
-#ifndef TRUE
-# define TRUE 1
-#endif
-#if defined(TRUE) && 1 != TRUE
-# undef TRUE
-# define TRUE 1
-#endif
+# ifndef TRUE
+#  define TRUE 1
+# endif
+# if defined(TRUE) && 1 != TRUE
+#  undef TRUE
+#  define TRUE 1
+# endif
 
 // Define FALSE macro to 0
-#ifndef FALSE
-# define FALSE 0
-#endif
-#if defined(FALSE) && 0 != FALSE
-# undef FALSE
-# define FALSE 0
-#endif
+# ifndef FALSE
+#  define FALSE 0
+# endif
+# if defined(FALSE) && 0 != FALSE
+#  undef FALSE
+#  define FALSE 0
+# endif
 
 // SET BONUS TO 0 BY DEFAULT
-#ifndef BONUS
-# define BONUS 0
-#endif
+# ifndef BONUS
+#  define BONUS 0
+# endif
 
 // # define PATH_MAX_LEN 256
 
@@ -234,6 +238,12 @@ int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
 int			ft_exit(void) __attribute__((noreturn));
 int			ft_clear(void);
+
+/*
+** History
+*/
+void		init_history(void);
+void		add2history(char *cmd);
 
 /*
 ** Signals

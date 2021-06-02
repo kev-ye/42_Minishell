@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 18:19:24 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 23:00:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,29 +52,6 @@ void	print_prompt(void)
 			ft_dprintf(STDERR_FILENO, PROMPT, basename + 1);
 	}
 }
-
-// void	prompt(void)
-// {
-// 	char	*ret;
-// 	int		r;
-
-// 	signal(SIGINT, ft_interrupt);
-// 	while (1)
-// 	{
-// 		print_prompt();
-// 		r = get_next_line(STDIN_FILENO, &ret);
-// 		// r = ft_get_next_line(&ret);
-// 		ft_parse(ret);
-// 		// ft_exec_each_cmd();
-// 		ft_exec_each_cmd(singleton()->lst);
-// 		ft_memdel((void **)(&ret));
-// 		if (r <= 0)
-// 		{
-// 			ft_exit();
-// 			break ;
-// 		}
-// 	}
-// }
 
 t_list	*get_env(char **env)
 {
@@ -125,6 +102,11 @@ static int	ft_init_minishell(char **env)
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
 	singleton()->isatty_stdin = isatty(STDIN_FILENO);
+	tcgetattr(STDIN_FILENO, &singleton()->tattr);
+	singleton()->tattr.c_lflag &= ~(ICANON | ECHO);
+	singleton()->tattr.c_cc[VMIN] = 1;
+	singleton()->tattr.c_cc[VTIME] = 0;
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
 	return (1);
 }
 
@@ -150,103 +132,11 @@ int	check_arrow(char buf[])
 }
 
 // special putchar
-int	ft_sputchar_fd(int c, int fd)
-{
-	if (write(fd, &c, sizeof(int)) < 0)
-		return (EOF);
-	return (c);
-}
-
 int	ft_sputchar(int c)
 {
-	return (ft_sputchar_fd(c, STDIN_FILENO));
-}
-
-#define HISTORY_FILENAME ".minishell_history"
-
-void	create_history(void)
-{
-	char	*path;
-	char	*home;
-
-	home = NULL;	// ft_getenv("HOME");
-	if (!home || ft_is_openable(home, O_RDONLY))
-	{
-		if (home)
-			free(home);
-		home = getcwd(NULL, 0);
-	}
-	ft_asprintf(&path, "%s/" HISTORY_FILENAME, home);
-	if (home)
-		ft_memdel((void **)&home);
-	if (!path)
-		ft_malloc_error(__FILE__, __LINE__);
-	singleton()->hist.path = path;
-	singleton()->hist.fd = open(singleton()->hist.path,
-		O_RDWR | O_CREAT | O_APPEND, 0644);
-	if (singleton()->hist.fd == -1)
-		ft_malloc_error(__FILE__, __LINE__);
-	ft_memdel((void **)&path);
-}
-
-void	init_history(void)
-{
-	char	*ret;
-	int		check;
-	t_list	*new;
-
-	while (1)
-	{
-		check = get_next_line(singleton()->hist.fd, &ret);
-		if ((0 == ft_strlen(ret) || ft_strisall(ret, ft_isspace)))
-		{
-			ft_memdel((void **)&ret);
-			if (check > 0)
-				continue ;
-			else
-				break ;
-		}
-		new = ft_lstnew(ret);
-		if (check < 0 || !new)
-		{
-			ft_lstclear(&singleton()->hist.history, free);
-			ft_malloc_error(__FILE__, __LINE__);
-		}
-
-		/////////////////////////////////////////////
-		// HERE LAST TIME - ben
-		/////////////////////////////////////////////
-
-
-		ft_lstadd_back(&singleton()->hist.history, new);
-		if (0 == check)
-			break ;
-	}
-	singleton()->hist.size = ft_lstsize(singleton()->hist.history);
-	singleton()->hist.current = singleton()->hist.size;
-}
-
-void	add2history(char *cmd)
-{
-	t_list	*new;
-
-	singleton()->hist.current = singleton()->hist.size;
-	if (!cmd || ft_strisall(cmd, ft_isspace) || 0 == ft_strlen(cmd))
-		return ;
-	if (!ft_is_openable(singleton()->hist.path, O_RDONLY))
-	{
-		singleton()->hist.fd = open(singleton()->hist.path,
-			O_RDWR | O_CREAT | O_APPEND, 0644);
-		if (singleton()->hist.fd == -1)
-			ft_malloc_error(__FILE__, __LINE__);
-	}
-	ft_putendl_fd(cmd, singleton()->hist.fd);
-	new = ft_lstnew(cmd);
-	if (!new)
-		ft_malloc_error(__FILE__, __LINE__);
-	ft_lstadd_back(&singleton()->hist.history, new);
-	singleton()->hist.size++;
-	singleton()->hist.current = singleton()->hist.size;
+	if (write(STDIN_FILENO, &c, sizeof(int)) < 0)
+		return (EOF);
+	return (c);
 }
 
 void	prompt(void)
@@ -261,9 +151,9 @@ void	prompt(void)
 		// tputs(s, 1, ft_sputchar);
 		print_prompt();	
 		r = ft_gnl_stdin(&ret);
-		add2history(ret);
+		if (singleton()->isatty_stdin)
+			add2history(ret);
 		// tputs(ret, 1, ft_sputchar);
-		// ft_sputchar_fd('\n', STDERR_FILENO);
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
 		// ft_memdel((void **)(&ret));
@@ -281,77 +171,10 @@ int	main(__attribute__((unused)) int ac,
 {
 	if (!ft_init_minishell(env))
 		return (EXIT_FAILURE);
-	// prompt();
 	
-	__attribute__((unused)) int				i;
-	__attribute__((unused)) char			buf[BUF_SIZE + 1] = {0};
-	// __attribute__((unused)) struct termios	tattr;
-
-	tcgetattr(STDIN_FILENO, &singleton()->tattr);
-	singleton()->tattr.c_lflag &= ~(ICANON | ECHO); /* Clear ICANON and ECHO. */
-	singleton()->tattr.c_cc[VMIN] = 1;
-	singleton()->tattr.c_cc[VTIME] = 0;
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
-
-	create_history();
-	init_history();
-
-	// signal(SIGINT, SIG_IGN);
-	// print_prompt();
-	// prompt();
-
+	if (singleton()->isatty_stdin)
+		init_history();
+	
 	prompt();
-	
-
-	// i = 0;
-	// while (1)
-	// {
-	// 	ft_printf("ret: [%s]\n", ret);
-	// 	int		ret = read(STDIN_FILENO, buf + i, 1);
-		
-	// 	(void)ret;
-		
-	// 	if (0x1b == buf[0])
-	// 	{
-	// 		if (3 == ++i)
-	// 		{
-	// 			check_arrow(buf);
-	// 			ft_bzero(buf, BUF_SIZE + 1);
-	// 			i = 0;
-	// 		}
-	// 		continue ;
-	// 	}
-	// 	if ('\n' == buf[0] || '\0' == buf[0])
-	// 	{
-	// 		signal(SIGINT, ft_interrupt);
-	// 		print_prompt();
-	// 		r = get_next_line(STDIN_FILENO, &ret);
-	// 		// r = ft_get_next_line(&ret);
-	// 		ft_printf("ret: [%s]\n", ret);
-	// 		ft_parse(ret);
-	// 		// ft_exec_each_cmd();
-	// 		ft_exec_each_cmd(singleton()->lst);
-	// 		ft_memdel((void **)(&ret));
-	// 		if (r <= 0)
-	// 			ft_exit();
-	// 		// prompt();
-	// 		continue ;
-	// 	}
-	// 	else
-	// 		tputs(buf, 1, ft_sputchar);
-	// 	ft_printf("ret[%d], buf[", ret);
-	// 	int _i = 0;
-	// 	while (buf[_i])
-	// 		ft_dprintf(STDERR_FILENO, "%x", buf[_i++]);
-	// 	ft_putendl_fd("]", STDERR_FILENO);
-
-	// 	if (0x4 == buf[0])
-	// 	{
-	// 		ft_putendl_fd("CTRL-D", STDERR_FILENO);
-	// 		break ;
-	// 	}
-	// }
-	close(singleton()->hist.fd);
-	ft_lstclear(&singleton()->hist.history, free);
 	return (EXIT_SUCCESS);
 }

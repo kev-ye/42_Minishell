@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 18:07:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 21:29:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,7 @@ void	ft_free_exit(void)
 		ft_lstclear(&singleton()->hist.history, free);
 	if (singleton()->hist.path)
 		ft_memdel((void **)(&singleton()->hist.path));
+	close(singleton()->hist.fd);
 	free(singleton());
 	exit(0);
 }

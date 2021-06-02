@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/02 13:51:25 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/02 21:09:06 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SRC		:= main.c
 SUB_SRC	:= exec_cmds.c \
 		   ft_gnl.c \
 		   ft_termcaps.c \
+		   history.c \
 		   parser.c \
 		   search_executable.c \
 		   sig.c

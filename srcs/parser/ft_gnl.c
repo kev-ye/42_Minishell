@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 18:20:40 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 22:57:17 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,10 +123,13 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 		if (r <= 0)
 			break ;
 		buffer[r] = '\0';
-		if (ft_istermcap(&str, buffer))
-			continue ;
-		ft_putchar_fd(buffer[0], STDIN_FILENO);
 		tmp = str;
+		if (ft_istermcap(&str, buffer))
+		{
+			// ft_memdel((void **)&tmp);
+			continue ;
+		}
+		ft_putchar_fd(buffer[0], STDIN_FILENO);
 		str = ft_mcat(str, buffer);
 		ft_memdel((void **)&tmp);
 		if (ft_strchr(str, '\n'))

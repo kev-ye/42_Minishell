@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 18:23:12 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 22:57:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@ void	ft_termcap_history(char **ptr, char *termcap)
 	tmp = ft_lstindex(singleton()->hist.history, singleton()->hist.current);
 	if (tmp && tmp->content)
 	{
-		// if (*ptr)
-		// 	free(*ptr);
 		*ptr = tmp->content;
 		ft_dprintf(STDIN_FILENO, "%s", tmp->content);
 	}
@@ -54,20 +52,26 @@ void	ft_termcap_edition(char **ptr, char *termcap)
 
 void	ft_termcap_delete_char(char **ptr)
 {
+	const void	*tmp_ptr = ptr;
+
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	if (ft_strlen(*ptr) > 0)
 	{
 		*ptr = ft_substr(*ptr, 0, ft_strlen(*ptr) - 1);
 		ft_dprintf(STDIN_FILENO, "%s", *ptr);
+		ft_memdel((void **)tmp_ptr);
 	}
 }
 
 void	ft_termcap_clear_line(char **ptr)
 {
+	const void	*tmp_ptr = ptr;
+
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	*ptr = ft_strdup("");
+	ft_memdel((void **)tmp_ptr);
 }
 
 void	ft_termcap_clear_screen(char **ptr)
