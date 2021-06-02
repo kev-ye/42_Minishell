@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 22:57:17 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 23:16:17 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,25 +25,6 @@ static struct s_termcaps	g_terms[] = {
 #ifndef __TMP_BUF_SZ
 # define __TMP_BUF_SZ _TERMCAPS_ARROW_LEN
 #endif	/* ifndef __TMP_BUF_SZ */
-
-static char	*ft_mcat(char *s1, char *s2)
-{
-	char	*new;
-	int		i;
-	int		j;
-
-	new = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!new)
-		return (NULL);
-	i = -1;
-	while (s1[++i])
-		new[i] = s1[i];
-	j = -1;
-	while (s2[++j])
-		new[i + j] = s2[j];
-	new[i + j] = '\0';
-	return (new);
-}
 
 static char	*ft_realloc_str(char *str, char **line, int *check)
 {
@@ -92,15 +73,15 @@ static int	ft_istermcap(char **ptr, char *read_buffer)
 
 	ft_bzero(buf, _TERMCAPS_ARROW_LEN + 1);
 	ft_memcpy(buf, read_buffer, ft_strlen(read_buffer));
-	if (ft_strchr(buf, 0x7F))			// if (c == 127) (delete)
+	if (ft_strchr(buf, K_DELETE))
 		ft_termcap_delete_char(ptr);
-	else if (ft_strchr(buf, 0x4))		// if (c == 4) (CTRL-D)
+	else if (ft_strchr(buf, K_CTRL_D))
 		ft_exit();
-	else if (ft_strchr(buf, 0xC))		// if (c == 12) (CTRL-L)
+	else if (ft_strchr(buf, K_CTRL_L))
 		ft_termcap_clear_screen(ptr);
-	else if (ft_strchr(buf, 0x15))		// if (c == 21) (CTRL-U)
+	else if (ft_strchr(buf, K_CTRL_U))
 		ft_termcap_clear_line(ptr);
-	else if (ft_strchr(buf, 0x1B))		// may be ESC or one of the arrow keys
+	else if (ft_strchr(buf, 0x1B))
 	{
 		if (is_arrow_pressed(ptr, buf) == NOT_FOUND)
 			ft_termcap_esc(ptr);
@@ -115,7 +96,7 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 	char	buffer[__TMP_BUF_SZ + 1];
 	char	*tmp;
 	int		r;
-	
+
 	r = 1;
 	while (r > 0)
 	{
@@ -130,7 +111,7 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 			continue ;
 		}
 		ft_putchar_fd(buffer[0], STDIN_FILENO);
-		str = ft_mcat(str, buffer);
+		str = ft_strjoin(str, buffer);
 		ft_memdel((void **)&tmp);
 		if (ft_strchr(str, '\n'))
 			break ;

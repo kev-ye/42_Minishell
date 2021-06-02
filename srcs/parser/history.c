@@ -6,19 +6,20 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 20:57:28 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 23:12:45 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// home = ft_getenv("HOME");
 static void	create_history(void)
 {
 	char	*path;
 	char	*home;
 
-	home = NULL;	// ft_getenv("HOME");
-	if (!home || ft_is_openable(home, O_RDONLY))
+	home = NULL;
+	if (!home || !ft_is_openable(home, O_RDONLY))
 	{
 		if (home)
 			free(home);
@@ -56,10 +57,7 @@ void	init_history(void)
 		}
 		new = ft_lstnew(ret);
 		if (check < 0 || !new)
-		{
-			ft_lstclear(&singleton()->hist.history, free);
 			ft_malloc_error(__FILE__, __LINE__);
-		}
 		ft_lstadd_back(&singleton()->hist.history, new);
 		if (0 == check)
 			break ;

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 20:57:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 23:06:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,6 @@ struct s_termcaps
 {
 	char	*termcap;
 	void	(*f)();
-	// uint8_t	flag;
 };
 
 /*

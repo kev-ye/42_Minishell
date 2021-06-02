@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 23:00:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/02 23:07:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,27 +110,6 @@ static int	ft_init_minishell(char **env)
 	return (1);
 }
 
-#define BUF_SIZE 4096
-
-
-int	check_arrow(char buf[])
-{
-	struct s_termcaps	terms[] = {
-		{K_UP, ft_termcap_history}, {K_DOWN, ft_termcap_history},
-		{K_RIGHT, ft_termcap_edition}, {K_LEFT, ft_termcap_edition}, {NULL, 0}
-	};
-	int			i;
-
-	i = 0;
-	while (terms[i].termcap)
-	{
-		if (!strncmp(buf, terms[i].termcap, ft_strlen(terms[i].termcap)))
-			terms[i].f(terms[i].termcap);
-		++i;
-	}
-	return (1);
-}
-
 // special putchar
 int	ft_sputchar(int c)
 {
@@ -149,7 +128,7 @@ void	prompt(void)
 	{
 		// char *s = tgetstr("al", NULL);
 		// tputs(s, 1, ft_sputchar);
-		print_prompt();	
+		print_prompt();
 		r = ft_gnl_stdin(&ret);
 		if (singleton()->isatty_stdin)
 			add2history(ret);
@@ -171,10 +150,8 @@ int	main(__attribute__((unused)) int ac,
 {
 	if (!ft_init_minishell(env))
 		return (EXIT_FAILURE);
-	
 	if (singleton()->isatty_stdin)
 		init_history();
-	
 	prompt();
 	return (EXIT_SUCCESS);
 }
