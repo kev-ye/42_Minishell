@@ -14,31 +14,45 @@
 # include <sys/ioctl.h>
 # include <libc.h>
 
+char *cmd[2] = {"ls", "."};
+
 int main()
 {
     const pid_t	pid = fork();
     char *test = "lol";
 
+	int fd2;
+
 	if (pid < 0)
 		exit(1);
 	else if (0 == pid)
 	{
-        int fd = open("file" , O_WRONLY | O_CREAT, 0666);
-		if (fd == -1)
-		{
-			printf("write fd down\n");
-			exit(0);
-		}
-		write(fd, test, strlen(test));
+        // int fd = open("file1" , O_WRONLY | O_TRUNC | O_CREAT, 0666);
+		// if (fd == -1)
+		// {
+		// 	printf("write fd1 down\n");
+		// 	exit(0);
+		// }
 
-        //////////////////////////////////////////////////////////////// last time here fo dup2 -> copy fd to fd2
-        int fd2 = open("file2" , O_WRONLY | O_CREAT, 0666);
+        fd2 = open("file2" , O_WRONLY | O_TRUNC |O_CREAT, 0666);
 		if (fd2 == -1)
 		{
-			printf("write fd down\n");
+			printf("write fd2 down\n");
 			exit(0);
 		}
-		dup2(fd, fd2);
+		close(fd2);
+
+		fd2 = open("file3" , O_WRONLY | O_TRUNC | O_CREAT, 0666);
+		if (fd2 == -1)
+		{
+			printf("write fd3 down\n");
+			exit(0);
+		}
+		// close(fd2);
+
+		dup2(fd2, STDOUT_FILENO);
+		execvp(cmd[0], cmd);
+		close(fd2);
 
 		exit(0);
 	}
