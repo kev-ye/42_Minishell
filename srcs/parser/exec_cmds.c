@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 18:15:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/03 19:20:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,33 +231,103 @@ void	simple_cmd(void *cmd)
 
 /////////////////////////////////////////////////////////////////////////////////////////////// start direction
 
+void *get_complete_cmd(void *cmd, t_list *lst_cmd)
+{
+	t_list	*lst_tmp;
+	size_t len;
+	char **new_cmd;
+	int i;
+	int j;
+
+	lst_tmp = lst_cmd;
+	while (lst_tmp && (((t_cmd *)lst_tmp->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_tmp->content)->status_flag & FLG_APPEND || ((t_cmd *)lst_tmp->content)->status_flag & FLG_INPUT))
+		lst_tmp = lst_tmp->next;
+	len = ft_strslen(((t_cmd *)lst_tmp->content)->args);
+	if (lst_tmp && len > 1)
+	{
+		len += ft_strslen(((t_cmd *)cmd)->args);
+		new_cmd = malloc(sizeof(char *) * (len + 1));
+		if (!new_cmd)
+			return (NULL);
+		i = 0;
+		while (((t_cmd *)cmd)->args[i])
+		{
+			new_cmd[i] = ft_strdup(((t_cmd *)cmd)->args[i]);
+			++i;
+			--len;
+		}
+		j = 1;
+		while (((t_cmd *)lst_tmp->content)->args[j] && len)
+		{
+			new_cmd[i] = ft_strdup(((t_cmd *)lst_tmp->content)->args[j]);
+			++i;
+			++j;
+			--len;
+		}
+		new_cmd[i] = NULL;
+		ft_strsfree(ft_strslen(((t_cmd *)cmd)->args), ((t_cmd *)cmd)->args);
+		((t_cmd *)cmd)->args = new_cmd;
+	}
+	return (cmd);
+}
+
 int	redir_cmd(t_list *lst_cmd)
 {
 	int tmp_fd;
 	int flag_append;
 	int flag_trunc;
+	int flag_redir_input;
 	int first;
 
 	tmp_fd = -1;
 	flag_append = 0;
 	flag_trunc = 0;
 	first = 1;
+	flag_redir_input = 0;
 	while (lst_cmd)
 	{
+		// printf("in output\n");
 		if (first == 1)
+		{
 			first = 0;
-		else if (!first && (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND))
+			if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
+				flag_redir_input = 1;
+			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
+				flag_trunc = 1;
+			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
+				flag_append = 1;	
+		}
+		else if (!first && (flag_trunc == 1 || flag_append == 1))
 		{
 			if (flag_trunc == 1)
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);                                       /////////// last time here -> redir_cmd remake  ////////// check with cat > f1 < f2
 			else if (flag_append == 1)
 				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
 			if (tmp_fd == -1)
 			{
+				printf("check\n");
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
-				exit(ERROR);
+				// exit(ERROR);
+				return (-1);
+			}
+			if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
+				flag_redir_input = 1;
+			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
+				flag_trunc = 1;
+			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
+				flag_append = 1;
+			else
+			{
+				flag_redir_input = 0;
+				flag_trunc = 0;
+				flag_append = 0;
 			}
 			close(tmp_fd);
+		}
+		else if (!first && flag_redir_input == 1)
+		{
+			lst_cmd = lst_cmd->next;
+			continue ;
 		}
 		else if (!first)
 		{
@@ -268,13 +338,17 @@ int	redir_cmd(t_list *lst_cmd)
 			}
 			else if (flag_append == 1)
 			{
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
 				printf("lst append\n");
+				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
 			}
+			else if (flag_redir_input == 1)
+				return (tmp_fd);
 			if (tmp_fd == -1)
 			{
+				printf("ret\n");
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
-				exit(ERROR);
+				// exit(ERROR);
+				return (-1);
 			}
 			return (tmp_fd);
 		}
@@ -293,83 +367,144 @@ int	redir_cmd(t_list *lst_cmd)
 	return (-1);
 }
 
-// void	cmd_with_redir(void *cmd, t_list *lst_cmd)
-// {
-// 	pid_t	pid;
-// 	int fd;
-	
-// 	fd = -1;
-// 	pid = fork();
-// 	if (pid < 0)
-// 			exit(1);
-// 	else if (pid == 0)
-// 	{
-// 		fd = redir_cmd(lst_cmd);
-// 		if (fd == -1)
-// 		{
-// 			printf("fork fd error\n");
-// 			exit(0);
-// 		}
-// 		dup2(fd, STDOUT_FILENO);
-// 		ft_pre_exec_cmd(cmd);
-// 		close(fd);
-// 		exit(0);
-// 	}
-// 	else
-// 	{
-// 		wait(NULL);
-// 	}
-// }
+int  get_input_fd(t_list *lst_cmd)
+{
+	t_list *tmp;
+	int fd;
+	int tmp_fd;
+	int first;
+
+	tmp = lst_cmd;
+	fd = -1;
+	tmp_fd = -1;
+	first = 1;
+	while (tmp)
+	{
+		// printf("in input\n");
+		if (first)
+		{
+			first = 0;
+		}
+		else if (tmp && !first)
+		{
+			// printf("fd opened in input : %s\n", ((t_cmd *)tmp->content)->args[0]);
+			tmp_fd = open(((t_cmd *)tmp->content)->args[0], O_RDWR);
+			if (tmp_fd == -1)
+			{
+				printf("get input fd over\n");
+				if (fd == -1)
+					return (-1);
+				else
+					return (fd);
+			}
+			fd = tmp_fd;
+		}
+		tmp = tmp->next;
+	}
+	return (fd);
+}
 
 int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
 {
 	pid_t	pid;
 	int		*fd = malloc(sizeof(int) * 2);
+	int 	input_fd;
 
 	if (!fd)
 		return (NULL);
+	input_fd = -1;
 	pipe(fd);
 	pid = fork();
 	if (pid < 0)
 			exit(1);
 	else if (pid == 0)
 	{
+		close(fd[0]);
+		input_fd = get_input_fd(lst_cmd);
+		printf("input_fd : %d\n", input_fd);
+		dup2(input_fd, STDIN_FILENO);
+	
 		fd[1] = redir_cmd(lst_cmd);
+		printf("output_fd : %d\n", fd[1]);
 		if (fd[1] == -1)
 		{
 			printf("fork fd error\n");
-			exit(0);
+			// exit(0);
 		}
 		dup2(fd[1], STDOUT_FILENO);
+	
 		ft_pre_exec_cmd(cmd);
 		close(fd[1]);
 		exit(0);
 	}
 	else
 	{
+		close(fd[1]);
 		wait(NULL);
 	}
 	return (fd);
 }
 
-// void	cmd_before_get_redir(void *cmd, int fd_from_redir)
+// int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
 // {
 // 	pid_t	pid;
+// 	int		*fd = malloc(sizeof(int) * 2);
 
+// 	if (!fd)
+// 		return (NULL);
+// 	pipe(fd);
 // 	pid = fork();
 // 	if (pid < 0)
 // 			exit(1);
 // 	else if (pid == 0)
 // 	{
-// 		dup2(fd_from_redir, STDIN_FILENO);
+// 		fd[1] = redir_cmd(lst_cmd);
+// 		if (fd[1] == -1)
+// 		{
+// 			printf("fork fd error\n");
+// 			exit(0);
+// 		}
+// 		dup2(fd[1], STDOUT_FILENO);
 // 		ft_pre_exec_cmd(cmd);
-// 		close(fd_from_redir);
+// 		close(fd[1]);
 // 		exit(0);
 // 	}
 // 	else
 // 	{
 // 		wait(NULL);
 // 	}
+// 	return (fd);
+// }
+
+// int *cmd_with_redir_input(void *cmd, t_list *lst_cmd)
+// {
+// 	pid_t	pid;
+// 	int		*fd = malloc(sizeof(int) * 2);
+
+// 	if (!fd)
+// 		return (NULL);
+// 	pipe(fd);
+// 	pid = fork();
+// 	if (pid < 0)
+// 			exit(1);
+// 	else if (pid == 0)
+// 	{
+// 		fd[1] = redir_cmd(lst_cmd);
+// 		if (fd[1] == -1)
+// 		{
+// 			printf("fork fd error\n");
+// 			exit(0);
+// 		}
+// 		dup2(fd[1], STDIN_FILENO);
+// 		ft_pre_exec_cmd(cmd);
+// 		close(fd[1]);
+// 		exit(0);
+// 	}
+// 	else
+// 	{
+// 		wait(NULL);
+// 	}
+// 	return (fd);
 // }
 
 void	cmd_before_get_redir(void *cmd, int *fd_from_redir)
@@ -402,9 +537,9 @@ void	ft_exec_each_cmd(t_list *lst)
 	t_list	*tmp;
 	int		first;
 	int		redir_flag;
+	// int		redir_input_flag;
 	int 	pipe_flag;
 	int		*fd;
-	// int		fd_redir;
 	
 	if (!lst || !((t_cmd *)lst->content)->args)
 		return ;
@@ -439,14 +574,24 @@ void	ft_exec_each_cmd(t_list *lst)
 			printf("last with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
 		}
-		else if (((((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT) || (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)))
+		else if (((((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT) || (((t_cmd *)tmp->content)->status_flag & FLG_APPEND || (((t_cmd *)tmp->content)->status_flag & FLG_INPUT))))
 		{
 			printf("cmd with redir\n");
+			tmp->content = get_complete_cmd(tmp->content, lst);
 			fd = cmd_with_redir(tmp->content, tmp);
 			redir_flag = 1;
-			while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT || ((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
+			while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT || ((t_cmd *)tmp->content)->status_flag & FLG_APPEND || (((t_cmd *)tmp->content)->status_flag & FLG_INPUT)))
 				tmp = tmp->next;
 		}
+		// else if (((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
+		// {
+		// 	printf("cmd with redir input\n");
+		// 	tmp->content = get_complete_cmd(tmp->content, lst);
+		// 	fd = cmd_with_redir_input(tmp->content, tmp);
+		// 	redir_input_flag = 1;
+		// 	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_INPUT))
+		// 		tmp = tmp->next;
+		// }
 		else if (((t_cmd *)tmp->content)->args && redir_flag == 1)
 		{
 			printf("last with pipe before get redir\n");
@@ -455,7 +600,6 @@ void	ft_exec_each_cmd(t_list *lst)
 		else if (((t_cmd *)tmp->content)->args)
 		{
 			printf("simple\n");
-			printf("simple cmd : %s\n", (char *)((t_cmd *)tmp->content)->args[0]);
 			simple_cmd(tmp->content);
 		}
 		tmp = tmp->next;
