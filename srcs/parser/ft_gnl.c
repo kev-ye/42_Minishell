@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 23:16:17 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 11:10:44 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,13 @@ static int	is_arrow_pressed(char **ptr, char *s)
 	return (NOT_FOUND);
 }
 
-static int	ft_istermcap(char **ptr, char *read_buffer)
+// static
+int	ft_istermcap(char **ptr, char *read_buffer, int len)
 {
 	char	buf[_TERMCAPS_ARROW_LEN + 1];
 
 	ft_bzero(buf, _TERMCAPS_ARROW_LEN + 1);
-	ft_memcpy(buf, read_buffer, ft_strlen(read_buffer));
+	ft_memcpy(buf, read_buffer, len);
 	if (ft_strchr(buf, K_DELETE))
 		ft_termcap_delete_char(ptr);
 	else if (ft_strchr(buf, K_CTRL_D))
@@ -105,12 +106,13 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 			break ;
 		buffer[r] = '\0';
 		tmp = str;
-		if (ft_istermcap(&str, buffer))
+		if (ft_istermcap(&str, buffer, r))
 		{
 			// ft_memdel((void **)&tmp);
 			continue ;
 		}
 		ft_putchar_fd(buffer[0], STDIN_FILENO);
+		// ft_putchar_fd(' ', STDIN_FILENO);
 		str = ft_strjoin(str, buffer);
 		ft_memdel((void **)&tmp);
 		if (ft_strchr(str, '\n'))

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 22:57:58 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 11:22:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	ft_termcap_history(char **ptr, char *termcap)
 {
-	t_list	*tmp;
+	const void	*tmp_ptr = *ptr;
+	t_list		*tmp;
 
 	if (0 == ft_strcmp(termcap, K_UP) && singleton()->hist.current > 0)
 		singleton()->hist.current--;
@@ -27,32 +28,34 @@ void	ft_termcap_history(char **ptr, char *termcap)
 	tmp = ft_lstindex(singleton()->hist.history, singleton()->hist.current);
 	if (tmp && tmp->content)
 	{
-		*ptr = tmp->content;
-		ft_dprintf(STDIN_FILENO, "%s", tmp->content);
+		*ptr = ft_strdup(tmp->content);
+		ft_dprintf(STDIN_FILENO, "%s", ft_strdup(tmp->content));
 	}
 	else
 		*ptr = ft_strdup("");
+	ft_memdel((void **)&tmp_ptr);
 }
 
 void	ft_termcap_edition(char **ptr, char *termcap)
 {
-	if (BONUS)
-	{
+	// if (BONUS)
+	// {
+		singleton()->edit.len = ft_strlen(*ptr);
 		if (0 == ft_strcmp(termcap, K_RIGHT))
 		{
-			// ft_printf("RIGHT\n");
+			ft_putstr_fd("\e[1C", STDIN_FILENO);
 		}
 		else if (0 == ft_strcmp(termcap, K_LEFT))
 		{
-			// ft_printf("LEFT\n");
+			ft_putstr_fd("\e[1D", STDIN_FILENO);
 		}
-	}
+	// }
 	(void)ptr;
 }
 
 void	ft_termcap_delete_char(char **ptr)
 {
-	const void	*tmp_ptr = ptr;
+	const void	*tmp_ptr = *ptr;
 
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
@@ -60,18 +63,18 @@ void	ft_termcap_delete_char(char **ptr)
 	{
 		*ptr = ft_substr(*ptr, 0, ft_strlen(*ptr) - 1);
 		ft_dprintf(STDIN_FILENO, "%s", *ptr);
-		ft_memdel((void **)tmp_ptr);
+		ft_memdel((void **)&tmp_ptr);
 	}
 }
 
 void	ft_termcap_clear_line(char **ptr)
 {
-	const void	*tmp_ptr = ptr;
+	const void	*tmp_ptr = *ptr;
 
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	*ptr = ft_strdup("");
-	ft_memdel((void **)tmp_ptr);
+	ft_memdel((void **)&tmp_ptr);
 }
 
 void	ft_termcap_clear_screen(char **ptr)

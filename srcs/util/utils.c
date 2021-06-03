@@ -6,11 +6,19 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 23:08:31 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 10:09:20 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+// special putchar
+int	ft_sputchar(int c)
+{
+	if (write(STDIN_FILENO, &c, sizeof(int)) < 0)
+		return (EOF);
+	return (c);
+}
 
 int	ft_is_openable(char *path, int flag)
 {

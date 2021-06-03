@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 23:06:01 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 11:13:57 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,12 @@ typedef struct s_history
 	t_list	*history;
 }	t_history;
 
+typedef struct s_edition
+{
+	size_t	len;
+	size_t	current_index;
+}	t_edition;
+
 /*
 ** Main stucture. Called with a singleton
 **
@@ -190,6 +196,7 @@ typedef struct s_minishl
 	char			*cwd;
 	t_list			*env;
 	t_list			*lst;
+	t_edition		edit;
 	t_history		hist;
 	struct termios	tattr;
 }	t_minishl;
@@ -201,6 +208,7 @@ typedef struct s_minishl
 /*
 ** Utils
 */
+int			ft_sputchar(int c);
 int			ft_is_openable(char *path, int flag);
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);

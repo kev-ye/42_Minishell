@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 23:07:34 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 11:17:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,33 @@ t_list	*get_env(char **env)
 	return (new_env);
 }
 
+static void	init_termcaps(struct termios *tattr)
+{
+	// const char	*term_name = ft_getenv("TERM");
+	// int			ret;
+
+	// if (!term_name)
+	// {
+	// 	ft_dprintf(STDERR_FILENO,
+	// 		B_RED "$TERM not set. Termcaps won't work.\n" CLR_COLOR);
+	// 	ft_free_exit();
+	// }
+	// ret = tgetent(NULL, term_name);
+	// ft_memdel((void **)&term_name);
+	// if (ret <= 0)
+	// {
+	// 	ft_dprintf(STDERR_FILENO,
+	// 		B_RED "Could not access the termcap data base.\n" CLR_COLOR);
+	// 	ft_free_exit();
+	// }
+	tcgetattr(STDIN_FILENO, tattr);
+	tattr->c_lflag &= ~(ICANON | ECHO);
+	tattr->c_cc[VMIN] = 1;
+	tattr->c_cc[VTIME] = 0;
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, tattr);
+	// tcsetattr(STDIN_FILENO, TCSANOW, tattr);
+}
+
 static int	ft_init_minishell(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
@@ -102,20 +129,8 @@ static int	ft_init_minishell(char **env)
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
 	singleton()->isatty_stdin = isatty(STDIN_FILENO);
-	tcgetattr(STDIN_FILENO, &singleton()->tattr);
-	singleton()->tattr.c_lflag &= ~(ICANON | ECHO);
-	singleton()->tattr.c_cc[VMIN] = 1;
-	singleton()->tattr.c_cc[VTIME] = 0;
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
+	init_termcaps(&singleton()->tattr);
 	return (1);
-}
-
-// special putchar
-int	ft_sputchar(int c)
-{
-	if (write(STDIN_FILENO, &c, sizeof(int)) < 0)
-		return (EOF);
-	return (c);
 }
 
 void	prompt(void)
