@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 18:31:34 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 21:23:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,12 @@ void	ft_termcap_edition(__attribute__((unused)) char **ptr, char *termcap)
 		if (0 == ft_strcmp(termcap, K_RIGHT) && edit->current_index < ft_strlen(*ptr))
 		{
 			edit->current_index++;
-			tputs(tgetstr("nd", NULL), 1, ft_sputchar);
+			ft_dprintf(STDIN_FILENO, "%s", tgetstr("nd", NULL));
 		}
 		else if (0 == ft_strcmp(termcap, K_LEFT) && edit->current_index > 0)
 		{
 			edit->current_index--;
-			tputs(tgetstr("le", NULL), 1, ft_sputchar);
+			ft_dprintf(STDIN_FILENO, "%s", tgetstr("le", NULL));
 		}
 	// }
 }
@@ -82,8 +82,9 @@ void	ft_termcap_delete_char(char **ptr)
 		ft_memdel((void **)&tmp_ptr);
 	}
 	ft_dprintf(STDIN_FILENO, "%s", *ptr);
-	tputs(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + \
-		PROMPT_CPADDING + singleton()->edit.current_index), 1, ft_sputchar);
+	ft_dprintf(STDIN_FILENO, "%s", tgoto(go, 0,
+		ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING + \
+		singleton()->edit.current_index));
 	ft_memdel((void **)&head);
 	ft_memdel((void **)&tail);
 }

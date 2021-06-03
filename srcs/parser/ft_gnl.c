@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 18:27:10 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 21:23:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,9 @@ void	print_inline(char **ptr, char *buffer)
 	print_prompt();
 	ft_dprintf(STDIN_FILENO, "%s", ret);
 	*ptr = ret;
-	tputs(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING +\
-		singleton()->edit.current_index), 1, ft_sputchar);
+	ft_dprintf(STDIN_FILENO, "%s", tgoto(go, 0,
+		ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING + \
+		singleton()->edit.current_index));
 	(void)tmp_ptr;
 	// ft_memdel((void **)&tmp_ptr);
 	ft_memdel((void **)&head);
