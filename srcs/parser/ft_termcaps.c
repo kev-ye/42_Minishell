@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 11:22:27 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 18:31:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,37 +34,58 @@ void	ft_termcap_history(char **ptr, char *termcap)
 	else
 		*ptr = ft_strdup("");
 	ft_memdel((void **)&tmp_ptr);
+	singleton()->edit.len = ft_strlen(*ptr);
+	singleton()->edit.current_index = singleton()->edit.len;
 }
 
-void	ft_termcap_edition(char **ptr, char *termcap)
+void	ft_termcap_edition(__attribute__((unused)) char **ptr, char *termcap)
 {
+	t_edition	*edit;
+
 	// if (BONUS)
 	// {
-		singleton()->edit.len = ft_strlen(*ptr);
-		if (0 == ft_strcmp(termcap, K_RIGHT))
+		edit = &singleton()->edit;
+		if (0 == ft_strcmp(termcap, K_RIGHT) && edit->current_index < ft_strlen(*ptr))
 		{
-			ft_putstr_fd("\e[1C", STDIN_FILENO);
+			edit->current_index++;
+			tputs(tgetstr("nd", NULL), 1, ft_sputchar);
 		}
-		else if (0 == ft_strcmp(termcap, K_LEFT))
+		else if (0 == ft_strcmp(termcap, K_LEFT) && edit->current_index > 0)
 		{
-			ft_putstr_fd("\e[1D", STDIN_FILENO);
+			edit->current_index--;
+			tputs(tgetstr("le", NULL), 1, ft_sputchar);
 		}
 	// }
-	(void)ptr;
 }
 
 void	ft_termcap_delete_char(char **ptr)
 {
 	const void	*tmp_ptr = *ptr;
+	const char	*go = tgetstr("ch", NULL);
+	char		*ret;
+	char		*head;
+	char		*tail;
 
+	if (singleton()->edit.current_index > 0)
+		singleton()->edit.current_index--;
+	if (singleton()->edit.len > 0)
+		singleton()->edit.len--;
+	head = ft_substr(*ptr, 0, singleton()->edit.current_index);
+	tail = ft_substr(*ptr + singleton()->edit.current_index + 1, 0,
+				singleton()->edit.len - singleton()->edit.current_index);
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
-	if (ft_strlen(*ptr) > 0)
+	if (singleton()->edit.current_index > 0)
 	{
-		*ptr = ft_substr(*ptr, 0, ft_strlen(*ptr) - 1);
-		ft_dprintf(STDIN_FILENO, "%s", *ptr);
+		ft_asprintf(&ret, "%s%s", head, tail);
+		*ptr = ret;
 		ft_memdel((void **)&tmp_ptr);
 	}
+	ft_dprintf(STDIN_FILENO, "%s", *ptr);
+	tputs(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + \
+		PROMPT_CPADDING + singleton()->edit.current_index), 1, ft_sputchar);
+	ft_memdel((void **)&head);
+	ft_memdel((void **)&tail);
 }
 
 void	ft_termcap_clear_line(char **ptr)
@@ -86,6 +107,6 @@ void	ft_termcap_clear_screen(char **ptr)
 
 void	ft_termcap_esc(char **ptr)
 {
-	(void)ptr;
+	ft_memdel((void **)ptr);
 	ft_exit();
 }

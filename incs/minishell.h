@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 11:13:57 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 17:15:20 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@
 ** -- DEFINES --
 */
 # define PROG_NAME "minishell"
+
+# define PROMPT_CPADDING 3
 # define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
 
 # ifndef HISTORY_FILENAME
@@ -74,6 +76,14 @@
 # ifndef BONUS
 #  define BONUS 0
 # endif
+
+# ifndef ZSH_HISTORY_HANDLING
+#  define ZSH_HISTORY_HANDLING 1
+# endif
+// # if defined(ZSH_HISTORY_HANDLING) && (ZSH_HISTORY_HANDLING != 1)
+// #  undef ZSH_HISTORY_HANDLING
+// #  define ZSH_HISTORY_HANDLING 1
+// # endif
 
 // # define PATH_MAX_LEN 256
 
@@ -194,6 +204,7 @@ typedef struct s_minishl
 	int				isatty_stdin;
 	int				last_return_value;
 	char			*cwd;
+	char			*cwd_basename;
 	t_list			*env;
 	t_list			*lst;
 	t_edition		edit;
@@ -251,6 +262,8 @@ int			ft_clear(void);
 */
 void		init_history(void);
 void		add2history(char *cmd);
+
+void		print_inline(char **ptr, char *buffer);
 
 /*
 ** Signals

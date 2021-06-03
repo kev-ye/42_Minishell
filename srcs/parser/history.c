@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 11:18:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 13:31:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,12 @@ static void	create_history(void)
 		ft_malloc_error(__FILE__, __LINE__);
 }
 
-void	init_history(void)
+static void	convert_history2lst(void)
 {
-	char	*ret;
 	int		check;
+	char	*ret;
 	t_list	*new;
 
-	create_history();
 	while (1)
 	{
 		check = get_next_line(singleton()->hist.fd, &ret);
@@ -62,6 +61,12 @@ void	init_history(void)
 		if (0 == check)
 			break ;
 	}
+}
+
+void	init_history(void)
+{
+	create_history();
+	convert_history2lst();
 	singleton()->hist.size = ft_lstsize(singleton()->hist.history);
 	singleton()->hist.current = singleton()->hist.size;
 }
@@ -69,9 +74,14 @@ void	init_history(void)
 void	add2history(char *cmd)
 {
 	t_list	*new;
+	t_list	*last;
 
 	singleton()->hist.current = singleton()->hist.size;
 	if (!cmd || ft_strisall(cmd, ft_isspace) || 0 == ft_strlen(cmd))
+		return ;
+	last = ft_lstlast(singleton()->hist.history);
+	if (ZSH_HISTORY_HANDLING && last && last->content
+		&& 0 == ft_strcmp(cmd, last->content))
 		return ;
 	if (!ft_is_openable(singleton()->hist.path, O_RDONLY))
 	{

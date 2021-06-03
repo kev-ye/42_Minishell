@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 11:17:31 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 16:53:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_minishl	*singleton(void)
 void	print_prompt(void)
 {
 	char	*pwd;
-	char	*basename;
+	// char	*basename;
 
 	pwd = getcwd(NULL, 0);
 	if (pwd)
@@ -42,15 +42,12 @@ void	print_prompt(void)
 		*/
 		ft_memdel((void **)(&singleton()->cwd));
 		singleton()->cwd = pwd;
+		singleton()->cwd_basename = ft_strrchr(singleton()->cwd, '/');
+		if (*(singleton()->cwd_basename + 1))
+			singleton()->cwd_basename++;
 	}
 	if (singleton()->isatty_stdin)
-	{
-		basename = ft_strrchr(singleton()->cwd, '/');
-		if (!*(basename + 1))
-			ft_dprintf(STDERR_FILENO, PROMPT, "/");
-		else
-			ft_dprintf(STDERR_FILENO, PROMPT, basename + 1);
-	}
+		ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
 }
 
 t_list	*get_env(char **env)
@@ -83,23 +80,23 @@ t_list	*get_env(char **env)
 
 static void	init_termcaps(struct termios *tattr)
 {
-	// const char	*term_name = ft_getenv("TERM");
-	// int			ret;
+	const char	*term_name = ft_getenv("TERM");
+	int			ret;
 
-	// if (!term_name)
-	// {
-	// 	ft_dprintf(STDERR_FILENO,
-	// 		B_RED "$TERM not set. Termcaps won't work.\n" CLR_COLOR);
-	// 	ft_free_exit();
-	// }
-	// ret = tgetent(NULL, term_name);
-	// ft_memdel((void **)&term_name);
-	// if (ret <= 0)
-	// {
-	// 	ft_dprintf(STDERR_FILENO,
-	// 		B_RED "Could not access the termcap data base.\n" CLR_COLOR);
-	// 	ft_free_exit();
-	// }
+	if (!term_name)
+	{
+		ft_dprintf(STDERR_FILENO,
+			B_RED "$TERM not set. Termcaps won't work.\n" CLR_COLOR);
+		ft_free_exit();
+	}
+	ret = tgetent(NULL, term_name);
+	ft_memdel((void **)&term_name);
+	if (ret <= 0)
+	{
+		ft_dprintf(STDERR_FILENO,
+			B_RED "Could not access the termcap data base.\n" CLR_COLOR);
+		ft_free_exit();
+	}
 	tcgetattr(STDIN_FILENO, tattr);
 	tattr->c_lflag &= ~(ICANON | ECHO);
 	tattr->c_cc[VMIN] = 1;
@@ -143,6 +140,7 @@ void	prompt(void)
 	{
 		// char *s = tgetstr("al", NULL);
 		// tputs(s, 1, ft_sputchar);
+		ft_bzero(&singleton()->edit, sizeof(t_edition));
 		print_prompt();
 		r = ft_gnl_stdin(&ret);
 		if (singleton()->isatty_stdin)
@@ -159,6 +157,52 @@ void	prompt(void)
 	}
 }
 
+char	*check_dir(char *dir_path, char *fname)
+{
+	// static size_t	found = 0;
+	// const size_t	old = found;
+	const size_t	len = ft_strlen(fname);
+	DIR				*dirp;
+	struct dirent	*dp;
+	size_t			i;
+
+	dirp = opendir(dir_path);
+	if (!dirp)
+		return (NULL);
+	i = 0;
+	// while (i < found)
+	// {
+	// 	dp = readdir(dirp);
+	// 	if (!dp)
+	// 	{
+	// 		closedir(dirp);
+	// 		return (NULL);
+	// 	}
+	// 	++i;
+	// }
+	while (1)
+	{
+		dp = readdir(dirp);
+		if (!dp)
+			break ;
+		ft_printf("%s\n", dp->d_name);
+		if (!ft_strncmp(dp->d_name, fname, len))
+		{
+			dir_path = dp->d_name;
+			// ++found;
+			// break ;
+		}
+		++i;
+	}
+	closedir(dirp);
+	// if (found == old)
+	// {
+	// 	found = 0;
+	// 	return (NULL);
+	// }
+	return (dir_path);
+}
+
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
@@ -167,6 +211,15 @@ int	main(__attribute__((unused)) int ac,
 		return (EXIT_FAILURE);
 	if (singleton()->isatty_stdin)
 		init_history();
+	
+	// while (1)
+	// {
+	// 	char *t = check_dir(ft_getenv("PWD"), "mini");
+	// 	if (!t)
+	// 		break ;
+	// 	ft_printf("[%s]\n", t);
+	// }
+
 	prompt();
 	return (EXIT_SUCCESS);
 }

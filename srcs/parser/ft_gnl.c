@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 11:10:44 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 18:27:10 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,7 @@ static int	is_arrow_pressed(char **ptr, char *s)
 	return (NOT_FOUND);
 }
 
-// static
-int	ft_istermcap(char **ptr, char *read_buffer, int len)
+static int	ft_istermcap(char **ptr, char *read_buffer, int len)
 {
 	char	buf[_TERMCAPS_ARROW_LEN + 1];
 
@@ -92,6 +91,30 @@ int	ft_istermcap(char **ptr, char *read_buffer, int len)
 	return (TRUE);
 }
 
+void	print_inline(char **ptr, char *buffer)
+{
+	char		*ret;
+	const void	*tmp_ptr = *ptr;
+	const char	*head = ft_substr(*ptr, 0, singleton()->edit.current_index);
+	const char	*tail = ft_substr(*ptr + singleton()->edit.current_index, 0,
+					singleton()->edit.len - singleton()->edit.current_index);
+	const char	*go = tgetstr("ch", NULL);
+
+	singleton()->edit.len += ft_strlen(buffer);
+	singleton()->edit.current_index += ft_strlen(buffer);
+	ft_asprintf(&ret, "%s%s%s", head, buffer, tail);
+	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
+	print_prompt();
+	ft_dprintf(STDIN_FILENO, "%s", ret);
+	*ptr = ret;
+	tputs(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING +\
+		singleton()->edit.current_index), 1, ft_sputchar);
+	(void)tmp_ptr;
+	// ft_memdel((void **)&tmp_ptr);
+	ft_memdel((void **)&head);
+	ft_memdel((void **)&tail);
+}
+
 static char	*ft_read_line(int fd, char *str, char **line, int *check)
 {
 	char	buffer[__TMP_BUF_SZ + 1];
@@ -107,16 +130,28 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 		buffer[r] = '\0';
 		tmp = str;
 		if (ft_istermcap(&str, buffer, r))
-		{
-			// ft_memdel((void **)&tmp);
 			continue ;
+		if (buffer[0] == '\n')
+		{
+			ft_putstr_fd(buffer, STDIN_FILENO);
+			str = ft_strjoin(str, buffer);
+
+			///////////////////////////////
+			// SOME OPTI TO DO HERE
+			///////////////////////////////
+
+
 		}
-		ft_putchar_fd(buffer[0], STDIN_FILENO);
-		// ft_putchar_fd(' ', STDIN_FILENO);
-		str = ft_strjoin(str, buffer);
+		else
+			print_inline(&str, buffer);
 		ft_memdel((void **)&tmp);
 		if (ft_strchr(str, '\n'))
 			break ;
+		
+			///////////////////////////////
+			// AND HERE
+			///////////////////////////////
+		
 	}
 	return (ft_realloc_str(str, line, check));
 }
