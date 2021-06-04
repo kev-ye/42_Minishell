@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/04 12:41:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/04 18:59:13 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,96 +271,113 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 	return (cmd);
 }
 
-int	redir_cmd(t_list *lst_cmd)
+int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 {
-	int tmp_fd;
+	// first cmd
+	int first;
+	
+	int tmp_fd_output;
+	int tmp_fd_input;
+
 	int flag_append;
 	int flag_trunc;
 	int flag_redir_input;
-	int first;
 
-	tmp_fd = -1;
+	// init
+	first = 1;
+
+	tmp_fd_output = -2;
+	tmp_fd_input = -2;
+
 	flag_append = 0;
 	flag_trunc = 0;
-	first = 1;
 	flag_redir_input = 0;
-	while (lst_cmd)
+
+	// start
+	while(lst_cmd)
 	{
 		if (first == 1)
 			first = 0;
 		else if (!first && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND || ((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT))
 		{
+			// try file
 			if (flag_trunc == 1)
 			{
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
-				printf("in check output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
+				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 			}
 			else if (flag_append == 1)
 			{
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
-				printf("in check output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
+				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
 			}
 			else if (flag_redir_input == 1)
 			{
-				if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
+				tmp_fd_input = open(((t_cmd *)lst_cmd->content)->args[0], O_RDWR);
+				if (tmp_fd_input == -1)
 				{
-					flag_redir_input = 1;
-					flag_append = 0;
-					flag_trunc = 0;
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
+					exit(1);
 				}
-				else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
+				else
 				{
-					flag_trunc = 1;
-					flag_append = 0;
-					flag_redir_input = 0;
+					fd_input = tmp_fd_input;
+					dup2(fd_input, STDIN_FILENO);
 				}
-				else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
-				{
-					flag_append = 1;
-					flag_trunc = 0;
-					flag_redir_input = 0;
-				}
-				lst_cmd = lst_cmd->next;
-				continue ;
 			}
-			if (tmp_fd == -1)
+			
+			// check output file
+			if (tmp_fd_output == -1)
 			{
-				printf("check with append and trunc flag\n");
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
-				return (-1);
+				exit(1);
 			}
 		}
 		else if (!first)
 		{
 			if (flag_trunc == 1)
 			{
-				printf("lst trunc\n");
-				if (tmp_fd != -1)
-					close(tmp_fd);
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
-				printf("output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
+				printf("[%s] is trunc\n", ((t_cmd *)lst_cmd->content)->args[0]);
+				if (tmp_fd_output != -1)
+					close(tmp_fd_output);
+				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 			}
 			else if (flag_append == 1)
 			{
-				printf("lst append\n");
-				if (tmp_fd != -1)
-					close(tmp_fd);
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
-				printf("output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
+				printf("[%s] is append\n", ((t_cmd *)lst_cmd->content)->args[0]);
+				if (tmp_fd_output != -1)
+					close(tmp_fd_output);
+				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
 			}
 			else if (flag_redir_input == 1)
 			{
-				printf("output fd ret : %d\n", tmp_fd);
-				return (tmp_fd); //////////////////////////////////////// some pb here maybe
+				tmp_fd_input = open(((t_cmd *)lst_cmd->content)->args[0], O_RDWR);
+				if (tmp_fd_input == -1)
+				{
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
+					exit(1);
+				}
+				else
+				{
+					fd_input = tmp_fd_input;
+					dup2(fd_input, STDIN_FILENO);
+				}
 			}
-			if (tmp_fd == -1)
+			if (tmp_fd_output == -1)
 			{
-				printf("ret error\n");
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
-				return (-1);
+				exit(1);
 			}
-			return (tmp_fd);
+			else
+			{
+				fd_output = tmp_fd_output;
+				dup2(fd_output, STDOUT_FILENO);
+			}
 		}
+
+		// active flag
 		if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
 		{
 				flag_redir_input = 1;
@@ -381,47 +398,7 @@ int	redir_cmd(t_list *lst_cmd)
 		}
 		lst_cmd = lst_cmd->next;
 	}
-	return (-1);
-}
-
-int  get_input_fd(t_list *lst_cmd)
-{
-	t_list *tmp;
-	int tmp_fd;
-	int fd;
-	int flag_redir_input;
-
-	tmp = lst_cmd;
-	tmp_fd = -1;
-	fd = -1;
-	flag_redir_input = 0;
-	while (tmp)
-	{
-		if((((t_cmd *)tmp->content)->status_flag & FLG_APPEND || ((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT) && flag_redir_input == 0)
-		{
-			flag_redir_input = 0;
-			tmp = tmp->next;
-			continue ;
-		}
-		else if (((t_cmd *)tmp->content)->status_flag & FLG_INPUT && flag_redir_input == 0)
-		{
-			flag_redir_input = 1;
-		}
-		else if (flag_redir_input == 1)
-		{
-			tmp_fd = open(((t_cmd *)tmp->content)->args[0], O_RDWR);
-			printf("input fd : %s -> %d\n", ((t_cmd *)tmp->content)->args[0], fd);
-			if (tmp_fd == -1)
-			{
-				ft_dprintf(STDERR_FILENO, "error open with rdwr -> errno msg : %s\n", strerror(errno));
-			}
-			else
-				fd = tmp_fd;
-		}
-		tmp = tmp->next;
-	}
-	printf("input fd ret : %d\n", fd);
-	return (fd);
+	return (fd_output);
 }
 
 int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
@@ -429,10 +406,12 @@ int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
 	pid_t	pid;
 	int		*fd = malloc(sizeof(int) * 2);
 	int 	input_fd;
+	int tmp_errno;
 
 	if (!fd)
 		return (NULL);
 	input_fd = -1;
+	tmp_errno = 0;
 	pipe(fd);
 	pid = fork();
 	if (pid < 0)
@@ -440,16 +419,8 @@ int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
 	else if (pid == 0)
 	{
 		close(fd[0]);
-		input_fd = get_input_fd(lst_cmd);
-		dup2(input_fd, STDIN_FILENO);
-	
-		fd[1] = redir_cmd(lst_cmd);
-		if (fd[1] == -1)
-		{
-			printf("fork fd error\n");
-		}
-		dup2(fd[1], STDOUT_FILENO);
-	
+		fd[1] = redir_parser(input_fd, fd[1], lst_cmd);
+
 		ft_pre_exec_cmd(cmd);
 		close(fd[1]);
 		exit(0);
@@ -461,68 +432,6 @@ int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
 	}
 	return (fd);
 }
-
-// int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
-// {
-// 	pid_t	pid;
-// 	int		*fd = malloc(sizeof(int) * 2);
-
-// 	if (!fd)
-// 		return (NULL);
-// 	pipe(fd);
-// 	pid = fork();
-// 	if (pid < 0)
-// 			exit(1);
-// 	else if (pid == 0)
-// 	{
-// 		fd[1] = redir_cmd(lst_cmd);
-// 		if (fd[1] == -1)
-// 		{
-// 			printf("fork fd error\n");
-// 			exit(0);
-// 		}
-// 		dup2(fd[1], STDOUT_FILENO);
-// 		ft_pre_exec_cmd(cmd);
-// 		close(fd[1]);
-// 		exit(0);
-// 	}
-// 	else
-// 	{
-// 		wait(NULL);
-// 	}
-// 	return (fd);
-// }
-
-// int *cmd_with_redir_input(void *cmd, t_list *lst_cmd)
-// {
-// 	pid_t	pid;
-// 	int		*fd = malloc(sizeof(int) * 2);
-
-// 	if (!fd)
-// 		return (NULL);
-// 	pipe(fd);
-// 	pid = fork();
-// 	if (pid < 0)
-// 			exit(1);
-// 	else if (pid == 0)
-// 	{
-// 		fd[1] = redir_cmd(lst_cmd);
-// 		if (fd[1] == -1)
-// 		{
-// 			printf("fork fd error\n");
-// 			exit(0);
-// 		}
-// 		dup2(fd[1], STDIN_FILENO);
-// 		ft_pre_exec_cmd(cmd);
-// 		close(fd[1]);
-// 		exit(0);
-// 	}
-// 	else
-// 	{
-// 		wait(NULL);
-// 	}
-// 	return (fd);
-// }
 
 void	cmd_before_get_redir(void *cmd, int *fd_from_redir)
 {
@@ -554,11 +463,12 @@ void	ft_exec_each_cmd(t_list *lst)
 	t_list	*tmp;
 	int		first;
 	int		redir_flag;
-	// int		redir_input_flag;
 	int 	pipe_flag;
 	int		*fd;
 	
-	if (!lst || !((t_cmd *)lst->content)->args)
+	// if (!lst || !((t_cmd *)lst->content)->args)
+	// 	return ;
+	if (!lst)
 		return ;
 	tmp = lst;
 	first = 1;
@@ -567,26 +477,26 @@ void	ft_exec_each_cmd(t_list *lst)
 	fd = NULL;
 	while (tmp)
 	{
-		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
+		if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
 		{
 			printf("fist with pipe\n");
 			fd = first_cmd_with_pipe(tmp->content);
 			first = 0;
 			pipe_flag = 1;
 		}
-		else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
+		else if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
 		{
 			printf("interm with pipe\n");
 			fd = interm_cmd_with_pipe(tmp->content, fd);
 			pipe_flag = 1;
 		}
-		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
+		else if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
 		{
 			printf("with ;\n");
 			last_cmd_with_pipe(tmp->content, fd);
 			pipe_flag = 0;
 		}
-		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
+		else if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
 		{
 			printf("last with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
@@ -600,16 +510,7 @@ void	ft_exec_each_cmd(t_list *lst)
 			while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT || ((t_cmd *)tmp->content)->status_flag & FLG_APPEND || (((t_cmd *)tmp->content)->status_flag & FLG_INPUT)))
 				tmp = tmp->next;
 		}
-		// else if (((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
-		// {
-		// 	printf("cmd with redir input\n");
-		// 	tmp->content = get_complete_cmd(tmp->content, lst);
-		// 	fd = cmd_with_redir_input(tmp->content, tmp);
-		// 	redir_input_flag = 1;
-		// 	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_INPUT))
-		// 		tmp = tmp->next;
-		// }
-		else if (((t_cmd *)tmp->content)->args && redir_flag == 1)
+		else if (((t_cmd *)tmp->content)->args && ((t_cmd *)tmp->content)->args && redir_flag == 1)
 		{
 			printf("last with pipe before get redir\n");
 			cmd_before_get_redir(tmp->content, fd);
@@ -619,6 +520,11 @@ void	ft_exec_each_cmd(t_list *lst)
 			printf("simple\n");
 			simple_cmd(tmp->content);
 		}
+		// else if (!((t_cmd *)tmp->content)->args)                              //////////////////////// some pb here : quit with ctrl + D show message
+		// {
+		// 	ft_dprintf(STDERR_FILENO, PROG_NAME": syntax error near unexpected token `|'\n");
+		// 	return ;
+		// }
 		tmp = tmp->next;
 	}
 }

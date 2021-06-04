@@ -14,12 +14,12 @@
 # include <sys/ioctl.h>
 # include <libc.h>
 
-char *cmd1[3] = {"echo", "test", NULL};
-char *cmd2[2] = {"cat", NULL};
+char *_echo[3] = {"echo", "test", NULL};
+char *_cat[2] = {"cat", NULL};
 
-int	test_func_output(void)
+int	test_func_output(int fd1)
 {
-		int fd1;
+		// int fd1;
 
 		fd1 = -1;
 		fd1 = open("f1", O_WRONLY | O_TRUNC | O_CREAT, 0666);
@@ -28,12 +28,13 @@ int	test_func_output(void)
 			printf("f1 down\n");
 			// exit(0);
 		}
+		dup2(fd1, STDOUT_FILENO);
 		return (fd1);
 }
 
-int	test_func_input(void)
+int	test_func_input(int fd2)
 {
-		int fd2;
+		// int fd2;
 
 		fd2 = open("f2" , O_RDWR);
 		if (fd2 == -1)
@@ -41,6 +42,7 @@ int	test_func_input(void)
 			printf("f2 down\n");
 			// exit(0);
 		}
+		dup2(fd2, STDIN_FILENO);
 		return (fd2);
 }
 
@@ -66,13 +68,13 @@ int main()
 		// }
 		// dup2(fd1, STDOUT_FILENO);
 
-		fd2 = test_func_input();
-		dup2(fd2, STDIN_FILENO);
+		fd2 = test_func_input(fd2);
+		// dup2(fd2, STDIN_FILENO);
 
-		fd1 = test_func_output();
-		dup2(fd1, STDOUT_FILENO);
+		fd1 = test_func_output(fd1);
+		// dup2(fd1, STDOUT_FILENO);
 
-		execvp(cmd1[0], cmd1);
+		execvp(_echo[0], _echo);
 
 		close(fd2);
 
