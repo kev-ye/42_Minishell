@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 19:20:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/04 12:41:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,81 +286,98 @@ int	redir_cmd(t_list *lst_cmd)
 	flag_redir_input = 0;
 	while (lst_cmd)
 	{
-		// printf("in output\n");
 		if (first == 1)
-		{
 			first = 0;
-			if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
-				flag_redir_input = 1;
-			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
-				flag_trunc = 1;
-			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
-				flag_append = 1;	
-		}
-		else if (!first && (flag_trunc == 1 || flag_append == 1))
+		else if (!first && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND || ((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT))
 		{
 			if (flag_trunc == 1)
-				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);                                       /////////// last time here -> redir_cmd remake  ////////// check with cat > f1 < f2
+			{
+				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+				printf("in check output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
+			}
 			else if (flag_append == 1)
+			{
 				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
+				printf("in check output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
+			}
+			else if (flag_redir_input == 1)
+			{
+				if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
+				{
+					flag_redir_input = 1;
+					flag_append = 0;
+					flag_trunc = 0;
+				}
+				else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
+				{
+					flag_trunc = 1;
+					flag_append = 0;
+					flag_redir_input = 0;
+				}
+				else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
+				{
+					flag_append = 1;
+					flag_trunc = 0;
+					flag_redir_input = 0;
+				}
+				lst_cmd = lst_cmd->next;
+				continue ;
+			}
 			if (tmp_fd == -1)
 			{
-				printf("check\n");
+				printf("check with append and trunc flag\n");
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
-				// exit(ERROR);
 				return (-1);
 			}
-			if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
-				flag_redir_input = 1;
-			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
-				flag_trunc = 1;
-			else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
-				flag_append = 1;
-			else
-			{
-				flag_redir_input = 0;
-				flag_trunc = 0;
-				flag_append = 0;
-			}
-			close(tmp_fd);
-		}
-		else if (!first && flag_redir_input == 1)
-		{
-			lst_cmd = lst_cmd->next;
-			continue ;
 		}
 		else if (!first)
 		{
 			if (flag_trunc == 1)
 			{
 				printf("lst trunc\n");
+				if (tmp_fd != -1)
+					close(tmp_fd);
 				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+				printf("output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
 			}
 			else if (flag_append == 1)
 			{
 				printf("lst append\n");
+				if (tmp_fd != -1)
+					close(tmp_fd);
 				tmp_fd = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
+				printf("output fd : %s -> %d\n", ((t_cmd *)lst_cmd->content)->args[0], tmp_fd);
 			}
 			else if (flag_redir_input == 1)
-				return (tmp_fd);
+			{
+				printf("output fd ret : %d\n", tmp_fd);
+				return (tmp_fd); //////////////////////////////////////// some pb here maybe
+			}
 			if (tmp_fd == -1)
 			{
-				printf("ret\n");
+				printf("ret error\n");
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
-				// exit(ERROR);
 				return (-1);
 			}
 			return (tmp_fd);
 		}
-		if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
+		if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
+		{
+				flag_redir_input = 1;
+				flag_append = 0;
+				flag_trunc = 0;
+		}
+		else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
 		{
 			flag_trunc = 1;
 			flag_append = 0;
+			flag_redir_input = 0;
 		}
 		else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
 		{
-			flag_trunc = 0;
 			flag_append = 1;
+			flag_trunc = 0;
+			flag_redir_input = 0;
 		}
 		lst_cmd = lst_cmd->next;
 	}
@@ -370,37 +387,40 @@ int	redir_cmd(t_list *lst_cmd)
 int  get_input_fd(t_list *lst_cmd)
 {
 	t_list *tmp;
-	int fd;
 	int tmp_fd;
-	int first;
+	int fd;
+	int flag_redir_input;
 
 	tmp = lst_cmd;
-	fd = -1;
 	tmp_fd = -1;
-	first = 1;
+	fd = -1;
+	flag_redir_input = 0;
 	while (tmp)
 	{
-		// printf("in input\n");
-		if (first)
+		if((((t_cmd *)tmp->content)->status_flag & FLG_APPEND || ((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT) && flag_redir_input == 0)
 		{
-			first = 0;
+			flag_redir_input = 0;
+			tmp = tmp->next;
+			continue ;
 		}
-		else if (tmp && !first)
+		else if (((t_cmd *)tmp->content)->status_flag & FLG_INPUT && flag_redir_input == 0)
 		{
-			// printf("fd opened in input : %s\n", ((t_cmd *)tmp->content)->args[0]);
+			flag_redir_input = 1;
+		}
+		else if (flag_redir_input == 1)
+		{
 			tmp_fd = open(((t_cmd *)tmp->content)->args[0], O_RDWR);
+			printf("input fd : %s -> %d\n", ((t_cmd *)tmp->content)->args[0], fd);
 			if (tmp_fd == -1)
 			{
-				printf("get input fd over\n");
-				if (fd == -1)
-					return (-1);
-				else
-					return (fd);
+				ft_dprintf(STDERR_FILENO, "error open with rdwr -> errno msg : %s\n", strerror(errno));
 			}
-			fd = tmp_fd;
+			else
+				fd = tmp_fd;
 		}
 		tmp = tmp->next;
 	}
+	printf("input fd ret : %d\n", fd);
 	return (fd);
 }
 
@@ -421,15 +441,12 @@ int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
 	{
 		close(fd[0]);
 		input_fd = get_input_fd(lst_cmd);
-		printf("input_fd : %d\n", input_fd);
 		dup2(input_fd, STDIN_FILENO);
 	
 		fd[1] = redir_cmd(lst_cmd);
-		printf("output_fd : %d\n", fd[1]);
 		if (fd[1] == -1)
 		{
 			printf("fork fd error\n");
-			// exit(0);
 		}
 		dup2(fd[1], STDOUT_FILENO);
 	

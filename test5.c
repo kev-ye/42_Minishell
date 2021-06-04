@@ -17,7 +17,7 @@
 char *cmd1[3] = {"echo", "test", NULL};
 char *cmd2[2] = {"cat", NULL};
 
-int	test_func(void)
+int	test_func_output(void)
 {
 		int fd1;
 
@@ -31,7 +31,7 @@ int	test_func(void)
 		return (fd1);
 }
 
-int	test_func2(void)
+int	test_func_input(void)
 {
 		int fd2;
 
@@ -66,14 +66,13 @@ int main()
 		// }
 		// dup2(fd1, STDOUT_FILENO);
 
-		fd2 = test_func2();
-		// fd2 = -1;
+		fd2 = test_func_input();
 		dup2(fd2, STDIN_FILENO);
 
-		fd1 = -1;
+		fd1 = test_func_output();
 		dup2(fd1, STDOUT_FILENO);
 
-		execvp(cmd2[0], cmd2);
+		execvp(cmd1[0], cmd1);
 
 		close(fd2);
 
