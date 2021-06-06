@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 16:53:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 10:58:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	prompt(void)
 	int		r;
 
 	signal(SIGINT, ft_interrupt);
-	while (1)
+	while (TRUE)
 	{
 		// char *s = tgetstr("al", NULL);
 		// tputs(s, 1, ft_sputchar);

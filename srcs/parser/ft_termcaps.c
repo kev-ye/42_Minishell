@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 21:23:21 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 11:26:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,30 +63,28 @@ void	ft_termcap_delete_char(char **ptr)
 	const void	*tmp_ptr = *ptr;
 	const char	*go = tgetstr("ch", NULL);
 	char		*ret;
-	char		*head;
-	char		*tail;
 
-	if (singleton()->edit.current_index > 0)
-		singleton()->edit.current_index--;
-	if (singleton()->edit.len > 0)
+	if (singleton()->edit.len > 0 && singleton()->edit.current_index > 0)
 		singleton()->edit.len--;
-	head = ft_substr(*ptr, 0, singleton()->edit.current_index);
-	tail = ft_substr(*ptr + singleton()->edit.current_index + 1, 0,
-				singleton()->edit.len - singleton()->edit.current_index);
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	if (singleton()->edit.current_index > 0)
 	{
-		ft_asprintf(&ret, "%s%s", head, tail);
+		ft_asprintf(&ret, "%.*s%.*s",
+			(int)singleton()->edit.current_index - 1,
+			*ptr,
+			(int)singleton()->edit.len - (int)(singleton()->edit.current_index - 1),
+			*ptr + singleton()->edit.current_index);
 		*ptr = ret;
-		ft_memdel((void **)&tmp_ptr);
+		singleton()->edit.current_index--;
 	}
+	else
+		*ptr = ft_strdup(*ptr);
 	ft_dprintf(STDIN_FILENO, "%s", *ptr);
 	ft_dprintf(STDIN_FILENO, "%s", tgoto(go, 0,
 		ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING + \
 		singleton()->edit.current_index));
-	ft_memdel((void **)&head);
-	ft_memdel((void **)&tail);
+	ft_memdel((void **)&tmp_ptr);
 }
 
 void	ft_termcap_clear_line(char **ptr)

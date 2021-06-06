@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 17:15:20 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 10:58:19 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,13 +77,15 @@
 #  define BONUS 0
 # endif
 
+/*
+** Used to add an entry to history if it's different from the last one
+** For this purpose, a simple strcmp is done between the last and the new entry
+** Bash adds it whatever the last one was. To replicate this behavour, just set
+** -D ZSH_HISTORY_HANDLING=0 at compile time
+*/
 # ifndef ZSH_HISTORY_HANDLING
 #  define ZSH_HISTORY_HANDLING 1
 # endif
-// # if defined(ZSH_HISTORY_HANDLING) && (ZSH_HISTORY_HANDLING != 1)
-// #  undef ZSH_HISTORY_HANDLING
-// #  define ZSH_HISTORY_HANDLING 1
-// # endif
 
 // # define PATH_MAX_LEN 256
 

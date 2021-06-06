@@ -6,11 +6,16 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 21:23:40 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 11:47:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+// READ _TERMCAPS_ARROW_LEN BYTE AT A TIME
+#ifndef __TMP_BUF_SZ
+# define __TMP_BUF_SZ _TERMCAPS_ARROW_LEN
+#endif	/* ifndef __TMP_BUF_SZ */
 
 // termcaps lookup table declaration
 static struct s_termcaps	g_terms[] = {
@@ -20,11 +25,6 @@ static struct s_termcaps	g_terms[] = {
 	{K_LEFT, ft_termcap_edition},
 	{NULL, 0}
 };
-
-// READ 1 BYTE AT A TIME
-#ifndef __TMP_BUF_SZ
-# define __TMP_BUF_SZ _TERMCAPS_ARROW_LEN
-#endif	/* ifndef __TMP_BUF_SZ */
 
 static char	*ft_realloc_str(char *str, char **line, int *check)
 {
@@ -95,25 +95,24 @@ void	print_inline(char **ptr, char *buffer)
 {
 	char		*ret;
 	const void	*tmp_ptr = *ptr;
-	const char	*head = ft_substr(*ptr, 0, singleton()->edit.current_index);
-	const char	*tail = ft_substr(*ptr + singleton()->edit.current_index, 0,
-					singleton()->edit.len - singleton()->edit.current_index);
 	const char	*go = tgetstr("ch", NULL);
 
+	ft_asprintf(&ret, "%.*s%s%.*s",
+		(int)singleton()->edit.current_index, *ptr,
+		buffer,
+		(int)singleton()->edit.len - (int)singleton()->edit.current_index,
+		*ptr + (int)singleton()->edit.current_index);
 	singleton()->edit.len += ft_strlen(buffer);
 	singleton()->edit.current_index += ft_strlen(buffer);
-	ft_asprintf(&ret, "%s%s%s", head, buffer, tail);
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	ft_dprintf(STDIN_FILENO, "%s", ret);
 	*ptr = ret;
-	ft_dprintf(STDIN_FILENO, "%s", tgoto(go, 0,
-		ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING + \
+	ft_dprintf(STDIN_FILENO, "%s",
+		tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING + \
 		singleton()->edit.current_index));
 	(void)tmp_ptr;
 	// ft_memdel((void **)&tmp_ptr);
-	ft_memdel((void **)&head);
-	ft_memdel((void **)&tail);
 }
 
 static char	*ft_read_line(int fd, char *str, char **line, int *check)
