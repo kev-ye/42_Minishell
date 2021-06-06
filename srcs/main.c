@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 10:58:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 12:46:09 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,9 @@ static void	init_termcaps(struct termios *tattr)
 			B_RED "Could not access the termcap data base.\n" CLR_COLOR);
 		ft_free_exit();
 	}
+	(void)tattr;
 	tcgetattr(STDIN_FILENO, tattr);
-	tattr->c_lflag &= ~(ICANON | ECHO);
+	// tattr->c_lflag &= ~(ECHO);
 	tattr->c_cc[VMIN] = 1;
 	tattr->c_cc[VTIME] = 0;
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, tattr);
@@ -130,6 +131,27 @@ static int	ft_init_minishell(char **env)
 	return (1);
 }
 
+#define SET_TERMCAPS 1
+#define RESET_TERMCAPS 0
+
+static void	reset_termcaps(int flag)
+{
+	if (SET_TERMCAPS == flag)
+	{
+		tcgetattr(STDIN_FILENO, &singleton()->tattr);
+		(&singleton()->tattr)->c_lflag &= ~(ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
+		tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr);
+	}
+	else if (RESET_TERMCAPS == flag)
+	{
+		tcgetattr(STDIN_FILENO, &singleton()->tattr);
+		(&singleton()->tattr)->c_lflag |= (ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
+		tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr);
+	}
+}
+
 void	prompt(void)
 {
 	char	*ret;
@@ -141,8 +163,10 @@ void	prompt(void)
 		// char *s = tgetstr("al", NULL);
 		// tputs(s, 1, ft_sputchar);
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
+		reset_termcaps(SET_TERMCAPS);
 		print_prompt();
 		r = ft_gnl_stdin(&ret);
+		reset_termcaps(RESET_TERMCAPS);
 		if (singleton()->isatty_stdin)
 			add2history(ret);
 		// tputs(ret, 1, ft_sputchar);
