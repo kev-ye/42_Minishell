@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 11:58:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 18:07:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-#define COMPLETE_METACHARACTERS "|&;()<> \t"
-#define METACHARACTERS "|;<> \t"
+static struct s_redirections	g_limits[] = {
+	{";", 1, FLG_EO_CMD}, {"|", 1, FLG_PIPE}, {">>", 2, FLG_APPEND},
+	{">", 1, FLG_OUTPUT}, {"<", 1, FLG_INPUT}, {NULL, 0, 0}
+};
 
 // RESET_FLAG is used to reset static variables in `quotes2close'
 #define RESET_FLAG 1
@@ -79,12 +81,8 @@ t_cmd	*new_cmd(uint16_t status, t_list **args)
 
 int	found_str_limit(char *s, size_t i, t_list **args)
 {
-	static struct s_redirections	limits[] = {
-		{";", 1, FLG_EO_CMD}, {"|", 1, FLG_PIPE}, {">>", 2, FLG_APPEND},
-		{">", 1, FLG_OUTPUT}, {"<", 1, FLG_INPUT}, {NULL, 0, 0}
-	};
-	t_cmd		*new;
-	size_t		k;
+	t_cmd	*new;
+	size_t	k;
 
 	// if (!s[i])
 	// {
@@ -94,15 +92,15 @@ int	found_str_limit(char *s, size_t i, t_list **args)
 	// 	return (0);
 	// }
 	k = 0;
-	while (limits[k].redir)
+	while (g_limits[k].redir)
 	{
-		if (ft_strncmp(s + i, limits[k].redir, limits[k].len) == 0)
+		if (ft_strncmp(s + i, g_limits[k].redir, g_limits[k].len) == 0)
 		{
 			if (i > 0)
 				ft_lstadd_back(args, ft_lstnew(ft_substr(s, 0, i)));
-			new = new_cmd(limits[k].flag, args);
+			new = new_cmd(g_limits[k].flag, args);
 			ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
-			return (limits[k].len);
+			return (g_limits[k].len);
 		}
 		++k;
 	}
@@ -127,17 +125,13 @@ int	len_variable(char *s)
 		return (NOT_FOUND);
 }
 
+// $? case
 size_t	get_var_last_return_case(char **s, size_t i)
 {
 	char	*ptr;
-	// char	*tmp;
-	// char	*head;
 
-	// head = ft_substr(*s, 0)
-	// ft_asprintf(&ptr, "%s%d", singleton()->last_return_value, s + i);
-	ft_asprintf(&ptr, "%s%d", *s + i, singleton()->last_return_value);
-	ft_printf("ptr: %s\n", ptr);
-	// free(ptr);
+	ft_asprintf(&ptr, "%.*s%d%s", i - 1, *s, singleton()->last_return_value,
+		*s + i + 1);
 	*s = ptr;
 	return (ft_nblen(singleton()->last_return_value) - 1);
 }
@@ -150,7 +144,7 @@ size_t	get_env_var(char **s, size_t i)
 	char		*ptr;
 	char		*new;
 
-	if (*(*s + i) == '?')	// case: echo $?
+	if (*(*s + i) == '?')
 		return (get_var_last_return_case(s, i));
 	if (NOT_FOUND == len_str)
 		return (0);
@@ -158,7 +152,6 @@ size_t	get_env_var(char **s, size_t i)
 	if (!p)
 		return ((size_t)ft_malloc_error(__FILE__, __LINE__));
 	ptr = NULL;
-	// ptr = ft_trns((tmp != NULL), ft_strchr(tmp->content, '='), NULL);
 	tmp = search_env(p, &singleton()->env);
 	if (tmp)
 		ptr = ft_strchr(tmp->content, '=');
@@ -170,7 +163,6 @@ size_t	get_env_var(char **s, size_t i)
 		ft_memcpy(new + i - 1, ptr + 1, ft_strlen(ptr) - 1);
 	ft_strcat(new, *s + i + len_str);
 	*s = new;
-	// return (ft_trnul((ptr != NULL), ft_strlen(ptr + 1) - 1, -1));
 	if (ptr)
 		return (ft_strlen(ptr + 1) - 1);
 	else
@@ -215,12 +207,14 @@ void	ft_parse(char *s)
 				continue ;
 			}
 		}
-		
+
 		// ft_printf("%s:%d: [%.4b] [%s]\n", __FILE__, __LINE__, quotes.first, s + i);
 
 		if (s[i] == '\\' && quotes.first == 0)
 		{
-			ft_strnclean(s + i, "\\", 1);	// remove `\' (backslash) from `s'
+			if (quotes.d_quote == 0)
+				ft_strnclean(s + i, "\\", 1);	// remove `\' (backslash) from `s'
+			// PRINT_ERR("here")
 			if (ft_incharset(SPEC_CHARS, s[i]))
 				++i;
 			quotes2close(s[i], &quotes, SET_FLAG);
@@ -231,21 +225,22 @@ void	ft_parse(char *s)
 			quotes2close(s[i], &quotes, SET_FLAG);
 			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change)
 			{
+				// PRINT_ERR("here")
 				ft_strnclean(s + i, QUOTES, 1);	// remove ``'"`` from `s'
 				quotes2close(s[i], &quotes, SET_FLAG);
-				// ft_printf("quotes.first[%d] (s + i)[%s] i[%d]\n",
-				// 	quotes.first, s + i, i);
+				// ft_printf("quotes.first[%d] quotes.changed[%d] s[%s] (s + i)[%s] i[%d]\n",
+					// quotes.first, quotes.did_change, s, s + i, i);
 				// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
 				// 	|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
 				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
 				if (quotes.did_change)
 				{
+					// ft_printf("%s%d: s[%s]\n", __FILE__, __LINE__, s);
 					ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 					s += i;
 					i = 0;
-					continue ;
+					// continue ; // does not change anything
 				}
-				continue ;
 			}
 			else if (s[i] == '$' && (!quotes.first || (quotes.first & (1 << DBL_BSHFT))))
 			{

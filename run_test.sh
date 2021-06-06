@@ -146,8 +146,8 @@ test_cmd() {
 		echo >> $__SHL_TST_PATH__/results.log
 		errors=$((errors+1))
 	else
-		# echo "✅ => [${1}]"	# debug purpose
-		echo "✅  "
+		echo "✅ => [${1}]"	# debug purpose
+		# echo "✅  "
 	fi
 
 	# echo "[${1}]"	# debug purpose
@@ -197,11 +197,16 @@ test_parser() {
 
 	# backslashes
 	test_cmd "echo \\"
-	test_cmd "echo \\"
 	test_cmd "echo \\\\"
 	test_cmd "echo \\\\\\"
 	test_cmd "echo \"\\\\\\\""
 	test_cmd "echo '\\\\\\'"
+	test_cmd "echo \"\\ \""
+	test_cmd "echo '\\ '"
+	test_cmd "echo \"\\\\\\\\ \""
+	test_cmd "echo '\\\\\\\\ '"
+	test_cmd "echo '\\'"
+	test_cmd "echo '\\\\\\\\'"
 
 	# quotes
 	test_cmd "echo ''"
@@ -218,16 +223,14 @@ test_parser() {
 	test_cmd "echo ''\"''bonjour\"''"
 	test_cmd "echo \\\"\"''\\\"\"\"bonjour\""
 	test_cmd "echo \"a\"\"b\""
-	test_cmd "echo \"\\ \""
-	test_cmd "echo \"\\\\\\\\ \""
-	test_cmd "echo '\\'"
-	test_cmd "echo '\\\\\\\\'"
 
 	# variables
 	test_cmd "echo \$"
 	test_cmd "echo '\$'"
 	test_cmd "echo \"\$\""
 	test_cmd "echo \"\$?\""
+	test_cmd "adkjg; echo \"\$?\""
+	test_cmd "echo '\$?'"
 	test_cmd "echo \"\$DOES_NOT_EXIST\""
 	test_cmd "echo \"\$HOME\""
 	test_cmd "echo '\$HOME'"

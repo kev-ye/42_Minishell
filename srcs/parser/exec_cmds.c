@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 12:32:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 17:40:28 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	ft_pre_exec_cmd(void *ptr)
 	char	*ex;
 
 	cmd = ptr;
-	if (!cmd->args || !cmd->args)
+	if (!cmd->args || !*cmd->args)
 		return ;
 	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
 	if (singleton()->last_return_value == NOT_FOUND)
@@ -116,6 +116,7 @@ void	ft_pre_exec_cmd(void *ptr)
 		{
 			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
 				cmd->args[0]);
+			singleton()->last_return_value = LRV_NOT_FOUND;
 		}
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
