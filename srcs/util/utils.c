@@ -6,19 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 10:09:20 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 22:43:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// special putchar
-int	ft_sputchar(int c)
-{
-	if (write(STDIN_FILENO, &c, sizeof(int)) < 0)
-		return (EOF);
-	return (c);
-}
 
 int	ft_is_openable(char *path, int flag)
 {
@@ -66,14 +58,14 @@ t_list	*ft_lstindex(t_list *lst, size_t index)
 	tmp = lst;
 	while (tmp)
 	{
-		if (i == index)
+		if (i++ == index)
 			return (tmp);
-		++i;
 		tmp = tmp->next;
 	}
 	return (NULL);
 }
 
+// DEBUG PURPOSE
 void	ft_lstprint_cmd(t_list *lst)
 {
 	t_list	*tmp;
@@ -113,7 +105,7 @@ int	ft_find_in_strs(char *s, const char **strs)
 	i = 0;
 	while (strs[i])
 	{
-		if (ft_strcmp(s, strs[i]) == 0)
+		if (0 == ft_strcmp(s, strs[i]))
 			return (i);
 		++i;
 	}
@@ -168,17 +160,20 @@ char	*ft_strnclean(char *s, const char *charset, size_t end)
 
 void	ft_free_exit(void)
 {
-	ft_lstclear(&singleton()->lst, free);
-	if (singleton()->cwd)
-		ft_memdel((void **)(&singleton()->cwd));
-	if (singleton()->env)
-		ft_lstclear(&singleton()->env, free);
-	if (singleton()->hist.history)
-		ft_lstclear(&singleton()->hist.history, free);
-	if (singleton()->hist.path)
-		ft_memdel((void **)(&singleton()->hist.path));
-	close(singleton()->hist.fd);
-	free(singleton());
+	if (singleton())
+	{
+		ft_lstclear(&singleton()->lst, free);
+		if (singleton()->cwd)
+			ft_memdel((void **)(&singleton()->cwd));
+		if (singleton()->env)
+			ft_lstclear(&singleton()->env, free);
+		if (singleton()->hist.history)
+			ft_lstclear(&singleton()->hist.history, free);
+		if (singleton()->hist.path)
+			ft_memdel((void **)(&singleton()->hist.path));
+		close(singleton()->hist.fd);
+		free(singleton());
+	}
 	exit(0);
 }
 
@@ -249,7 +244,7 @@ t_list	*search_env(char *tofind, t_list **env)
 	while (tmp)
 	{
 		if ((char *)tmp->content
-			&& !ft_strncmp((char *)tmp->content, tofind, len_tofind)
+			&& 0 == ft_strncmp((char *)tmp->content, tofind, len_tofind)
 			&& (((char *)(tmp->content))[len_tofind] == '='
 			|| ((char *)(tmp->content))[len_tofind] == '\0'))
 			return (tmp);
@@ -273,12 +268,12 @@ char	*ft_getenv(const char *name)
 		if (ptr)
 		{
 			idx = ft_stridx(tmp->content, "=");
-			if (idx != -1 && ft_strncmp(name, tmp->content, idx) == 0)
+			if (idx != NOT_FOUND && 0 == ft_strncmp(name, tmp->content, idx))
 				return (ft_strdup(ptr + 1));
 		}
 		else
 		{
-			if (ft_strcmp(name, tmp->content) == 0)
+			if (0 == ft_strcmp(name, tmp->content))
 				return (ft_strdup(""));
 		}
 		tmp = tmp->next;

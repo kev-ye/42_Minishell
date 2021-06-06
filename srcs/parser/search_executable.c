@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 18:11:16 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 21:51:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ static char	*find_exec(char **exectbl, char *command)
 			ft_asprintf(&cmd, "%s/%s", exectbl[i++], command);
 			if (!cmd)
 				return (NULL);
-			// struct stat	s;
-			// stat()
 			if (ft_is_openable(cmd, O_RDONLY))
 				return (cmd);
 			ft_memdel((void **)&cmd);

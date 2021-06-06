@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_gnl.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 12:13:44 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 21:43:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // READ _TERMCAPS_ARROW_LEN BYTE AT A TIME
-#ifndef __TMP_BUF_SZ
-# define __TMP_BUF_SZ _TERMCAPS_ARROW_LEN
-#endif	/* ifndef __TMP_BUF_SZ */
+#ifndef _TMP_BUF_SZ_
+# define _TMP_BUF_SZ_ _TERMCAPS_ARROW_LEN
+#endif	/* ifndef _TMP_BUF_SZ_ */
 
 // termcaps lookup table declaration
 static struct s_termcaps	g_terms[] = {
@@ -37,7 +37,7 @@ static char	*ft_realloc_str(char *str, char **line, int *check)
 		i = 0;
 		while (str[i] && str[i] != '\n')
 			++i;
-		if (str[i] == '\n')
+		if ('\n' == str[i])
 		{
 			*check = 1;
 			new = ft_strdup(str + i + 1);
@@ -57,7 +57,7 @@ static int	is_arrow_pressed(char **ptr, char *s)
 	i = 0;
 	while (g_terms[i].termcap)
 	{
-		if (!strncmp(s, g_terms[i].termcap, ft_strlen(g_terms[i].termcap)))
+		if (0 == strncmp(s, g_terms[i].termcap, ft_strlen(g_terms[i].termcap)))
 		{
 			g_terms[i].f(ptr, g_terms[i].termcap);
 			return (FOUND);
@@ -97,34 +97,32 @@ void	print_inline(char **ptr, char *buffer)
 	const void	*tmp_ptr = *ptr;
 	const char	*go = tgetstr("ch", NULL);
 
-	ft_asprintf(&ret, "%.*s%s%.*s",
-		(int)singleton()->edit.current_index, *ptr,
-		buffer,
+	ft_asprintf(&ret, "%.*s%s%.*s", (int)singleton()->edit.current_index,
+		*ptr, buffer,
 		(int)singleton()->edit.len - (int)singleton()->edit.current_index,
 		*ptr + (int)singleton()->edit.current_index);
 	singleton()->edit.len += ft_strlen(buffer);
 	singleton()->edit.current_index += ft_strlen(buffer);
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
-	ft_dprintf(STDIN_FILENO, "%s", ret);
+	ft_putstr_fd(ret, STDIN_FILENO);
 	*ptr = ret;
-	ft_dprintf(STDIN_FILENO, "%s",
-		tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + PROMPT_CPADDING + \
-		singleton()->edit.current_index));
+	ft_putstr_fd(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + \
+		PROMPT_CPADDING + singleton()->edit.current_index), STDIN_FILENO);
 	(void)tmp_ptr;
 	// ft_memdel((void **)&tmp_ptr);
 }
 
 static char	*ft_read_line(int fd, char *str, char **line, int *check)
 {
-	char	buffer[__TMP_BUF_SZ + 1];
+	char	buffer[_TMP_BUF_SZ_ + 1];
 	char	*tmp;
 	int		r;
 
 	r = 1;
 	while (r > 0)
 	{
-		r = read(fd, buffer, __TMP_BUF_SZ);
+		r = read(fd, buffer, _TMP_BUF_SZ_);
 		if (r <= 0)
 			break ;
 		buffer[r] = '\0';
@@ -135,23 +133,11 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 		{
 			ft_putstr_fd(buffer, STDIN_FILENO);
 			str = ft_strjoin(str, buffer);
-
-			///////////////////////////////
-			// SOME OPTI TO DO HERE
-			///////////////////////////////
-
-
+			break ;
 		}
 		else
 			print_inline(&str, buffer);
 		ft_memdel((void **)&tmp);
-		if (ft_strchr(str, '\n'))
-			break ;
-		
-			///////////////////////////////
-			// AND HERE
-			///////////////////////////////
-		
 	}
 	return (ft_realloc_str(str, line, check));
 }
@@ -161,7 +147,7 @@ int	ft_gnl_stdin(char **line)
 	static char	*str;
 	int			check;
 
-	if (read(STDIN_FILENO, str, 0) || __TMP_BUF_SZ <= 0 || !line)
+	if (read(STDIN_FILENO, str, 0) || _TMP_BUF_SZ_ <= 0 || !line)
 		return (-1);
 	check = 0;
 	if (str && ft_strchr(str, '\n'))
@@ -179,6 +165,6 @@ int	ft_gnl_stdin(char **line)
 	return (check);
 }
 
-#ifdef __TMP_BUF_SZ
-# undef __TMP_BUF_SZ
-#endif	/* ifdef __TMP_BUF_SZ */
+#ifdef _TMP_BUF_SZ_
+# undef _TMP_BUF_SZ_
+#endif	/* ifdef _TMP_BUF_SZ_ */

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 18:07:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 22:53:59 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	quotes2close(unsigned char c, t_quotes *q, int status)
 	if (SET_FLAG == status)
 	{
 		if ((('"' == c) && (('"' == c) << DBL_BSHFT) & q->first)
-		|| (('\'' == c) && (('\'' == c) << SGL_BSHFT) & q->first))
+			|| (('\'' == c) && (('\'' == c) << SGL_BSHFT) & q->first))
 			q->first = 0;
 		else if (q->d_quote == 0 && q->s_quote == 0)
 			q->first = (('"' == c) << DBL_BSHFT) | (('\'' == c) << SGL_BSHFT);
@@ -173,10 +173,6 @@ size_t	get_env_var(char **s, size_t i)
 -------- PARSER --------
 *******************************************************************************/
 
-#define SPEC_CHARS " \\$'\""
-#define SPACES " \t"
-#define QUOTES "\"'"
-
 void	ft_parse(char *s)
 {
 	t_quotes	quotes;
@@ -213,7 +209,7 @@ void	ft_parse(char *s)
 		if (s[i] == '\\' && quotes.first == 0)
 		{
 			if (quotes.d_quote == 0)
-				ft_strnclean(s + i, "\\", 1);	// remove `\' (backslash) from `s'
+				ft_strnclean(s + i, "\\", 1); // remove `\' (backslash) from `s'
 			// PRINT_ERR("here")
 			if (ft_incharset(SPEC_CHARS, s[i]))
 				++i;
@@ -226,7 +222,7 @@ void	ft_parse(char *s)
 			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change)
 			{
 				// PRINT_ERR("here")
-				ft_strnclean(s + i, QUOTES, 1);	// remove ``'"`` from `s'
+				ft_strnclean(s + i, QUOTES, 1); // remove ``'"`` from `s'
 				quotes2close(s[i], &quotes, SET_FLAG);
 				// ft_printf("quotes.first[%d] quotes.changed[%d] s[%s] (s + i)[%s] i[%d]\n",
 					// quotes.first, quotes.did_change, s, s + i, i);
@@ -264,7 +260,7 @@ void	ft_parse(char *s)
 	{
 		t_cmd	*new;
 
-		if (i > 0 && s[i - 1])// && !ft_incharset(SPACES, s[i - 1]))
+		if (i > 0 && s[i - 1]) // && !ft_incharset(SPACES, s[i - 1]))
 			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
@@ -276,7 +272,6 @@ void	ft_parse(char *s)
 /*******************************************************************************
 -------- END PARSER --------
 *******************************************************************************/
-
 
 /*
 TESTS TO DO:

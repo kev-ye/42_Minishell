@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/06 11:07:03 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/06 22:25:50 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,8 +38,7 @@ SUB_SRC	:= exec_cmds.c \
 		   ft_termcaps.c \
 		   history.c \
 		   parser.c \
-		   search_executable.c \
-		   sig.c
+		   search_executable.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \

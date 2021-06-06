@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 17:15:50 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 22:59:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ static int	ft_init_minishell(char **env)
 #define SET_TERMCAPS 1
 #define RESET_TERMCAPS 0
 
-static void	reset_termcaps(int flag)
+static void	__reset_termcaps__(int flag)
 {
 	if (SET_TERMCAPS == flag)
 	{
@@ -160,19 +160,16 @@ void	prompt(void)
 	signal(SIGINT, ft_interrupt);
 	while (TRUE)
 	{
-		// char *s = tgetstr("al", NULL);
-		// tputs(s, 1, ft_sputchar);
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
-		reset_termcaps(SET_TERMCAPS);
+		__reset_termcaps__(SET_TERMCAPS);
 		print_prompt();
 		r = ft_gnl_stdin(&ret);
-		reset_termcaps(RESET_TERMCAPS);
+		__reset_termcaps__(RESET_TERMCAPS);
 		if (singleton()->isatty_stdin)
-			add2history(ret);
-		// tputs(ret, 1, ft_sputchar);
+			add2history(ft_strdup(ret));
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
-		// ft_memdel((void **)(&ret));
+		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{
 			ft_exit();
@@ -204,7 +201,7 @@ char	*check_dir(char *dir_path, char *fname)
 	// 	}
 	// 	++i;
 	// }
-	while (1)
+	while (TRUE)
 	{
 		dp = readdir(dirp);
 		if (!dp)
@@ -236,7 +233,7 @@ int	main(__attribute__((unused)) int ac,
 	if (singleton()->isatty_stdin)
 		init_history();
 	
-	// while (1)
+	// while (TRUE)
 	// {
 	// 	char *t = check_dir(ft_getenv("PWD"), "mini");
 	// 	if (!t)

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/03 13:31:40 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 21:44:18 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void	convert_history2lst(void)
 	char	*ret;
 	t_list	*new;
 
-	while (1)
+	while (TRUE)
 	{
 		check = get_next_line(singleton()->hist.fd, &ret);
 		if ((0 == ft_strlen(ret) || ft_strisall(ret, ft_isspace)))
