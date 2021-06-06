@@ -1,1 +1,0 @@
-This string will be printed in tmp.txt file

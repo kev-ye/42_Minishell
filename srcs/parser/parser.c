@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/05/31 16:43:21 by besellem         ###   ########.fr       */
+=======
+/*   Updated: 2021/06/02 14:10:35 by kaye             ###   ########.fr       */
+>>>>>>> kaye
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,8 +278,8 @@ void	ft_parse(char *s)
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
-	// ft_lstprint_cmd(singleton()->lst);
-	// ft_printf("\n");
+	ft_lstprint_cmd(singleton()->lst);
+	ft_printf("\n");
 }
 
 /*******************************************************************************
