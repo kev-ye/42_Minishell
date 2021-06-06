@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 12:46:09 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 13:07:39 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ void	print_prompt(void)
 		ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
 }
 
+
+// a revoir : cant add env with export and unset fuck
 t_list	*get_env(char **env)
 {
 	t_list	*new_env;

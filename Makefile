@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
+#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/06 11:07:03 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/06 19:57:40 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ INC_DIR		:= incs
 SRC_DIR		:= srcs
 SUB_DIR		:= builtin \
 			   parser \
+			   execution \
 			   util
 OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
@@ -33,14 +34,17 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 
 NAME	:= minishell
 SRC		:= main.c
-SUB_SRC	:= exec_cmds.c \
-		   ft_gnl.c \
+SUB_SRC	:= ft_gnl.c \
 		   ft_termcaps.c \
 		   history.c \
 		   parser.c \
-		   search_executable.c \
 		   sig.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
+SUB_SRC	:= exec_cmds.c \
+		   search_executable.c \
+		   only_pipe.c \
+		   only_redir.c
+SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \
 		   echo.c \

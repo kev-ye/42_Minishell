@@ -6,12 +6,13 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:11:08 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 19:45:29 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 13:10:08 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// a revoir : after use cd, PWD no change
 int	ft_cd(char **cmds)
 {
 	if (!cmds || !*cmds)

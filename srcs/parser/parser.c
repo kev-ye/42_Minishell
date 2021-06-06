@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 11:58:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 19:19:31 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,8 +274,8 @@ void	ft_parse(char *s)
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
-	// ft_lstprint_cmd(singleton()->lst);
-	// ft_printf("\n");
+	ft_lstprint_cmd(singleton()->lst);
+	ft_printf("\n");
 }
 
 /*******************************************************************************

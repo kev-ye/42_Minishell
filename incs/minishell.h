@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 11:57:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 19:56:30 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,11 +241,18 @@ void		*ft_malloc_error(char *file, int line);
 */
 t_minishl	*singleton(void);
 int			ft_gnl_stdin(char **line);
-char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
-void		ft_exec_each_cmd(t_list *lst);
 t_list		*search_env(char *tofind, t_list **env);
+
+/*
+** Execution
+*/
+void		ft_exec_each_cmd(t_list *lst);
+char		*search_executable(char *command);
+void		ft_pre_exec_cmd(void *ptr);
+void 		cmd_with_pipe(t_list *lst_cmd);
+int			*cmd_with_redir(void *cmd, t_list *lst_cmd);
 
 /*
 ** Builtin
