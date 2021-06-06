@@ -6,16 +6,16 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/05/31 13:09:50 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/06 11:07:03 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror #-fsanitize=address -g3
+CFLAGS 		= -Wall -Wextra -Werror# -fsanitize=address -g3
 IFLAGS 		= -I./incs -I./libft/incs
-LIBFLAGS 	= -L./libft -lft
+LIBFLAGS 	= -L./libft -lft -lncurses
 
 # DIRECTORIES
 
@@ -34,6 +34,9 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 NAME	:= minishell
 SRC		:= main.c
 SUB_SRC	:= exec_cmds.c \
+		   ft_gnl.c \
+		   ft_termcaps.c \
+		   history.c \
 		   parser.c \
 		   search_executable.c \
 		   sig.c
@@ -86,6 +89,7 @@ fclean: clean
 	@echo "Deleting $(CYAN_COLOR)minishell $(DEFAULT_COLOR)file ..."
 	@rm -rf $(NAME)
 	@rm -rf $(NAME).dSYM
+	@rm -f .minishell_history
 
 re: fclean all
 

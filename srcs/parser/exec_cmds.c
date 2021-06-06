@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 13:11:00 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 14:46:04 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,27 +98,27 @@ void	ft_pre_exec_cmd(void *ptr)
 	t_cmd	*cmd;
 	char	*ex;
 
-    cmd = ptr;
-    if (!cmd->args || !cmd->args)
-        return ;
-    singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-    if (singleton()->last_return_value == NOT_FOUND)
-    {
+	cmd = ptr;
+	if (!cmd->args || !cmd->args)
+		return ;
+	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+	if (singleton()->last_return_value == NOT_FOUND)
+	{
 		// printf("\n\n\n\n\n\nim here\n\n\n\n\n\n");
-        ex = search_executable(cmd->args[0]);
-        if (ex)
-        {
-            // ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-            singleton()->last_return_value = ft_exec_cmd(ex, cmd);
-            ft_memdel((void **)&ex);
-        }
-        else
-        {
-            ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
-                cmd->args[0]);
-        }
-    }
-    ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
+		ex = search_executable(cmd->args[0]);
+		if (ex)
+		{
+			// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
+			singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+			ft_memdel((void **)&ex);
+		}
+		else
+		{
+			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
+				cmd->args[0]);
+		}
+	}
+	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
 }
 
 int	*first_cmd_with_pipe(void *cmd)

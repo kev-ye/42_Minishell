@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 11:23:38 by besellem         ###   ########.fr       */
+/*   Updated: 2021/05/31 16:43:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ size_t	get_env_var(char **s, size_t i)
 	if (!p)
 		return ((size_t)ft_malloc_error(__FILE__, __LINE__));
 	ptr = NULL;
+	// ptr = ft_trns((tmp != NULL), ft_strchr(tmp->content, '='), NULL);
 	tmp = search_env(p, &singleton()->env);
 	if (tmp)
 		ptr = ft_strchr(tmp->content, '=');
@@ -169,6 +170,7 @@ size_t	get_env_var(char **s, size_t i)
 		ft_memcpy(new + i - 1, ptr + 1, ft_strlen(ptr) - 1);
 	ft_strcat(new, *s + i + len_str);
 	*s = new;
+	// return (ft_trnul((ptr != NULL), ft_strlen(ptr + 1) - 1, -1));
 	if (ptr)
 		return (ft_strlen(ptr + 1) - 1);
 	else
@@ -277,12 +279,15 @@ void	ft_parse(char *s)
 }
 
 /*******************************************************************************
--------- PARSER --------
+-------- END PARSER --------
 *******************************************************************************/
 
 
 /*
 TESTS TO DO:
+
+env -i ./minishell
+env -i SHLVL=1 ./minishell
 
 ls -la; echo bonjour >> out; ls | grep srcs ;
 ls -la; ec"ho" bo"njo"ur >> out ;echo ' bonjour "" "a\" $LESS\toi'\"\' > out

@@ -6,11 +6,30 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/27 14:06:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/03 10:09:20 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+// special putchar
+int	ft_sputchar(int c)
+{
+	if (write(STDIN_FILENO, &c, sizeof(int)) < 0)
+		return (EOF);
+	return (c);
+}
+
+int	ft_is_openable(char *path, int flag)
+{
+	int	fd;
+
+	fd = open(path, flag);
+	if (fd == -1)
+		return (0);
+	close(fd);
+	return (1);
+}
 
 void	ft_printstrs(int fd, char **strs)
 {
@@ -35,6 +54,24 @@ void	ft_lstprint(t_list *lst, char sep)
 			ft_printf("%s%c", tmp->content, sep);
 		tmp = tmp->next;
 	}
+}
+
+// return the nth node of the list
+t_list	*ft_lstindex(t_list *lst, size_t index)
+{
+	t_list	*tmp;
+	size_t	i;
+
+	i = 0;
+	tmp = lst;
+	while (tmp)
+	{
+		if (i == index)
+			return (tmp);
+		++i;
+		tmp = tmp->next;
+	}
+	return (NULL);
 }
 
 void	ft_lstprint_cmd(t_list *lst)
@@ -136,6 +173,11 @@ void	ft_free_exit(void)
 		ft_memdel((void **)(&singleton()->cwd));
 	if (singleton()->env)
 		ft_lstclear(&singleton()->env, free);
+	if (singleton()->hist.history)
+		ft_lstclear(&singleton()->hist.history, free);
+	if (singleton()->hist.path)
+		ft_memdel((void **)(&singleton()->hist.path));
+	close(singleton()->hist.fd);
 	free(singleton());
 	exit(0);
 }
@@ -143,7 +185,7 @@ void	ft_free_exit(void)
 void	*ft_malloc_error(char *file, int line)
 {
 	ft_dprintf(STDERR_FILENO, B_GREEN "%s:%d: Malloc Error\n" CLR_COLOR,
-				file, line);
+		file, line);
 	ft_free_exit();
 	return (NULL);
 }

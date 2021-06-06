@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/05/31 10:48:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/06 10:58:19 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,29 +33,70 @@
 # include <sys/ioctl.h>
 // # include <sys/param.h>
 
-# define CUSTOM_T_LIST
 # include "libft.h"
+# include "ft_termcaps.h"
 
 /*
 ** -- DEFINES --
 */
 # define PROG_NAME "minishell"
+
+# define PROMPT_CPADDING 3
 # define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-# define BUILTIN 7
+
+# ifndef HISTORY_FILENAME
+#  define HISTORY_FILENAME ".minishell_history"
+# endif
 
 # define SUCCESS 0
 # define ERROR 1
 
 # define FOUND 0
 # define NOT_FOUND (-1)
+
+// Define TRUE macro to 1
+# ifndef TRUE
+#  define TRUE 1
+# endif
+# if defined(TRUE) && 1 != TRUE
+#  undef TRUE
+#  define TRUE 1
+# endif
+
+// Define FALSE macro to 0
+# ifndef FALSE
+#  define FALSE 0
+# endif
+# if defined(FALSE) && 0 != FALSE
+#  undef FALSE
+#  define FALSE 0
+# endif
+
+// SET BONUS TO 0 BY DEFAULT
+# ifndef BONUS
+#  define BONUS 0
+# endif
+
+/*
+** Used to add an entry to history if it's different from the last one
+** For this purpose, a simple strcmp is done between the last and the new entry
+** Bash adds it whatever the last one was. To replicate this behavour, just set
+** -D ZSH_HISTORY_HANDLING=0 at compile time
+*/
+# ifndef ZSH_HISTORY_HANDLING
+#  define ZSH_HISTORY_HANDLING 1
+# endif
+
 // # define PATH_MAX_LEN 256
 
 # define PARSER_LIMITS_CHARS ";|<> "
 
+// DEBUGGING PURPOSE - TO REMOVE
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
 						":\e[0m " s "\n");
+// END DEBUGGING PURPOSE - TO REMOVE
 
 /*
 ** -- DATA STRUCTURES --
@@ -76,6 +117,12 @@ struct s_redirections
 	char	*redir;
 	int		len;
 	uint8_t	flag;
+};
+
+struct s_termcaps
+{
+	char	*termcap;
+	void	(*f)();
 };
 
 /*
@@ -131,6 +178,21 @@ typedef struct s_cmd
 	int			fd;
 }	t_cmd;
 
+typedef struct s_history
+{
+	int		fd;
+	size_t	current;
+	size_t	size;
+	char	*path;
+	t_list	*history;
+}	t_history;
+
+typedef struct s_edition
+{
+	size_t	len;
+	size_t	current_index;
+}	t_edition;
+
 /*
 ** Main stucture. Called with a singleton
 **
@@ -141,11 +203,15 @@ typedef struct s_cmd
 */
 typedef struct s_minishl
 {
-	int		isatty_stdin;
-	int		last_return_value;
-	char	*cwd;
-	t_list	*env;
-	t_list	*lst;
+	int				isatty_stdin;
+	int				last_return_value;
+	char			*cwd;
+	char			*cwd_basename;
+	t_list			*env;
+	t_list			*lst;
+	t_edition		edit;
+	t_history		hist;
+	struct termios	tattr;
 }	t_minishl;
 
 /*
@@ -155,8 +221,11 @@ typedef struct s_minishl
 /*
 ** Utils
 */
+int			ft_sputchar(int c);
+int			ft_is_openable(char *path, int flag);
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
+t_list		*ft_lstindex(t_list *lst, size_t index);
 void		ft_lstprint_cmd(t_list *lst);
 char		**ft_lst2strs(t_list **lst);
 void		ft_list_sort(t_list **begin_list, int (*cmp)());
@@ -171,10 +240,10 @@ void		*ft_malloc_error(char *file, int line);
 ** Parser
 */
 t_minishl	*singleton(void);
+int			ft_gnl_stdin(char **line);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
-// void		ft_exec_each_cmd(void);
 void		ft_exec_each_cmd(t_list *lst);
 t_list		*search_env(char *tofind, t_list **env);
 
@@ -189,6 +258,14 @@ int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
 int			ft_exit(void) __attribute__((noreturn));
 int			ft_clear(void);
+
+/*
+** History
+*/
+void		init_history(void);
+void		add2history(char *cmd);
+
+void		print_inline(char **ptr, char *buffer);
 
 /*
 ** Signals
