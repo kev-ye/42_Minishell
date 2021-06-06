@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 11:57:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/06 11:58:37 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,14 +337,14 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 		{
 			if (flag_trunc == 1)
 			{
-				printf("[%s] is trunc\n", ((t_cmd *)lst_cmd->content)->args[0]);
+				// printf("[%s] is trunc\n", ((t_cmd *)lst_cmd->content)->args[0]);
 				if (tmp_fd_output != -1)
 					close(tmp_fd_output);
 				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 			}
 			else if (flag_append == 1)
 			{
-				printf("[%s] is append\n", ((t_cmd *)lst_cmd->content)->args[0]);
+				// printf("[%s] is append\n", ((t_cmd *)lst_cmd->content)->args[0]);
 				if (tmp_fd_output != -1)
 					close(tmp_fd_output);
 				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
@@ -479,31 +479,31 @@ void	ft_exec_each_cmd(t_list *lst)
 	{
 		if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
 		{
-			printf("fist with pipe\n");
+			// printf("fist with pipe\n");
 			fd = first_cmd_with_pipe(tmp->content);
 			first = 0;
 			pipe_flag = 1;
 		}
 		else if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
 		{
-			printf("interm with pipe\n");
+			// printf("interm with pipe\n");
 			fd = interm_cmd_with_pipe(tmp->content, fd);
 			pipe_flag = 1;
 		}
 		else if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
 		{
-			printf("with ;\n");
+			// printf("with ;\n");
 			last_cmd_with_pipe(tmp->content, fd);
 			pipe_flag = 0;
 		}
 		else if (((t_cmd *)tmp->content)->args && (((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
 		{
-			printf("last with pipe\n");
+			// // printf("last with pipe\n");
 			last_cmd_with_pipe(tmp->content, fd);
 		}
 		else if (((((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT) || (((t_cmd *)tmp->content)->status_flag & FLG_APPEND || (((t_cmd *)tmp->content)->status_flag & FLG_INPUT))))
 		{
-			printf("cmd with redir\n");
+			// printf("cmd with redir\n");
 			tmp->content = get_complete_cmd(tmp->content, lst);
 			fd = cmd_with_redir(tmp->content, tmp);
 			redir_flag = 1;
@@ -512,12 +512,12 @@ void	ft_exec_each_cmd(t_list *lst)
 		}
 		else if (((t_cmd *)tmp->content)->args && ((t_cmd *)tmp->content)->args && redir_flag == 1)
 		{
-			printf("last with pipe before get redir\n");
+			// printf("last with pipe before get redir\n");
 			cmd_before_get_redir(tmp->content, fd);
 		}
 		else if (((t_cmd *)tmp->content)->args)
 		{
-			printf("simple\n");
+			// printf("simple\n");
 			simple_cmd(tmp->content);
 		}
 		// else if (!((t_cmd *)tmp->content)->args)                              //////////////////////// some pb here : quit with ctrl + D show message
