@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 13:23:42 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 16:40:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@
 #define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
 						":\e[0m " s "\n");
 // END DEBUGGING PURPOSE - TO REMOVE
+
+# define LRV_SYNTAX_ERROR 258
 
 /*
 ** -- DATA STRUCTURES --
