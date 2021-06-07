@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 16:40:24 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 17:00:16 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,47 +123,6 @@ void	simple_cmd(void *cmd)
 			wait(NULL);
 	}
 }
-
-// void	ft_exec_each_cmd(t_list *lst_cmd)
-// {
-// 	t_list	*tmp;
-// 	int cmd_line;
-
-// 	tmp = lst_cmd;
-// 	cmd_line = -1;
-// 	if (syntax_parser(tmp) == 1)
-// 			return ;
-// 	while (tmp)
-// 	{
-// 		if (((t_cmd *)tmp->content)->args
-// 			&& ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-// 			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
-// 		{
-// 			printf(B_PURPLE"simple cmd"CLR_COLOR"\n");
-// 			simple_cmd(tmp->content);
-// 		}
-// 		else
-// 		{
-// 			cmd_line = part_cmd_check(tmp);
-// 			if (cmd_line == ONLY_PIPE)
-// 			{
-// 				printf(B_PURPLE"pipe cmd"CLR_COLOR"\n");
-// 				cmd_with_pipe(tmp);
-// 			}
-// 			else if (cmd_line == ONLY_REDIR)
-// 			{
-// 				printf(B_PURPLE"redir cmd"CLR_COLOR"\n");
-// 				cmd_with_redir(tmp->content, tmp);
-// 			}
-// 			else if (cmd_line == MIX)
-// 				printf("mix\n");
-// 		}
-// 		while (tmp && !(((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))
-// 			tmp = tmp->next;
-// 		if (tmp)
-// 			tmp = tmp->next;
-// 	}
-// }
 
 void	ft_exec_each_cmd(t_list *lst_cmd)
 {
