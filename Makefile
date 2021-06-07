@@ -6,14 +6,14 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/06 22:25:50 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/07 17:45:21 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror# -fsanitize=address -g3
+CFLAGS 		= -Wall -Wextra -Werror # -fsanitize=address -g3
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses
 
@@ -35,6 +35,7 @@ NAME	:= minishell
 SRC		:= main.c
 SUB_SRC	:= exec_cmds.c \
 		   ft_gnl.c \
+		   ft_termcaps_search_cmd.c \
 		   ft_termcaps.c \
 		   history.c \
 		   parser.c \

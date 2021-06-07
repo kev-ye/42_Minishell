@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 16:31:18 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 16:57:20 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,9 +211,9 @@ void	ft_parse(char *s)
 		// ft_printf("%s:%d: [%.4b] args_size[%2lld] [%s]\n", __FILE__, __LINE__,
 			// quotes.first, ft_lstsize(args), s + i);
 
-		if ('\\' == s[i])// && 0 == quotes.first)
+		if ('\\' == s[i] && 0 == quotes.first)
 		{
-			if (!quotes.d_quote)
+			// if (!quotes.d_quote)
 				ft_strnclean(s + i, "\\", 1); // remove `\' (backslash) from `s'
 			// PRINT_ERR("here")
 			// ft_printf("TO CLOSE: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));

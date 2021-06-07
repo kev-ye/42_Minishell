@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 13:56:54 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 17:53:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,52 +176,6 @@ void	prompt(void)
 	}
 }
 
-char	*check_dir(char *dir_path, char *fname)
-{
-	// static size_t	found = 0;
-	// const size_t	old = found;
-	const size_t	len = ft_strlen(fname);
-	DIR				*dirp;
-	struct dirent	*dp;
-	size_t			i;
-
-	dirp = opendir(dir_path);
-	if (!dirp)
-		return (NULL);
-	i = 0;
-	// while (i < found)
-	// {
-	// 	dp = readdir(dirp);
-	// 	if (!dp)
-	// 	{
-	// 		closedir(dirp);
-	// 		return (NULL);
-	// 	}
-	// 	++i;
-	// }
-	while (TRUE)
-	{
-		dp = readdir(dirp);
-		if (!dp)
-			break ;
-		ft_printf("%s\n", dp->d_name);
-		if (!ft_strncmp(dp->d_name, fname, len))
-		{
-			dir_path = dp->d_name;
-			// ++found;
-			// break ;
-		}
-		++i;
-	}
-	closedir(dirp);
-	// if (found == old)
-	// {
-	// 	found = 0;
-	// 	return (NULL);
-	// }
-	return (dir_path);
-}
-
 int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
@@ -230,15 +184,6 @@ int	main(__attribute__((unused)) int ac,
 		return (EXIT_FAILURE);
 	if (singleton()->isatty_stdin)
 		init_history();
-	
-	// while (TRUE)
-	// {
-	// 	char *t = check_dir(ft_getenv("PWD"), "mini");
-	// 	if (!t)
-	// 		break ;
-	// 	ft_printf("[%s]\n", t);
-	// }
-
 	prompt();
 	return (EXIT_SUCCESS);
 }
