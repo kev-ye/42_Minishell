@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/06 19:57:30 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 12:57:13 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 	return (cmd);
 }
 
-static int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
+static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 {
 	// first cmd
 	int first;
@@ -177,66 +177,45 @@ static int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 			flag_trunc = 0;
 			flag_redir_input = 0;
 		}
+		else
+			return ;
 		lst_cmd = lst_cmd->next;
 	}
-	return (fd_output);
+	// return (fd_output);
 }
 
-int	*cmd_with_redir(void *cmd, t_list *lst_cmd)
+void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 {
 	pid_t	pid;
-	int		*fd = malloc(sizeof(int) * 2);
+	// int		*fd = malloc(sizeof(int) * 2);
+	int		output_fd;
 	int 	input_fd;
 	int tmp_errno;
 
-	if (!fd)
-		return (NULL);
+	// if (!fd)
+	// 	return (NULL);
 	input_fd = -1;
+	output_fd = -1;
 	tmp_errno = 0;
-	pipe(fd);
+	// pipe(fd);
 	pid = fork();
 	if (pid < 0)
 			exit(1);
 	else if (pid == 0)
 	{
 		cmd = get_complete_cmd(cmd, lst_cmd);
-		close(fd[0]);
-		fd[1] = redir_parser(input_fd, fd[1], lst_cmd);
+		// close(fd[0]);
+		// fd[1] = redir_parser(input_fd, fd[1], lst_cmd);
+		redir_parser(input_fd, output_fd, lst_cmd);
 
 		ft_pre_exec_cmd(cmd);
-		close(fd[1]);
+		// close(fd[1]);
 		exit(0);
 	}
 	else
 	{
-		close(fd[1]);
+		// close(fd[1]);
 		wait(NULL);
 	}
-	return (fd);
+	// return (fd);
 }
-
-/*
-** maybe needed
-*/
-// void	cmd_before_get_redir(void *cmd, int *fd_from_redir)
-// {
-// 	const pid_t	pid = fork();
-// 	int		*tmp = fd_from_redir;
-
-// 	if (pid < 0)
-// 		exit(ERROR);
-// 	else if (0 == pid)
-// 	{
-// 		close(fd_from_redir[1]);
-// 		dup2(fd_from_redir[0], STDIN_FILENO);
-// 		ft_pre_exec_cmd(cmd);
-// 		close(fd_from_redir[0]);
-// 		exit(0);
-// 	}
-// 	else
-// 	{
-// 		close(fd_from_redir[1]);
-// 		wait(NULL);
-// 	}
-// 	free(tmp);
-// }

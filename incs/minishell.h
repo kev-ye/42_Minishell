@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 19:56:30 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 12:55:51 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,13 @@
 #  undef FALSE
 #  define FALSE 0
 # endif
+
+// Exec
+#define SYNTAXERR "syntax error near unexpected token"
+#define SIMPLE 0
+#define ONLY_PIPE 1
+#define ONLY_REDIR 2
+#define MIX 4
 
 // SET BONUS TO 0 BY DEFAULT
 # ifndef BONUS
@@ -252,7 +259,11 @@ void		ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
 void 		cmd_with_pipe(t_list *lst_cmd);
-int			*cmd_with_redir(void *cmd, t_list *lst_cmd);
+// int			*cmd_with_redir(void *cmd, t_list *lst_cmd);
+void		cmd_with_redir(void *cmd, t_list *lst_cmd);
+int 		part_cmd_check(t_list *lst_cmd);
+int 		syntax_error(t_list *lst_cmd);
+int 		syntax_error2(t_list *lst_cmd);
 
 /*
 ** Builtin

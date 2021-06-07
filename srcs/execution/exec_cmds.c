@@ -6,18 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 20:02:54 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 12:49:39 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-#define SYNTAXERR "syntax error near unexpected token"
-
-#define SIMPLE 0
-#define ONLY_PIPE 1
-#define ONLY_REDIR 2
-#define MIX 4
 
 // seems that it must be used on forked commands - not on the main program
 void	ft_quit(int code)
@@ -75,31 +68,6 @@ int	ft_exec_cmd(char *file, t_cmd *cmds)
 	// 	return (ret);
 }
 
-// void	ft_pre_exec_cmd(void *ptr)
-// {
-// 	t_cmd	*cmd;
-// 	char	*ex;
-// 	int bl;
-
-// 	cmd = ptr;
-// 	if (!cmd->args || !*cmd->args)
-// 		return ;
-// 	ex = search_executable(cmd->args[0]);
-// 	bl = ft_exec_builtin_cmd(char **cmds)
-// 	if (bl)
-// 	{
-// 		ft_printf(B_RED "`%s' builtin command:\n" CLR_COLOR, bl);
-// 		singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-// 	}
-// 	else if (ex)
-// 	{
-// 		ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-// 		singleton()->last_return_value = ft_exec_cmd(ex, cmd);
-// 		ft_memdel((void **)&ex);
-// 	}
-// 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
-// }
-
 void	ft_pre_exec_cmd(void *ptr)
 {
 	t_cmd	*cmd;
@@ -156,116 +124,6 @@ void	simple_cmd(void *cmd)
 	}
 }
 
-int only_pipe(t_list *lst_cmd)
-{
-	t_list *tmp;
-	int ret;
-
-	tmp = lst_cmd;
-	ret = -1;
-	while (tmp)
-	{
-		if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-		{
-			ret = (int)((t_cmd *)tmp->content)->status_flag;
-			tmp = tmp->next;
-		}
-		else
-			break ;
-	}
-	if (ret != -1
-		&& ((((t_cmd *)tmp->content)->status_flag & FLG_EOL)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)))
-		return (ONLY_PIPE);
-	return (-1);
-}
-
-int only_redir(t_list *lst_cmd)
-{
-	t_list *tmp;
-	int ret;
-
-	tmp = lst_cmd;
-	ret = -1;
-	while (tmp)
-	{
-		if ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
-			|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-			|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
-		{
-			ret = (int)((t_cmd *)tmp->content)->status_flag;
-			tmp = tmp->next;
-		}
-		else
-			break ;
-	}
-	if (ret != -1
-		&&((((t_cmd *)tmp->content)->status_flag & FLG_EOL)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)))
-		return (ONLY_REDIR);
-	return (-1);
-}
-
-int part_cmd_check(t_list *lst_cmd)
-{
-	t_list *tmp;
-	int ret_only_pipe;
-	int ret_only_redir;
-
-	tmp = lst_cmd;
-	ret_only_pipe = only_pipe(lst_cmd);
-	ret_only_redir = only_redir(lst_cmd);
-	if (ret_only_pipe == -1 && ret_only_redir == -1
-		&& (!(((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-		|| !(((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
-		return (MIX);
-	else if (ret_only_pipe != -1)
-		return (ONLY_PIPE);
-	else if (ret_only_redir != -1)
-		return (ONLY_REDIR);
-	return (-1);
-}
-
-int 	syntax_error(t_list *lst_cmd)
-{
-	t_list *tmp;
-
-	tmp = lst_cmd;
-	if (tmp && !((t_cmd *)tmp->content)->args
-		&& ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)))
-	{
-		if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-			ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `|'\n");
-		else if (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-			ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `;'\n");
-		else
-			ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `newline'\n");
-		return (1);
-	}
-	return (0);
-}
-
-int 	syntax_error2(t_list *lst_cmd)
-{
-	t_list *tmp;
-
-	tmp = lst_cmd;
-	if (tmp && tmp->next && ((t_cmd *)tmp->content)->args
-		&& !((t_cmd *)tmp->next->content)->args
-		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)))
-	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `newline'\n");
-		return (1);
-	}
-	return (0);
-}
-
 void	ft_exec_each_cmd(t_list *lst_cmd)
 {
 	t_list	*tmp;
@@ -298,9 +156,15 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 		{
 			cmd_line = part_cmd_check(tmp);
 			if (cmd_line == ONLY_PIPE)
+			{
+				printf(B_PURPLE"pipe cmd"CLR_COLOR"\n");
 				cmd_with_pipe(tmp);
+			}
 			else if (cmd_line == ONLY_REDIR)
+			{
+				printf(B_PURPLE"redir cmd"CLR_COLOR"\n");
 				cmd_with_redir(tmp->content, tmp);
+			}
 			else if (cmd_line == MIX)
 				printf("mix\n");
 		}
