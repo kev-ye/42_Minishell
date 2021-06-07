@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 17:00:16 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 18:19:27 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,47 +53,97 @@ int ft_exec_builtin_cmd(char **cmds)
 	return (NOT_FOUND);
 }
 
-int	ft_exec_cmd(char *file, t_cmd *cmds)
+/*
+** Old exec_cmd
+*/
+
+// int	ft_exec_cmd(char *file, t_cmd *cmds)
+// {
+// 	char	**env;
+// 	int		ret = 0;
+
+// 	env = ft_lst2strs(&singleton()->env);
+// 	singleton()->last_return_value = execve(file, cmds->args, env);
+// 	ft_memdel((void **)env);	// ne passe jamais ici
+// 	return (ret);
+// }
+
+// void	ft_pre_exec_cmd(void *ptr)
+// {
+// 	t_cmd	*cmd;
+// 	char	*ex;
+
+// 	cmd = ptr;
+// 	if (!cmd->args || !cmd->args)
+// 		return ;
+// 	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
+// 	if (singleton()->last_return_value == NOT_FOUND)
+// 	{
+// 		ex = search_executable(cmd->args[0]);
+// 		if (ex)
+// 		{
+// 			singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+// 			ft_memdel((void **)&ex);
+// 		}
+// 		else
+// 		{
+// 			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
+// 				cmd->args[0]);
+// 		}
+// 	}
+// 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
+// }
+
+/*
+** new exec_cmd
+*/
+
+void	ft_exec_cmd(char *file, t_cmd *cmds)
 {
 	char	**env;
 	int		ret = 0;
 
 	env = ft_lst2strs(&singleton()->env);
-	singleton()->last_return_value = execve(file, cmds->args, env);
-	ft_memdel((void **)env);	// ne passe jamais ici
-	return (ret);
-	// if (-1 == ret)
-	// 	return (ERROR);
-	// else
-	// 	return (ret);
+	ret = execve(file, cmds->args, env);
+	printf("msg check\n");
+	// prog exit here
+
+	ft_memdel((void **)env);	// ne passe jamais ici              //by kaye : psk quand execve lance , le prog exit
 }
 
 void	ft_pre_exec_cmd(void *ptr)
 {
 	t_cmd	*cmd;
 	char	*ex;
+	int 	not_found;
+	int 	builtin;
 
 	cmd = ptr;
+	not_found = 0;
+	builtin = NOT_FOUND;
 	if (!cmd->args || !cmd->args)
 		return ;
-	singleton()->last_return_value = ft_exec_builtin_cmd(cmd->args);
-	if (singleton()->last_return_value == NOT_FOUND)
+	builtin = ft_exec_builtin_cmd(cmd->args);
+	if (builtin == NOT_FOUND)
 	{
-		// printf("\n\n\n\n\n\nim here\n\n\n\n\n\n");
 		ex = search_executable(cmd->args[0]);
 		if (ex)
 		{
-			// ft_printf(B_RED "`%s' command:\n" CLR_COLOR, ex);
-			singleton()->last_return_value = ft_exec_cmd(ex, cmd);
+			ft_exec_cmd(ex, cmd);
 			ft_memdel((void **)&ex);
 		}
 		else
 		{
 			ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
 				cmd->args[0]);
+			not_found = 1;
 		}
 	}
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
+	if (builtin != NOT_FOUND)
+		exit(SUCCESS);
+	if (not_found == 1)
+		exit(LRV_CMD_NOT_FOUND);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////// exec
@@ -106,21 +156,27 @@ void	ft_pre_exec_cmd(void *ptr)
 void	simple_cmd(void *cmd)
 {
 	pid_t	pid;
+	int status;
 
+	status = 1;
 	if (!ft_strcmp(((t_cmd *)cmd)->args[0], "cd") || !ft_strcmp(((t_cmd *)cmd)->args[0], "exit"))
 		ft_pre_exec_cmd(cmd);
 	else
 	{	
 		pid = fork();
 		if (pid < 0)
-				exit(1);
+				exit(PID_FAILURE);
 		else if (pid == 0)
 		{
 			ft_pre_exec_cmd(cmd);
-			exit(0);
+			exit(EXEC_FAILURE);
 		}
 		else
-			wait(NULL);
+			wait(&status);
+		if (WIFEXITED(status) != 0)
+			singleton()->last_return_value = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status) == 1)
+			singleton()->last_return_value = LRV_SIGINT;
 	}
 }
 

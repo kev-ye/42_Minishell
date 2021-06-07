@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 12:57:13 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 18:22:34 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,7 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	int		output_fd;
 	int 	input_fd;
 	int tmp_errno;
+	int status = 1;
 
 	// if (!fd)
 	// 	return (NULL);
@@ -215,7 +216,11 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	else
 	{
 		// close(fd[1]);
-		wait(NULL);
+		wait(&status);
 	}
+	if (WIFEXITED(status) != 0)
+		singleton()->last_return_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status) == 1)
+		singleton()->last_return_value = LRV_SIGINT;
 	// return (fd);
 }

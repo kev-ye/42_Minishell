@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/06 19:50:14 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 18:22:09 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static int	*first_cmd_with_pipe(void *cmd)
 {
 	pid_t	pid;
 	int		*fd = malloc(sizeof(int) * 2);
+	int status = 1;
 
 	if (!fd)
 		return (NULL);
@@ -34,8 +35,12 @@ static int	*first_cmd_with_pipe(void *cmd)
 	else
 	{
 		close(fd[1]);
-		wait(NULL);
+		wait(&status);
 	}
+	if (WIFEXITED(status) != 0)
+		singleton()->last_return_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status) == 1)
+		singleton()->last_return_value = LRV_SIGINT;
 	return (fd);
 }
 
@@ -44,6 +49,7 @@ static int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
 	pid_t	pid;
 	int		*tmp = get_fd;
 	int		*fd = malloc(sizeof(int) * 2);
+	int status = 1;
 
 	if (!fd)
 		return (NULL);
@@ -66,9 +72,13 @@ static int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
 	else
 	{
 		close(fd[1]);
-		wait(NULL);
+		wait(&status);
 	}
 	free(tmp);
+	if (WIFEXITED(status) != 0)
+		singleton()->last_return_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status) == 1)
+		singleton()->last_return_value = LRV_SIGINT;
 	return (fd);
 }
 
@@ -76,6 +86,7 @@ static void	last_cmd_with_pipe(void *cmd, int *get_fd)
 {
 	const pid_t	pid = fork();
 	int		*tmp = get_fd;
+	int status = 1;
 
 	if (pid < 0)
 		exit(ERROR);
@@ -90,9 +101,13 @@ static void	last_cmd_with_pipe(void *cmd, int *get_fd)
 	else
 	{
 		close(get_fd[1]);
-		wait(NULL);
+		wait(&status);
 	}
 	free(tmp);
+	if (WIFEXITED(status) != 0)
+		singleton()->last_return_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status) == 1)
+		singleton()->last_return_value = LRV_SIGINT;
 }
 
 void cmd_with_pipe(t_list *lst_cmd)

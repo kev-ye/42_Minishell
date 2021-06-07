@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 14:47:59 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 15:34:46 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 18:25:14 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ static int syntax_with_redir(t_list *lst_cmd)
 		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
 		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
 		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
-		&& tmp->next && (((t_cmd *)tmp->next->content)->status_flag & FLG_EOL))
+		&& tmp->next && (!((t_cmd *)tmp->next->content)->args)
+		&& (((t_cmd *)tmp->next->content)->status_flag & FLG_EOL))
 		return (1);
 	else if (!((t_cmd *)tmp->content)->args
 		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
@@ -98,7 +99,7 @@ static int syntax_with_multi(t_list *lst_cmd)
     else if (!((t_cmd *)tmp->content)->args
 		    && ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
 		    || (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))
-		    && tmp->next && (!((t_cmd *)tmp->next->content)->args))
+		    && tmp->next)
 		return (2);
     return (0);
 }
@@ -125,9 +126,15 @@ int syntax_parser(t_list *lst_cmd)
 	if (tmp)
 	{
 		if (syntax == 1)
+		{
+			printf("in redir error\n");
 			ret = redir_error(tmp);
+		}
 		else if (syntax == 2)
+		{
+			printf("in multi error\n");
 			ret = multi_error(tmp);
+		}
 	}
 	return (ret);
 }

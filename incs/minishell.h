@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 16:40:42 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 17:50:28 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,18 @@
 # endif
 
 // Exec
-#define SYNTAXERR "syntax error near unexpected token"
-#define SIMPLE 0
-#define ONLY_PIPE 1
-#define ONLY_REDIR 2
-#define MIX 4
+# define SYNTAXERR "syntax error near unexpected token"
+# define SIMPLE 0
+# define ONLY_PIPE 1
+# define ONLY_REDIR 2
+# define MIX 4
+
+// Exec ret for $?
+# define PID_FAILURE 1
+# define EXEC_FAILURE 1
+# define LRV_SYNTAX_ERROR 258
+# define LRV_CMD_NOT_FOUND 127
+# define LRV_SIGINT 130
 
 // SET BONUS TO 0 BY DEFAULT
 # ifndef BONUS
@@ -104,8 +111,6 @@
 #define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
 						":\e[0m " s "\n");
 // END DEBUGGING PURPOSE - TO REMOVE
-
-# define LRV_SYNTAX_ERROR 258
 
 /*
 ** -- DATA STRUCTURES --
@@ -260,6 +265,7 @@ t_list		*search_env(char *tofind, t_list **env);
 void		ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
+// int			ft_pre_exec_cmd(void *ptr);
 void 		cmd_with_pipe(t_list *lst_cmd);
 // int			*cmd_with_redir(void *cmd, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
