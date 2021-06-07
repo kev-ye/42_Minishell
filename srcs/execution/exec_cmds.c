@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 12:49:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 15:38:56 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,20 +131,10 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 
 	tmp = lst_cmd;
 	cmd_line = -1;
+	if (syntax_parser(tmp) == 1)
+			return ;
 	while (tmp)
 	{
-		if (syntax_error(tmp) || syntax_error2(tmp) || !((t_cmd *)tmp->content)->args)
-			return ;
-		if (!((t_cmd *)tmp->content)->args
-			&& ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-			|| (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)))
-		{
-			if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-				ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `|'\n");
-			else if (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-				ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `;'\n");
-			return ;
-		}
 		if (((t_cmd *)tmp->content)->args
 			&& ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
 			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
@@ -241,73 +231,11 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 // 			printf("simple\n");
 // 			simple_cmd(tmp->content);
 // 		}
-// 		// else if (!((t_cmd *)tmp->content)->args)                              //////////////////////// some pb here : quit with ctrl + D show message
+// 		// else if (!((t_cmd *)tmp->content)->args)
 // 		// {
 // 		// 	ft_dprintf(STDERR_FILENO, PROG_NAME": syntax error near unexpected token `|'\n");
 // 		// 	return ;
 // 		// }
 // 		tmp = tmp->next;
 // 	}
-// }
-
-// void	ft_exec_each_cmd(t_list *lst)
-// {
-// 	t_list	*tmp;
-// 	int		first;
-// 	int		pipe_flag;
-// 	int		*fd;
-	
-// 	if (!lst || !((t_cmd *)lst->content)->args)
-// 		return ;
-// 	tmp = lst;
-// 	first = 1;
-// 	pipe_flag = 0;
-// 	fd = NULL;
-// 	while (tmp)
-// 	{
-// 		if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 1)
-// 		{
-// 			printf("fist with pipe\n");
-// 			fd = first_cmd_with_pipe(tmp->content);
-// 			first = 0;
-// 			pipe_flag = 1;
-// 		}
-// 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE) && first == 0)
-// 		{
-// 			printf("interm with pipe\n");
-// 			fd = interm_cmd_with_pipe(tmp->content, fd);
-// 			pipe_flag = 1;
-// 		}
-// 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD) && first == 0 && pipe_flag == 1)
-// 		{
-// 			printf("with ;\n");
-// 			last_cmd_with_pipe(tmp->content, fd);
-// 			pipe_flag = 0;
-// 		}
-// 		else if ((((t_cmd *)tmp->content)->status_flag & FLG_EOL) && pipe_flag == 1)
-// 		{
-// 			printf("last with pipe\n");
-// 			last_cmd_with_pipe(tmp->content, fd);
-// 		}
-// 		else if (((t_cmd *)tmp->content)->args)
-// 		{
-// 			printf("simple\n");
-// 			simple_cmd(tmp->content);
-// 		}
-// 		tmp = tmp->next;
-// 	}
-// }
-
-// void	ft_exec_each_cmd(void)
-// {
-// 	pid_t	id;
-// 	id = fork();
-// 	if (id < 0)
-// 		exit(ERROR);
-// 	if (id == 0)
-// 	{
-// 		multi_cmd_exec(singleton()->lst);
-// 	}
-// 	else
-// 		wait(NULL);
 // }

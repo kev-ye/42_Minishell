@@ -6,14 +6,14 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/07 12:49:12 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/07 14:47:57 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror# -fsanitize=address -g3
+CFLAGS 		= -Wall -Wextra -Werror -g3# -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses
 
@@ -44,7 +44,8 @@ SUB_SRC	:= exec_cmds.c \
 		   search_executable.c \
 		   only_pipe.c \
 		   only_redir.c \
-		   cmds_line_check.c
+		   multi_cmds_check.c \
+		   cmds_syntax_check.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \

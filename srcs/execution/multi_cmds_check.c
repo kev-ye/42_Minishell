@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmds_line_check.c                                  :+:      :+:    :+:   */
+/*   multi_cmds_check.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 12:45:35 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 12:48:15 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 14:48:23 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,44 +80,4 @@ int part_cmd_check(t_list *lst_cmd)
 	else if (ret_only_redir != -1)
 		return (ONLY_REDIR);
 	return (-1);
-}
-
-int 	syntax_error(t_list *lst_cmd)
-{
-	t_list *tmp;
-
-	tmp = lst_cmd;
-	if (tmp && !((t_cmd *)tmp->content)->args
-		&& ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)))
-	{
-		if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-			ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `|'\n");
-		else if (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-			ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `;'\n");
-		else
-			ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `newline'\n");
-		return (1);
-	}
-	return (0);
-}
-
-int 	syntax_error2(t_list *lst_cmd)
-{
-	t_list *tmp;
-
-	tmp = lst_cmd;
-	if (tmp && tmp->next && ((t_cmd *)tmp->content)->args
-		&& !((t_cmd *)tmp->next->content)->args
-		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)))
-	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `newline'\n");
-		return (1);
-	}
-	return (0);
 }

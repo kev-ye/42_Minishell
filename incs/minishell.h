@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 12:55:51 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 13:23:42 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,8 +262,9 @@ void 		cmd_with_pipe(t_list *lst_cmd);
 // int			*cmd_with_redir(void *cmd, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
 int 		part_cmd_check(t_list *lst_cmd);
-int 		syntax_error(t_list *lst_cmd);
-int 		syntax_error2(t_list *lst_cmd);
+// int 		syntax_error(t_list *lst_cmd);
+// int 		syntax_error2(t_list *lst_cmd);
+int 		syntax_parser(t_list *lst_cmd);
 
 /*
 ** Builtin
