@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:24:23 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/02 23:14:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 11:17:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,6 @@ void	ft_termcap_delete_char(char **ptr);
 void	ft_termcap_clear_line(char **ptr);
 void	ft_termcap_clear_screen(char **ptr);
 void	ft_termcap_esc(char **ptr);
+void	ft_termcap_search_cmd(char **ptr);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 22:53:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 12:10:18 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,7 +238,8 @@ void	ft_parse(char *s)
 					// continue ; // does not change anything
 				}
 			}
-			else if (s[i] == '$' && (!quotes.first || (quotes.first & (1 << DBL_BSHFT))))
+			else if (s[i] == '$' && (!quotes.first
+				|| (quotes.first & (1 << DBL_BSHFT))))
 			{
 				++i;
 				i += get_env_var(&s, i);

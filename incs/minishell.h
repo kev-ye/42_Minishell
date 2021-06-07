@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 22:53:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 11:04:00 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,12 +202,16 @@ typedef struct s_history
 ** Keeps track of the cursor's position:
 **
 ** len:					total len of the current cmd (minus the prompt's len)
+** line:				line number
 ** current_index:		current cursor position on the string
+** current_line:		current line number (in case of a small terminal)
 */
 typedef struct s_edition
 {
 	size_t	len;
+	size_t	line;
 	size_t	current_index;
+	size_t	current_line;
 }	t_edition;
 
 /*

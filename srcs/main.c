@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 22:59:58 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 11:09:59 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ static void	init_termcaps(struct termios *tattr)
 	}
 	(void)tattr;
 	tcgetattr(STDIN_FILENO, tattr);
-	// tattr->c_lflag &= ~(ECHO);
 	tattr->c_cc[VMIN] = 1;
 	tattr->c_cc[VTIME] = 0;
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, tattr);

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 21:43:31 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 11:20:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,12 @@ static int	ft_istermcap(char **ptr, char *read_buffer, int len)
 		ft_termcap_clear_screen(ptr);
 	else if (ft_strchr(buf, K_CTRL_U))
 		ft_termcap_clear_line(ptr);
+	else if (ft_strchr(buf, '\t'))
+		ft_termcap_search_cmd(ptr);
 	else if (ft_strchr(buf, 0x1B))
 	{
 		if (is_arrow_pressed(ptr, buf) == NOT_FOUND)
-			ft_termcap_esc(ptr);
+			;//ft_termcap_esc(ptr); // other cases starting with `\e' but not
 	}
 	else
 		return (FALSE);
@@ -103,6 +105,13 @@ void	print_inline(char **ptr, char *buffer)
 		*ptr + (int)singleton()->edit.current_index);
 	singleton()->edit.len += ft_strlen(buffer);
 	singleton()->edit.current_index += ft_strlen(buffer);
+
+	// ft_putstr_fd(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + \
+	// 	PROMPT_CPADDING + singleton()->edit.current_index), STDIN_FILENO);
+	
+	// ft_putstr_fd(tgetstr("kE", NULL)[0], STDIN_FILENO);
+	// ft_putstr_fd("\e[0K\r", STDIN_FILENO);
+	
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	ft_putstr_fd(ret, STDIN_FILENO);

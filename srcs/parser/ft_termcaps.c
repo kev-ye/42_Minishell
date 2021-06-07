@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 21:33:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 12:13:13 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,4 +103,81 @@ void	ft_termcap_esc(char **ptr)
 {
 	ft_memdel((void **)ptr);
 	ft_exit();
+}
+
+
+static size_t	get_max_len(void)
+{
+	DIR				*directory;
+	struct dirent	*_dirent;
+	size_t			len;
+
+	directory = opendir(singleton()->cwd);
+	if (!directory)
+		return (0);
+	len = 0;
+	while (TRUE)
+	{
+		_dirent = readdir(directory);
+		if (!_dirent)
+			break ;
+		if (len < _dirent->d_namlen)
+			len = _dirent->d_namlen;
+	}
+	closedir(directory);
+	return (len);
+}
+
+void	ft_termcap_search_cmd(char **ptr)
+{
+	const char		*go = tgetstr("ch", NULL);
+	DIR				*directory;
+	struct dirent	*_dirent;
+
+
+	int		_columns = tgetnum("co");
+	// int		_lines = tgetnum("li");
+	size_t	len = get_max_len();
+	
+	double	ratio = ft_fmax(len, _columns) / ft_fmin(len, _columns);
+	size_t	max_spaces = (size_t)(_columns / ratio);
+
+	// ft_printf("max_len: [%lld] col: [%d] line: [%d] ratio: [%f]",
+	// 	len, _columns, _lines, ratio);
+	
+	if (BONUS)
+	{
+		directory = opendir(singleton()->cwd);
+		if (!directory)
+		{
+			ft_putstr_fd(tgetstr("bl", NULL), STDIN_FILENO);
+			return ;
+		}
+		ft_putstr_fd("\n", STDIN_FILENO);
+		while (TRUE)
+		{
+			size_t i = 0;
+			while (i < (size_t)ratio)
+			{
+				_dirent = readdir(directory);
+				if (!_dirent)
+					break ;
+				if (ft_strcmp(_dirent->d_name, ".")
+					&& ft_strcmp(_dirent->d_name, ".."))
+				{
+					ft_printf("%-*s ", max_spaces, _dirent->d_name);
+				}
+				++i;
+			}
+			ft_putstr_fd("\n", STDIN_FILENO);
+			if (!_dirent)
+				break ;
+		}
+		closedir(directory);
+		ft_putstr_fd(CLR_LINE, STDIN_FILENO);
+		print_prompt();
+		ft_putstr_fd(*ptr, STDIN_FILENO);
+		ft_putstr_fd(tgoto(go, 0, ft_strlen(singleton()->cwd_basename) + \
+			PROMPT_CPADDING + singleton()->edit.current_index), STDIN_FILENO);
+	}
 }
