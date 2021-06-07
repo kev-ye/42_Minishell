@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 11:20:43 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 13:53:15 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,7 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 	char	*tmp;
 	int		r;
 
-	r = 1;
-	while (r > 0)
+	while (TRUE)
 	{
 		r = read(fd, buffer, _TMP_BUF_SZ_);
 		if (r <= 0)
@@ -142,6 +141,7 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 		{
 			ft_putstr_fd(buffer, STDIN_FILENO);
 			str = ft_strjoin(str, buffer);
+			ft_memdel((void **)&tmp);
 			break ;
 		}
 		else

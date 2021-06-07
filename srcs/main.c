@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 11:09:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 13:56:54 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ t_minishl	*singleton(void)
 void	print_prompt(void)
 {
 	char	*pwd;
-	// char	*basename;
 
 	pwd = getcwd(NULL, 0);
 	if (pwd)

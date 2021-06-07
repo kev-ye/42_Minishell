@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 11:04:00 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 14:42:06 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@
 // END DEBUGGING PURPOSE - TO REMOVE
 
 // Charsets used in the parsing
-# define SPEC_CHARS " \\$'\""
+// # define SPEC_CHARS " \\$'\""
 # define SPACES " \t"
 # define QUOTES "\"'"
 

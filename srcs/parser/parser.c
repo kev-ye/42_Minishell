@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 12:10:18 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 16:31:18 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,10 @@ size_t	get_env_var(char **s, size_t i)
 -------- PARSER --------
 *******************************************************************************/
 
+
+// TRANSFER TO .H FILE
+# define SPEC_CHARS " \\$'\""
+
 void	ft_parse(char *s)
 {
 	t_quotes	quotes;
@@ -204,17 +208,20 @@ void	ft_parse(char *s)
 			}
 		}
 
-		// ft_printf("%s:%d: [%.4b] [%s]\n", __FILE__, __LINE__, quotes.first, s + i);
+		// ft_printf("%s:%d: [%.4b] args_size[%2lld] [%s]\n", __FILE__, __LINE__,
+			// quotes.first, ft_lstsize(args), s + i);
 
-		if (s[i] == '\\' && quotes.first == 0)
+		if ('\\' == s[i])// && 0 == quotes.first)
 		{
-			if (quotes.d_quote == 0)
+			if (!quotes.d_quote)
 				ft_strnclean(s + i, "\\", 1); // remove `\' (backslash) from `s'
 			// PRINT_ERR("here")
+			// ft_printf("TO CLOSE: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
 			if (ft_incharset(SPEC_CHARS, s[i]))
 				++i;
-			quotes2close(s[i], &quotes, SET_FLAG);
-			continue ;
+			// ft_printf("TO CLOSE: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
+			// quotes2close(s[i], &quotes, SET_FLAG);
+			// continue ; // does nothing
 		}
 		else
 		{
@@ -224,22 +231,35 @@ void	ft_parse(char *s)
 				// PRINT_ERR("here")
 				ft_strnclean(s + i, QUOTES, 1); // remove ``'"`` from `s'
 				quotes2close(s[i], &quotes, SET_FLAG);
+
+				// if (quotes.did_change && ft_incharset(QUOTES, s[i]))
+				// {
+				// 	PRINT_ERR("NEW -- -- ")
+				// 	ft_strnclean(s + i, QUOTES, 1);
+				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
+				// 	s += i;
+				// 	i = 0;
+				// 	continue ;
+				// }
 				// ft_printf("quotes.first[%d] quotes.changed[%d] s[%s] (s + i)[%s] i[%d]\n",
 					// quotes.first, quotes.did_change, s, s + i, i);
 				// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
 				// 	|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
 				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
-				if (quotes.did_change)
+				if ((quotes.did_change && !ft_incharset(QUOTES, s[i]))
+				|| (!quotes.did_change && !s[i]))
+				// if (quotes.did_change)
 				{
+					// PRINT_ERR("NEW")
 					// ft_printf("%s%d: s[%s]\n", __FILE__, __LINE__, s);
 					ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 					s += i;
 					i = 0;
-					// continue ; // does not change anything
+					// continue ; // does nothing
 				}
 			}
-			else if (s[i] == '$' && (!quotes.first
-				|| (quotes.first & (1 << DBL_BSHFT))))
+			else if ((!quotes.first || (quotes.first & (1 << DBL_BSHFT)))
+				&& '$' == s[i])
 			{
 				++i;
 				i += get_env_var(&s, i);
@@ -261,7 +281,7 @@ void	ft_parse(char *s)
 	{
 		t_cmd	*new;
 
-		if (i > 0 && s[i - 1]) // && !ft_incharset(SPACES, s[i - 1]))
+		if (i > 0 && s[i - 1])
 			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));

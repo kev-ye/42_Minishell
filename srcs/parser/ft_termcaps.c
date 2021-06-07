@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 12:13:13 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/07 13:53:06 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,8 @@ void	ft_termcap_clear_line(char **ptr)
 	ft_putstr_fd(CLR_LINE, STDIN_FILENO);
 	print_prompt();
 	*ptr = ft_strdup("");
+	singleton()->edit.len = 0;
+	singleton()->edit.current_index = 0;
 	ft_memdel((void **)&tmp_ptr);
 }
 
@@ -140,7 +142,7 @@ void	ft_termcap_search_cmd(char **ptr)
 	size_t	len = get_max_len();
 	
 	double	ratio = ft_fmax(len, _columns) / ft_fmin(len, _columns);
-	size_t	max_spaces = (size_t)(_columns / ratio);
+	size_t	max_spaces = (size_t)((_columns) / ratio);
 
 	// ft_printf("max_len: [%lld] col: [%d] line: [%d] ratio: [%f]",
 	// 	len, _columns, _lines, ratio);

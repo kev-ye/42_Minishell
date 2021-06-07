@@ -197,8 +197,8 @@ test_parser() {
 
 	# backslashes
 	test_cmd "echo \\"
-	test_cmd "echo \\\\"
-	test_cmd "echo \\\\\\"
+	test_cmd "echo \\\\\\\\"
+	test_cmd "echo \\\\\\\\\\\\"
 	test_cmd "echo \"\\\\\\\""
 	test_cmd "echo '\\\\\\'"
 	test_cmd "echo \"\\ \""
