@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 18:19:27 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 19:45:43 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int ft_exec_builtin_cmd(char **cmds)
 	static t_builtin	builtin[] = {
 		{"echo", ft_echo, NULL}, {"cd", ft_cd, NULL}, {"pwd", NULL, ft_pwd},
 		{"env", ft_env, NULL}, {"unset", ft_unset, NULL}, 
-		{"export", ft_export, NULL}, {"exit", NULL, ft_exit},
+		{"export", ft_export, NULL}, {"exit", ft_exit, NULL},
 		{"clear", NULL, ft_clear}, {NULL, NULL, NULL}
 	};
 	int					i;
@@ -44,9 +44,9 @@ int ft_exec_builtin_cmd(char **cmds)
 		if (!ft_strcmp(cmds[0], builtin[i].cmd))
 		{
 			if (!builtin[i].f1)
-				return (!builtin[i].f2());
+				return (builtin[i].f2());
 			else
-				return (!builtin[i].f1(cmds));
+				return (builtin[i].f1(cmds));
 		}
 		++i;
 	}
@@ -111,15 +111,24 @@ void	ft_exec_cmd(char *file, t_cmd *cmds)
 	ft_memdel((void **)env);	// ne passe jamais ici              //by kaye : psk quand execve lance , le prog exit
 }
 
+static int cd_exit(char *cmd)
+{
+	if (!ft_strcmp(cmd, "cd") || !ft_strcmp(cmd, "exit"))
+		return (1);
+	return (0);
+}
+
 void	ft_pre_exec_cmd(void *ptr)
 {
 	t_cmd	*cmd;
 	char	*ex;
 	int 	not_found;
 	int 	builtin;
+	int		check;
 
 	cmd = ptr;
 	not_found = 0;
+	check = 0;
 	builtin = NOT_FOUND;
 	if (!cmd->args || !cmd->args)
 		return ;
@@ -139,8 +148,11 @@ void	ft_pre_exec_cmd(void *ptr)
 			not_found = 1;
 		}
 	}
+	check = cd_exit(cmd->args[0]);
 	ft_strsfree(ft_strslen(cmd->args) + 1, cmd->args);
-	if (builtin != NOT_FOUND)
+	if (check)
+		singleton()->last_return_value = builtin;
+	if (builtin != NOT_FOUND && check == 0)
 		exit(SUCCESS);
 	if (not_found == 1)
 		exit(LRV_CMD_NOT_FOUND);

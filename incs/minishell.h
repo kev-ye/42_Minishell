@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 17:50:28 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 19:51:32 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@
 # define ONLY_PIPE 1
 # define ONLY_REDIR 2
 # define MIX 4
+
+// Bultin
+# define NO_NUM_ARG 255
 
 // Exec ret for $?
 # define PID_FAILURE 1
@@ -283,7 +286,9 @@ int			ft_pwd(void);
 int			ft_env(char **cmds);
 int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
-int			ft_exit(void) __attribute__((noreturn));
+// int			ft_exit(void) __attribute__((noreturn));
+void		ft_exit_for_prompt(void);
+int			ft_exit(char **cmds) __attribute__((noreturn));
 int			ft_clear(void);
 
 /*

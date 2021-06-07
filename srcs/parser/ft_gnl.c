@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 12:13:44 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/07 18:50:25 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static int	ft_istermcap(char **ptr, char *read_buffer, int len)
 	if (ft_strchr(buf, K_DELETE))
 		ft_termcap_delete_char(ptr);
 	else if (ft_strchr(buf, K_CTRL_D))
-		ft_exit();
+		ft_exit_for_prompt();
 	else if (ft_strchr(buf, K_CTRL_L))
 		ft_termcap_clear_screen(ptr);
 	else if (ft_strchr(buf, K_CTRL_U))
