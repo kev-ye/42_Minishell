@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 19:51:32 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/08 13:17:23 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@
 # define EXEC_FAILURE 1
 # define LRV_SYNTAX_ERROR 258
 # define LRV_CMD_NOT_FOUND 127
-# define LRV_SIGINT 130
+# define LRV_SIGINT 128
 
 // SET BONUS TO 0 BY DEFAULT
 # ifndef BONUS
@@ -268,15 +268,12 @@ t_list		*search_env(char *tofind, t_list **env);
 void		ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
-// int			ft_pre_exec_cmd(void *ptr);
 void 		cmd_with_pipe(t_list *lst_cmd);
-// int			*cmd_with_redir(void *cmd, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
 int 		part_cmd_check(t_list *lst_cmd);
-// int 		syntax_error(t_list *lst_cmd);
-// int 		syntax_error2(t_list *lst_cmd);
 int 		syntax_parser(t_list *lst_cmd);
-
+int 		builtin_exec(char **cmds);
+void		sys_exec(void *ptr);
 /*
 ** Builtin
 */
@@ -286,7 +283,6 @@ int			ft_pwd(void);
 int			ft_env(char **cmds);
 int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
-// int			ft_exit(void) __attribute__((noreturn));
 void		ft_exit_for_prompt(void);
 int			ft_exit(char **cmds) __attribute__((noreturn));
 int			ft_clear(void);

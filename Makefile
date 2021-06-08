@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/07 14:47:57 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/08 13:15:31 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,9 @@ SUB_SRC	:= exec_cmds.c \
 		   only_pipe.c \
 		   only_redir.c \
 		   multi_cmds_check.c \
-		   cmds_syntax_check.c
+		   cmds_syntax_check.c \
+		   builtin_exec.c \
+		   sys_exec.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \

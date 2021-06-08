@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 18:22:09 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/08 13:46:01 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,15 @@ static int	*first_cmd_with_pipe(void *cmd)
 	pipe(fd);
 	pid = fork();
 	if (pid < 0)
-			exit(1);
+			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
-		ft_pre_exec_cmd(cmd);
-		close(fd[1]);
-		exit(0);
+		if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+			sys_exec(cmd);
+		// close(fd[1]);
+		exit(EXEC_FAILURE);
 	}
 	else
 	{
@@ -56,18 +57,19 @@ static int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
 	pipe(fd);
 	pid = fork();
 	if (pid < 0)
-		exit(ERROR);
+		exit(PID_FAILURE);
 	else if (pid == 0)
 	{
 		close(get_fd[1]);
-		dup2(get_fd[0], STDIN_FILENO);
+		dup2(get_fd[1], STDIN_FILENO);
 		close(get_fd[0]);
 	
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
-		ft_pre_exec_cmd(cmd);
+		if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+			sys_exec(cmd);
 		close(fd[1]);
-		exit(0);
+		exit(EXEC_FAILURE);
 	}
 	else
 	{
@@ -89,14 +91,15 @@ static void	last_cmd_with_pipe(void *cmd, int *get_fd)
 	int status = 1;
 
 	if (pid < 0)
-		exit(ERROR);
+		exit(PID_FAILURE);
 	else if (0 == pid)
 	{
 		close(get_fd[1]);
 		dup2(get_fd[0], STDIN_FILENO);
-		ft_pre_exec_cmd(cmd);
+		if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+			sys_exec(cmd);
 		close(get_fd[0]);
-		exit(0);
+		exit(EXEC_FAILURE);
 	}
 	else
 	{

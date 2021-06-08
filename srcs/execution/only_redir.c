@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 18:22:34 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/08 13:14:01 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 		// fd[1] = redir_parser(input_fd, fd[1], lst_cmd);
 		redir_parser(input_fd, output_fd, lst_cmd);
 
-		ft_pre_exec_cmd(cmd);
+		sys_exec(cmd);
 		// close(fd[1]);
 		exit(0);
 	}
