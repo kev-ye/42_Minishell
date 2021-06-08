@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/07 17:45:21 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/08 15:58:53 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ INC_DIR		:= incs
 SRC_DIR		:= srcs
 SUB_DIR		:= builtin \
 			   parser \
+			   termcaps \
 			   util
 OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
@@ -34,10 +35,6 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 NAME	:= minishell
 SRC		:= main.c
 SUB_SRC	:= exec_cmds.c \
-		   ft_gnl.c \
-		   ft_termcaps_search_cmd.c \
-		   ft_termcaps.c \
-		   history.c \
 		   parser.c \
 		   search_executable.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
@@ -50,6 +47,11 @@ SUB_SRC	:= cd.c \
 		   pwd.c \
 		   unset.c
 SRC		+= $(addprefix builtin/, $(SUB_SRC))
+SUB_SRC	:= ft_gnl.c \
+		   history.c \
+		   ft_termcaps_search_cmd.c \
+		   ft_termcaps.c
+SRC		+= $(addprefix termcaps/, $(SUB_SRC))
 SUB_SRC	:= utils.c
 SRC		+= $(addprefix util/, $(SUB_SRC))
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)

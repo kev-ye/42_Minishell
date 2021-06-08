@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 17:53:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/08 16:49:06 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,14 +139,14 @@ static void	__reset_termcaps__(int flag)
 		tcgetattr(STDIN_FILENO, &singleton()->tattr);
 		(&singleton()->tattr)->c_lflag &= ~(ICANON | ECHO);
 		tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
-		tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr);
+		// tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr); // unused
 	}
 	else if (RESET_TERMCAPS == flag)
 	{
 		tcgetattr(STDIN_FILENO, &singleton()->tattr);
 		(&singleton()->tattr)->c_lflag |= (ICANON | ECHO);
 		tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
-		tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr);
+		// tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr); // unused
 	}
 }
 
@@ -156,12 +156,16 @@ void	prompt(void)
 	int		r;
 
 	signal(SIGINT, ft_interrupt);
+	// signal(SIGQUIT, ft_interrupt);
 	while (TRUE)
 	{
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
 		__reset_termcaps__(SET_TERMCAPS);
 		print_prompt();
-		r = ft_gnl_stdin(&ret);
+		if (singleton()->option.fd == STDIN_FILENO)
+			r = ft_gnl(singleton()->option.fd, &ret);
+		else
+			r = get_next_line(singleton()->option.fd, &ret);
 		__reset_termcaps__(RESET_TERMCAPS);
 		if (singleton()->isatty_stdin)
 			add2history(ft_strdup(ret));
@@ -172,6 +176,40 @@ void	prompt(void)
 		{
 			ft_exit();
 			break ;
+		}
+		// signal(SIGQUIT)
+	}
+}
+
+static void	ft_c_option(int ac, const char **av)
+{
+	if (ac >= 3)
+	{
+		ft_parse((char *)av[2]);
+		ft_exec_each_cmd(singleton()->lst);
+	}
+}
+
+static void	parse_args(int ac, const char **av)
+{
+	ft_bzero(&singleton()->option, sizeof(struct s_options));
+	singleton()->option.fd = STDIN_FILENO;
+	if (ac > 1)
+	{
+		if (0 == ft_strcmp((char *)av[1], "-c"))
+		{
+			singleton()->option.opt_c = TRUE;
+			if (ac < 3)
+			{
+				ft_dprintf(STDERR_FILENO,
+					PROG_NAME ": -c: option requires an argument\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+		else if (ft_is_openable((char *)av[1], O_RDONLY))
+		{
+			singleton()->isatty_stdin = 0;
+			singleton()->option.fd = open(av[1], O_RDONLY);
 		}
 	}
 }
@@ -184,6 +222,10 @@ int	main(__attribute__((unused)) int ac,
 		return (EXIT_FAILURE);
 	if (singleton()->isatty_stdin)
 		init_history();
-	prompt();
+	parse_args(ac, av);
+	if (singleton()->option.opt_c)
+		ft_c_option(ac, av);
+	else
+		prompt();
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 14:42:06 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/08 16:26:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,6 +245,20 @@ typedef struct s_builtin
 }	t_builtin;
 
 /*
+** Used to handle arguments in the program
+**
+** opt_c:				is the -c option found (bool)
+** fd:					if there's a second arg and it's a file, execute the
+						script (the commands actually - nor loop or conditions
+						are implemented). Otherwise, set the fd to STDIN_FILENO.
+*/
+struct s_options
+{
+	uint8_t	opt_c : 2;
+	int		fd;
+};
+
+/*
 ** Main stucture. Called with a singleton.
 **
 ** isatty_stdin:		checks if the STDIN_FILENO fd is a terminal
@@ -260,15 +274,16 @@ typedef struct s_builtin
 */
 typedef struct s_minishl
 {
-	int				isatty_stdin;
-	int				last_return_value;
-	char			*cwd;
-	char			*cwd_basename;
-	t_list			*env;
-	t_list			*lst;
-	t_edition		edit;
-	t_history		hist;
-	struct termios	tattr;
+	int					isatty_stdin;
+	int					last_return_value;
+	char				*cwd;
+	char				*cwd_basename;
+	t_list				*env;
+	t_list				*lst;
+	t_edition			edit;
+	t_history			hist;
+	struct s_options	option;
+	struct termios		tattr;
 }	t_minishl;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -291,7 +306,7 @@ void		*ft_malloc_error(char *file, int line);
 
 // Parser
 t_minishl	*singleton(void);
-int			ft_gnl_stdin(char **line);
+int			ft_gnl(int fd, char **line);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
@@ -307,10 +322,6 @@ int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
 int			ft_exit(void) __attribute__((noreturn));
 int			ft_clear(void);
-
-// History
-void		init_history(void);
-void		add2history(char *cmd);
 
 void		print_inline(char **ptr, char *buffer);
 

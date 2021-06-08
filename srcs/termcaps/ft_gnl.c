@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 13:53:15 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/08 16:03:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,12 +151,12 @@ static char	*ft_read_line(int fd, char *str, char **line, int *check)
 	return (ft_realloc_str(str, line, check));
 }
 
-int	ft_gnl_stdin(char **line)
+int	ft_gnl(int fd, char **line)
 {
 	static char	*str;
 	int			check;
 
-	if (read(STDIN_FILENO, str, 0) || _TMP_BUF_SZ_ <= 0 || !line)
+	if (read(fd, str, 0) || _TMP_BUF_SZ_ <= 0 || !line)
 		return (-1);
 	check = 0;
 	if (str && ft_strchr(str, '\n'))
@@ -170,7 +170,7 @@ int	ft_gnl_stdin(char **line)
 		if (!str)
 			return (-1);
 	}
-	str = ft_read_line(STDIN_FILENO, str, line, &check);
+	str = ft_read_line(fd, str, line, &check);
 	return (check);
 }
 
