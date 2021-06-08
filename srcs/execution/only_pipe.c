@@ -6,37 +6,51 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/08 13:46:01 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/08 18:22:03 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	*first_cmd_with_pipe(void *cmd)
+int	count_pipe(t_list *lst_cmd)
+{
+	t_list *tmp;
+	int count;
+
+	tmp = lst_cmd;
+	count = 0;
+	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE))
+	{
+		++count;
+		tmp = tmp->next;
+	}
+	return (count);
+}
+
+static void	*first_cmd_with_pipe(void *cmd, int *fd)
 {
 	pid_t	pid;
-	int		*fd = malloc(sizeof(int) * 2);
-	int status = 1;
+	int 	status = 1;
+	int 	builtin_status = 1;
 
-	if (!fd)
-		return (NULL);
-	pipe(fd);
 	pid = fork();
 	if (pid < 0)
 			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
-		close(fd[0]);
+		printf("\n---> first cmd go in\n");
 		dup2(fd[1], STDOUT_FILENO);
-		if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
-		// close(fd[1]);
+		if (builtin_status != NOT_FOUND)
+			exit(SUCCESS);
 		exit(EXEC_FAILURE);
 	}
 	else
 	{
-		close(fd[1]);
 		wait(&status);
+		close(fd[1]);           // get stdout, need to close, because if not, stdout is always open, so the fd for stdin never have EOF
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -45,97 +59,112 @@ static int	*first_cmd_with_pipe(void *cmd)
 	return (fd);
 }
 
-static int	*interm_cmd_with_pipe(void *cmd, int *get_fd)
+static void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 {
 	pid_t	pid;
-	int		*tmp = get_fd;
-	int		*fd = malloc(sizeof(int) * 2);
-	int status = 1;
+	int 	status = 1;
+	int 	builtin_status = 1;
 
-	if (!fd)
-		return (NULL);
-	pipe(fd);
 	pid = fork();
 	if (pid < 0)
 		exit(PID_FAILURE);
 	else if (pid == 0)
 	{
-		close(get_fd[1]);
-		dup2(get_fd[1], STDIN_FILENO);
-		close(get_fd[0]);
+		dup2(fd[fd_index * 2], STDIN_FILENO);
 	
-		close(fd[0]);
-		dup2(fd[1], STDOUT_FILENO);
-		if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+		dup2(fd[(fd_index + 1) * 2 + 1], STDOUT_FILENO);
+		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
+		// need add free here because sys_exec can fail
 		close(fd[1]);
+		if (builtin_status != NOT_FOUND)
+			exit(SUCCESS);
 		exit(EXEC_FAILURE);
 	}
 	else
 	{
-		close(fd[1]);
 		wait(&status);
+		close(fd[(fd_index + 1) * 2 + 1]);
 	}
-	free(tmp);
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
 		singleton()->last_return_value = LRV_SIGINT;
-	return (fd);
 }
 
-static void	last_cmd_with_pipe(void *cmd, int *get_fd)
+static void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 {
-	const pid_t	pid = fork();
-	int		*tmp = get_fd;
-	int status = 1;
+	pid_t	pid;
+	int 	status = 1;
+	int 	builtin_status = 1;
 
+	pid = fork();
 	if (pid < 0)
-		exit(PID_FAILURE);
-	else if (0 == pid)
+			exit(PID_FAILURE);
+	else if (pid == 0)
 	{
-		close(get_fd[1]);
-		dup2(get_fd[0], STDIN_FILENO);
-		if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+		printf("\n---> last cmd go in\n\n");
+		dup2(fd[fd_index * 2], STDIN_FILENO);
+		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
-		close(get_fd[0]);
+		if (builtin_status != NOT_FOUND)
+			exit(SUCCESS);
 		exit(EXEC_FAILURE);
 	}
 	else
 	{
-		close(get_fd[1]);
 		wait(&status);
 	}
-	free(tmp);
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
 		singleton()->last_return_value = LRV_SIGINT;
+}
+
+static void cmd_with_multi_pipe(t_list *lst_cmd, int *fd)
+{
+	t_list 	*tmp;
+	int		fd_index;
+
+	tmp = lst_cmd;
+	fd_index = 0;
+	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE))
+	{
+		interm_cmd_with_pipe(tmp->content, fd, fd_index);
+		++fd_index;
+		tmp = tmp->next;
+	}
+	last_cmd_with_pipe(tmp->content, fd, fd_index);
 }
 
 void cmd_with_pipe(t_list *lst_cmd)
 {
-	t_list *tmp;
-	int first;
-	int *fd;
+	t_list 	*tmp;
+	int 	*fd;
+	int 	i;
+	int 	pipe_len;
 
-	first = 1;
 	tmp = lst_cmd;
-	while (tmp)
-	{
-		if (first == 1)
-		{
-			fd = first_cmd_with_pipe((t_cmd *)tmp->content);
-			first = 0;
-		}
-		else if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
-		{
-			fd = interm_cmd_with_pipe((t_cmd *)tmp->content, fd);
-		}
-		else
-		{
-			last_cmd_with_pipe((t_cmd *)tmp->content, fd);
-		}
-		tmp = tmp->next;
-	}
+	pipe_len = count_pipe(tmp);
+	fd = malloc(sizeof(int) * (pipe_len * 2));
+	if (!fd)
+		return ;
+	
+	// create pipe for each cmd
+	i = 0;
+	while (i < pipe_len)
+		pipe(fd + (i++ * 2));
+
+	// lauch the first cmd with pipe
+	first_cmd_with_pipe(tmp->content, fd);
+
+	// multi cmd with pipe
+	cmd_with_multi_pipe(tmp->next, fd);
+
+	// close all pipe fd
+	i = 0;
+	while (i < pipe_len * 2)
+		close(fd[i++]);
 }

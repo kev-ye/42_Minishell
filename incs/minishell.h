@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/08 13:17:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/08 18:43:35 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@
 # define EXEC_FAILURE 1
 # define LRV_SYNTAX_ERROR 258
 # define LRV_CMD_NOT_FOUND 127
+# define LRV_GENERAL_ERROR 1
 # define LRV_SIGINT 128
 
 // SET BONUS TO 0 BY DEFAULT
@@ -168,6 +169,7 @@ typedef struct s_quotes
 ** FLG_OUTPUT		// `>'
 ** FLG_APPEND		// `>>'
 ** FLG_INPUT		// `<'
+** FLG_TAG			// `<<'
 */
 enum	e_flags
 {
@@ -176,7 +178,8 @@ enum	e_flags
 	FLG_OUTPUT = (1U << 2),
 	FLG_APPEND = (1U << 3),
 	FLG_INPUT = (1U << 4),
-	FLG_EOL = (1U << 5)
+	FLG_EOL = (1U << 5),
+	FLG_TAG = (1U << 6)
 };
 
 /*

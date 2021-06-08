@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 16:42:32 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/08 18:45:57 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int	found_str_limit(char *s, size_t i, t_list **args)
 {
 	static struct s_redirections	limits[] = {
 		{";", 1, FLG_EO_CMD}, {"|", 1, FLG_PIPE}, {">>", 2, FLG_APPEND},
-		{">", 1, FLG_OUTPUT}, {"<", 1, FLG_INPUT}, {NULL, 0, 0}
+		{">", 1, FLG_OUTPUT}, {"<", 1, FLG_INPUT}, {"<<", 2, FLG_TAG}, {NULL, 0, 0}
 	};
 	t_cmd		*new;
 	size_t		k;

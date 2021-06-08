@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 14:47:59 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 18:25:14 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/08 19:04:46 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ static int 	redir_error(t_list *lst_cmd)
 		ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `>'\n");
 	else if (((t_cmd *)tmp->next->content)->status_flag & FLG_APPEND)
 		ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `>>'\n");
+	else if (((t_cmd *)tmp->next->content)->status_flag & FLG_TAG)
+		ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `<<'\n");
 	else
 		return (0);
 	return (1);
@@ -39,13 +41,17 @@ static int 	multi_error(t_list *lst_cmd)
 	t_list *tmp;
 
 	tmp = lst_cmd;
-    if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
+	if ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
+		&& (!((t_cmd *)tmp->next->content)->args))
+        ft_dprintf(STDERR_FILENO, PROG_NAME": You should not do this.\n");
+    else if (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
         ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `|'\n");
     else if (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
         ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `;'\n");
 	else if ((((t_cmd *)tmp->next->content)->status_flag & FLG_INPUT)
 		|| (((t_cmd *)tmp->next->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->next->content)->status_flag & FLG_APPEND))
+		|| (((t_cmd *)tmp->next->content)->status_flag & FLG_APPEND)
+		|| (((t_cmd *)tmp->next->content)->status_flag & FLG_TAG))
 		ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `newline'\n");
     else if (((t_cmd *)tmp->next->content)->status_flag & FLG_PIPE)
         ft_dprintf(STDERR_FILENO, PROG_NAME": "SYNTAXERR" `|'\n");
@@ -64,20 +70,23 @@ static int syntax_with_redir(t_list *lst_cmd)
     if (((t_cmd *)tmp->content)->args
 		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
 		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
+		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)
+		|| (((t_cmd *)tmp->content)->status_flag & FLG_TAG))
 		&& tmp->next && (!((t_cmd *)tmp->next->content)->args))
 		return (1);
     else if (((t_cmd *)tmp->content)->args
 		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
 		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
+		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)
+		|| (((t_cmd *)tmp->content)->status_flag & FLG_TAG))
 		&& tmp->next && (!((t_cmd *)tmp->next->content)->args)
 		&& (((t_cmd *)tmp->next->content)->status_flag & FLG_EOL))
 		return (1);
 	else if (!((t_cmd *)tmp->content)->args
 		&& ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
 		|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
+		|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)
+		|| (((t_cmd *)tmp->content)->status_flag & FLG_TAG))
 		&& tmp->next && (!((t_cmd *)tmp->next->content)->args))
 		return (1);
     return (0);
@@ -89,8 +98,14 @@ static int syntax_with_multi(t_list *lst_cmd)
 
     tmp = lst_cmd;
     if (((t_cmd *)tmp->content)->args
+		&& (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
         && tmp->next && (((t_cmd *)tmp->next->content)->status_flag &FLG_EOL))
         return (0);
+	else if (((t_cmd *)tmp->content)->args
+		&& (((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
+        && tmp->next && (!((t_cmd *)tmp->next->content)->args)
+		&& (((t_cmd *)tmp->next->content)->status_flag &FLG_EOL))
+        return (2); 
     else if (((t_cmd *)tmp->content)->args
 		&& ((((t_cmd *)tmp->content)->status_flag & FLG_PIPE)
 		|| (((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))
