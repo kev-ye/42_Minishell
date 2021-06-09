@@ -34,7 +34,7 @@ int main()
 
         if (!strcmp(str, "cat << lol"))
         {
-            fd = open("/tmp/fuck", O_RDWR | O_CREAT | O_TRUNC |O_APPEND, 0666);
+            fd = open("/tmp/fuck", O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
             if (fd < 0)
                 exit(1);
             while (1)
