@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 16:57:20 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:42:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 static struct s_redirections	g_limits[] = {
 	{";", 1, FLG_EO_CMD}, {"|", 1, FLG_PIPE}, {">>", 2, FLG_APPEND},
-	{">", 1, FLG_OUTPUT}, {"<", 1, FLG_INPUT}, {NULL, 0, 0}
+	{">", 1, FLG_OUTPUT}, {"<<", 2, FLG_DINPUT}, {"<", 1, FLG_INPUT},
+	{NULL, 0, 0}
 };
 
 // RESET_FLAG is used to reset static variables in `quotes2close'
@@ -286,8 +287,8 @@ void	ft_parse(char *s)
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
-	// ft_lstprint_cmd(singleton()->lst);
-	// ft_printf("\n");
+	ft_lstprint_cmd(singleton()->lst);
+	ft_printf("\n");
 }
 
 /*******************************************************************************

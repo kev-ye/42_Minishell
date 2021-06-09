@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 14:00:46 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:41:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,8 @@ enum	e_flags
 	FLG_OUTPUT = (1U << 2),
 	FLG_APPEND = (1U << 3),
 	FLG_INPUT = (1U << 4),
-	FLG_EOL = (1U << 5)
+	FLG_DINPUT = (1U << 5),
+	FLG_EOL = (1U << 6)
 };
 
 // Only used whithin a lookup table for the parsing
