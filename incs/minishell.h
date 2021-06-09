@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 17:55:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 18:38:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,10 +220,7 @@ typedef struct s_quotes
 typedef struct s_history
 {
 	int		fd;
-	size_t	current;	// to remove
-	size_t	size;		// to remove
 	char	*path;
-	t_list	*history;	// to remove - unused (remove the call to free too)
 }	t_history;
 
 /*

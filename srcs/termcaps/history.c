@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 14:00:21 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 18:31:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,6 @@ void	init_history(void)
 {
 	create_history();
 	convert_history2lst();
-	singleton()->hist.size = ft_lstsize(singleton()->hist.history);
-	singleton()->hist.current = singleton()->hist.size;
 }
 
 void	add2history(char *cmd)

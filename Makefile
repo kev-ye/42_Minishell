@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
+#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/09 14:58:31 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/09 18:40:43 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,10 +55,7 @@ SUB_SRC	:= cd.c \
 		   pwd.c \
 		   unset.c
 SRC		+= $(addprefix builtin/, $(SUB_SRC))
-SUB_SRC	:= ft_gnl.c \
-		   history.c \
-		   ft_termcaps_search_cmd.c \
-		   ft_termcaps.c
+SUB_SRC	:= history.c
 SRC		+= $(addprefix termcaps/, $(SUB_SRC))
 SUB_SRC	:= utils.c
 SRC		+= $(addprefix util/, $(SUB_SRC))

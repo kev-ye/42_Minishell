@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 14:58:49 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 18:32:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ void	prompt(void)
 
 	signal(SIGINT, ft_interrupt);
 	// signal(SIGQUIT, ft_interrupt);
+	r = TRUE;
 	while (TRUE)
 	{
 		ft_bzero(&singleton()->edit, sizeof(t_edition));

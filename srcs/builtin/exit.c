@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/09 14:59:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 18:38:51 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ static void	ft_free_ft_exit(void)
 		ft_memdel((void **)(&singleton()->cwd));
 	if (singleton()->env)
 		ft_lstclear(&singleton()->env, free);
-	if (singleton()->hist.history)
-		ft_lstclear(&singleton()->hist.history, free);
 	if (singleton()->hist.path)
 		ft_memdel((void **)(&singleton()->hist.path));
 	close(singleton()->hist.fd);
