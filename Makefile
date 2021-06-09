@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
+#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/09 12:04:21 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/09 14:58:31 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror # -fsanitize=address -g3
+CFLAGS 		= -Wall -Wextra -Werror -g3 -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
 
@@ -26,6 +26,7 @@ SRC_DIR		:= srcs
 SUB_DIR		:= builtin \
 			   parser \
 			   termcaps \
+			   execution \
 			   util
 OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
@@ -34,10 +35,17 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 
 NAME	:= minishell
 SRC		:= main.c
-SUB_SRC	:= exec_cmds.c \
-		   parser.c \
-		   search_executable.c
+SUB_SRC	:= parser.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
+SUB_SRC	:= exec_cmds.c \
+		   search_executable.c \
+		   only_pipe.c \
+		   only_redir.c \
+		   multi_cmds_check.c \
+		   cmds_syntax_check.c \
+		   builtin_exec.c \
+		   sys_exec.c
+SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \
 		   echo.c \

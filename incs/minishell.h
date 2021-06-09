@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 14:41:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 15:02:17 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,29 @@
 # if defined(FALSE) && 0 != FALSE	/* May be set already */
 #  undef FALSE
 #  define FALSE 0
+# endif
+
+// Exec
+# define SYNTAXERR "syntax error near unexpected token"
+# define SIMPLE 0
+# define ONLY_PIPE 1
+# define ONLY_REDIR 2
+# define MIX 4
+
+// Bultin
+# define NO_NUM_ARG 255
+
+// Exec ret for $?
+# define PID_FAILURE 1
+# define EXEC_FAILURE 1
+# define LRV_SYNTAX_ERROR 258
+# define LRV_CMD_NOT_FOUND 127
+# define LRV_GENERAL_ERROR 1
+# define LRV_KILL_SIG 128
+
+// SET BONUS TO 0 BY DEFAULT
+# ifndef BONUS
+#  define BONUS 0
 # endif
 
 /*
@@ -315,17 +338,31 @@ int			ft_gnl(int fd, char **line);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
-void		ft_exec_each_cmd(t_list *lst);
 t_list		*search_env(char *tofind, t_list **env);
 
-// Builtin
+/*
+** Execution
+*/
+void		ft_exec_each_cmd(t_list *lst);
+char		*search_executable(char *command);
+void		ft_pre_exec_cmd(void *ptr);
+void 		cmd_with_pipe(t_list *lst_cmd);
+void		cmd_with_redir(void *cmd, t_list *lst_cmd);
+int 		part_cmd_check(t_list *lst_cmd);
+int 		syntax_parser(t_list *lst_cmd);
+int 		builtin_exec(char **cmds);
+void		sys_exec(void *ptr);
+/*
+** Builtin
+*/
 int			ft_echo(char **cmds);
 int			ft_cd(char **cmds);
 int			ft_pwd(void);
 int			ft_env(char **cmds);
 int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
-int			ft_exit(void) __attribute__((noreturn));
+void		ft_exit_for_prompt(void);
+int			ft_exit(char **cmds) __attribute__((noreturn));
 int			ft_clear(void);
 
 void		print_inline(char **ptr, char *buffer);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_gnl.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 12:55:07 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/08 16:03:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:59:02 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static int	ft_istermcap(char **ptr, char *read_buffer, int len)
 	if (ft_strchr(buf, K_DELETE))
 		ft_termcap_delete_char(ptr);
 	else if (ft_strchr(buf, K_CTRL_D))
-		ft_exit();
+		ft_exit_for_prompt();
 	else if (ft_strchr(buf, K_CTRL_L))
 		ft_termcap_clear_screen(ptr);
 	else if (ft_strchr(buf, K_CTRL_U))

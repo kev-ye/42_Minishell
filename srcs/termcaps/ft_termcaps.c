@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_termcaps.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 13:45:53 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/07 17:45:01 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:58:58 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,5 +104,5 @@ void	ft_termcap_clear_screen(char **ptr)
 void	ft_termcap_esc(char **ptr)
 {
 	ft_memdel((void **)ptr);
-	ft_exit();
+	ft_exit_for_prompt();
 }

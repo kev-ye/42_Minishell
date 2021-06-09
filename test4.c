@@ -27,13 +27,6 @@ int main()
 		exit(1);
 	else if (0 == pid)
 	{
-        // int fd = open("file1" , O_WRONLY | O_TRUNC | O_CREAT, 0666);
-		// if (fd == -1)
-		// {
-		// 	printf("write fd1 down\n");
-		// 	exit(0);
-		// }
-
         fd2 = open("file2" , O_WRONLY | O_TRUNC |O_CREAT, 0666);
 		if (fd2 == -1)
 		{

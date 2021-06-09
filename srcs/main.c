@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 13:56:27 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:58:49 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ void	print_prompt(void)
 	// 	ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
 }
 
+
+// a revoir : cant add env with export and unset fuck
 t_list	*get_env(char **env)
 {
 	t_list	*new_env;
@@ -152,7 +154,7 @@ void	prompt(void)
 		// rl_replace_line
 		if (!ret)
 		{
-			ft_exit();
+			ft_exit_for_prompt();
 			break ;
 		}
 		if (singleton()->isatty_stdin)
@@ -167,7 +169,7 @@ void	prompt(void)
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{
-			ft_exit();
+			ft_exit_for_prompt();
 			break ;
 		}
 	}
