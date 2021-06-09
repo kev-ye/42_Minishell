@@ -1,29 +1,4 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+pipe ideal :
 
 cmd0    cmd1   cmd2   cmd3   cmd4
    pipe0   pipe1  pipe2  pipe3
@@ -37,3 +12,10 @@ cmd0    cmd1   cmd2   cmd3   cmd4
 
 2 * 2 = 4
 (2 + 1) * 2 + 1 = 7
+
+
+redir ideal :
+
+">>" -> readline
+
+"> f1" -> seg
