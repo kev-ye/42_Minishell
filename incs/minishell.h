@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 15:02:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 17:55:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,7 @@
 ** FLG_OUTPUT:			`>'
 ** FLG_APPEND:			`>>'
 ** FLG_INPUT:			`<'
+** FLG_DINPUT:			`<<'
 ** FLG_EOL:				`\0' (end of line)
 */
 enum	e_flags
