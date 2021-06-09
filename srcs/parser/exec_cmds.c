@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 21:53:45 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 13:37:41 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@ void	ft_interrupt(int code)
 	// kill(singleton()->thread_pid, code);	
 	// exit(code);
 	(void)code;
-	ft_putstr_fd("\n", STDERR_FILENO);
+	// ft_putstr(CLR_LINE);
+	// ft_putstr_fd("\n", STDERR_FILENO);
 	print_prompt();
+	ft_dprintf(STDERR_FILENO, "\n%s", singleton()->prompt);
 }
 
 int ft_exec_builtin_cmd(char **cmds)

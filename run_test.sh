@@ -235,6 +235,8 @@ test_parser() {
 	test_cmd "echo \"\$HOME\""
 	test_cmd "echo '\$HOME'"
 	test_cmd "echo \"'\$HOME'\""
+	test_cmd "echo \$\"HOME\""
+	test_cmd "echo \$'HOME'"
 	test_cmd "echo \"Bonjour\$HOME\\\toi\""
 	test_cmd "echo \" bonjour '' 'a\' \$LESS\$BONJOUR\moi\"\\\"\'"
 	test_cmd "echo ' bonjour \"\" \"a\\\" \$LESS\$BONJOUR\moi'\\\"\'"

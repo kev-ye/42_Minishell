@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/06 21:44:18 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:00:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ static void	convert_history2lst(void)
 {
 	int		check;
 	char	*ret;
-	t_list	*new;
 
 	while (TRUE)
 	{
@@ -54,10 +53,10 @@ static void	convert_history2lst(void)
 			else
 				break ;
 		}
-		new = ft_lstnew(ret);
-		if (check < 0 || !new)
+		if (check < 0)
 			ft_malloc_error(__FILE__, __LINE__);
-		ft_lstadd_back(&singleton()->hist.history, new);
+		add_history(ret);
+		ft_memdel((void **)&ret);
 		if (0 == check)
 			break ;
 	}
@@ -73,15 +72,7 @@ void	init_history(void)
 
 void	add2history(char *cmd)
 {
-	t_list	*new;
-	t_list	*last;
-
-	singleton()->hist.current = singleton()->hist.size;
 	if (!cmd || ft_strisall(cmd, ft_isspace) || 0 == ft_strlen(cmd))
-		return ;
-	last = ft_lstlast(singleton()->hist.history);
-	if (ZSH_HISTORY_HANDLING && last && last->content
-		&& 0 == ft_strcmp(cmd, last->content))
 		return ;
 	if (!ft_is_openable(singleton()->hist.path, O_RDONLY))
 	{
@@ -91,10 +82,5 @@ void	add2history(char *cmd)
 			ft_malloc_error(__FILE__, __LINE__);
 	}
 	ft_putendl_fd(cmd, singleton()->hist.fd);
-	new = ft_lstnew(cmd);
-	if (!new)
-		ft_malloc_error(__FILE__, __LINE__);
-	ft_lstadd_back(&singleton()->hist.history, new);
-	singleton()->hist.size++;
-	singleton()->hist.current = singleton()->hist.size;
+	add_history(cmd);
 }

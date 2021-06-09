@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/02 21:28:31 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 13:44:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 int	ft_exit(void)
 {
-	ft_putstr_fd("exit\n", STDIN_FILENO);
+	if (singleton()->isatty_stdin)
+		ft_putstr_fd("exit\n", STDIN_FILENO);
 	ft_free_exit();
-	exit(0);
+	exit(EXIT_SUCCESS);
 }

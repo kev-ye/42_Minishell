@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/08 16:49:06 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 13:56:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,10 @@ void	print_prompt(void)
 		singleton()->cwd_basename = ft_strrchr(singleton()->cwd, '/');
 		if (*(singleton()->cwd_basename + 1))
 			singleton()->cwd_basename++;
+		ft_asprintf(&singleton()->prompt, PROMPT, singleton()->cwd_basename);
 	}
-	if (singleton()->isatty_stdin)
-		ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
+	// if (singleton()->isatty_stdin)
+	// 	ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
 }
 
 t_list	*get_env(char **env)
@@ -77,33 +78,6 @@ t_list	*get_env(char **env)
 	return (new_env);
 }
 
-static void	init_termcaps(struct termios *tattr)
-{
-	const char	*term_name = ft_getenv("TERM");
-	int			ret;
-
-	if (!term_name)
-	{
-		ft_dprintf(STDERR_FILENO,
-			B_RED "$TERM not set. Termcaps won't work.\n" CLR_COLOR);
-		ft_free_exit();
-	}
-	ret = tgetent(NULL, term_name);
-	ft_memdel((void **)&term_name);
-	if (ret <= 0)
-	{
-		ft_dprintf(STDERR_FILENO,
-			B_RED "Could not access the termcap data base.\n" CLR_COLOR);
-		ft_free_exit();
-	}
-	(void)tattr;
-	tcgetattr(STDIN_FILENO, tattr);
-	tattr->c_cc[VMIN] = 1;
-	tattr->c_cc[VTIME] = 0;
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, tattr);
-	// tcsetattr(STDIN_FILENO, TCSANOW, tattr);
-}
-
 static int	ft_init_minishell(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
@@ -125,30 +99,40 @@ static int	ft_init_minishell(char **env)
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
 	singleton()->isatty_stdin = isatty(STDIN_FILENO);
-	init_termcaps(&singleton()->tattr);
 	return (1);
 }
 
-#define SET_TERMCAPS 1
-#define RESET_TERMCAPS 0
+// void	prompt(void)
+// {
+// 	char	*ret;
+// 	int		r;
 
-static void	__reset_termcaps__(int flag)
-{
-	if (SET_TERMCAPS == flag)
-	{
-		tcgetattr(STDIN_FILENO, &singleton()->tattr);
-		(&singleton()->tattr)->c_lflag &= ~(ICANON | ECHO);
-		tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
-		// tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr); // unused
-	}
-	else if (RESET_TERMCAPS == flag)
-	{
-		tcgetattr(STDIN_FILENO, &singleton()->tattr);
-		(&singleton()->tattr)->c_lflag |= (ICANON | ECHO);
-		tcsetattr(STDIN_FILENO, TCSAFLUSH, &singleton()->tattr);
-		// tcsetattr(STDIN_FILENO, TCSANOW, &singleton()->tattr); // unused
-	}
-}
+// 	signal(SIGINT, ft_interrupt);
+// 	// signal(SIGQUIT, ft_interrupt);
+// 	while (TRUE)
+// 	{
+// 		ft_bzero(&singleton()->edit, sizeof(t_edition));
+// 		__reset_termcaps__(SET_TERMCAPS);
+// 		print_prompt();
+// 		if (singleton()->option.fd == STDIN_FILENO)
+// 			r = ft_gnl(singleton()->option.fd, &ret);
+// 		else
+// 			r = get_next_line(singleton()->option.fd, &ret);
+// 		__reset_termcaps__(RESET_TERMCAPS);
+// 		if (singleton()->isatty_stdin)
+// 			add2history(ft_strdup(ret));
+// 		ft_parse(ret);
+// 		ft_exec_each_cmd(singleton()->lst);
+// 		ft_memdel((void **)(&ret));
+// 		if (r <= 0)
+// 		{
+// 			ft_exit();
+// 			break ;
+// 		}
+// 		// signal(SIGQUIT)
+// 	}
+// }
+
 
 void	prompt(void)
 {
@@ -160,15 +144,24 @@ void	prompt(void)
 	while (TRUE)
 	{
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
-		__reset_termcaps__(SET_TERMCAPS);
 		print_prompt();
 		if (singleton()->option.fd == STDIN_FILENO)
-			r = ft_gnl(singleton()->option.fd, &ret);
+			ret = readline(singleton()->prompt);
 		else
 			r = get_next_line(singleton()->option.fd, &ret);
-		__reset_termcaps__(RESET_TERMCAPS);
+		// rl_replace_line
+		if (!ret)
+		{
+			ft_exit();
+			break ;
+		}
 		if (singleton()->isatty_stdin)
-			add2history(ft_strdup(ret));
+		{
+			// add_history(ret);
+			// add2history(ft_strdup(ret));
+			add2history(ret);
+		}
+		// rl_redisplay();
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
 		ft_memdel((void **)(&ret));
@@ -177,7 +170,6 @@ void	prompt(void)
 			ft_exit();
 			break ;
 		}
-		// signal(SIGQUIT)
 	}
 }
 

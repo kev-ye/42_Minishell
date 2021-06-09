@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/08 15:58:53 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/09 12:04:21 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@
 CC			= clang
 CFLAGS 		= -Wall -Wextra -Werror # -fsanitize=address -g3
 IFLAGS 		= -I./incs -I./libft/incs
-LIBFLAGS 	= -L./libft -lft -lncurses
+LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
 
 # DIRECTORIES
 

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/08 16:26:22 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:00:46 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@
 # include <sys/stat.h>
 # include <sys/errno.h>
 # include <sys/ioctl.h>
+
+# include <readline/readline.h>
+# include <readline/history.h>
 
 // Custom
 # include "libft.h"
@@ -60,7 +63,7 @@
 ** just set -D ZSH_HISTORY_HANDLING=0 at compile time.
 */
 # ifndef ZSH_HISTORY_HANDLING
-#  define ZSH_HISTORY_HANDLING 1
+#  define ZSH_HISTORY_HANDLING 1	// to remove - unused
 # endif
 
 /*
@@ -192,10 +195,10 @@ typedef struct s_quotes
 typedef struct s_history
 {
 	int		fd;
-	size_t	current;
-	size_t	size;
+	size_t	current;	// to remove
+	size_t	size;		// to remove
 	char	*path;
-	t_list	*history;
+	t_list	*history;	// to remove - unused (remove the call to free too)
 }	t_history;
 
 /*
@@ -276,8 +279,9 @@ typedef struct s_minishl
 {
 	int					isatty_stdin;
 	int					last_return_value;
-	char				*cwd;
-	char				*cwd_basename;
+	char				*cwd;				// one of those must be thrown
+	char				*cwd_basename;		// one of those must be thrown
+	char				*prompt;			// one of those must be thrown
 	t_list				*env;
 	t_list				*lst;
 	t_edition			edit;
