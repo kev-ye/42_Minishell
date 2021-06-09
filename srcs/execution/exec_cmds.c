@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/08 18:32:58 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 12:56:00 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	simple_cmd(void *cmd)
 		else if (WIFSIGNALED(status) == 1)
 		{
 			// printf("signal exit\n");
-			singleton()->last_return_value = LRV_SIGINT + WTERMSIG(status);
+			singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 		}	
 	}
 }

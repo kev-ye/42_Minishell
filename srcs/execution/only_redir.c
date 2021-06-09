@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/08 18:48:27 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 13:10:05 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,5 +226,5 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
-		singleton()->last_return_value = LRV_SIGINT;
+		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }

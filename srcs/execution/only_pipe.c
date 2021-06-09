@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/08 18:22:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 13:09:57 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static void	*first_cmd_with_pipe(void *cmd, int *fd)
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
-		singleton()->last_return_value = LRV_SIGINT;
+		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 	return (fd);
 }
 
@@ -90,7 +90,7 @@ static void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
-		singleton()->last_return_value = LRV_SIGINT;
+		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
 static void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
@@ -120,7 +120,7 @@ static void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
-		singleton()->last_return_value = LRV_SIGINT;
+		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
 static void cmd_with_multi_pipe(t_list *lst_cmd, int *fd)

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/08 18:43:35 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/09 12:55:49 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@
 # define LRV_SYNTAX_ERROR 258
 # define LRV_CMD_NOT_FOUND 127
 # define LRV_GENERAL_ERROR 1
-# define LRV_SIGINT 128
+# define LRV_KILL_SIG 128
 
 // SET BONUS TO 0 BY DEFAULT
 # ifndef BONUS
