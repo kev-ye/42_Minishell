@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 12:45:35 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/07 14:48:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 11:51:56 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ static int only_redir(t_list *lst_cmd)
 	{
 		if ((((t_cmd *)tmp->content)->status_flag & FLG_INPUT)
 			|| (((t_cmd *)tmp->content)->status_flag & FLG_OUTPUT)
-			|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND))
+			|| (((t_cmd *)tmp->content)->status_flag & FLG_APPEND)
+			|| (((t_cmd *)tmp->content)->status_flag & FLG_DINPUT))
 		{
 			ret = (int)((t_cmd *)tmp->content)->status_flag;
 			tmp = tmp->next;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 11:43:00 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 11:57:17 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,9 @@
 # define LRV_CMD_NOT_FOUND 127
 # define LRV_GENERAL_ERROR 1
 # define LRV_KILL_SIG 128
+
+// for '<<'
+# define TMP_FD "/tmp/double_input_fd"
 
 // SET BONUS TO 0 BY DEFAULT
 # ifndef BONUS
