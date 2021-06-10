@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 13:14:41 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 13:34:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,15 +195,20 @@ static void	parse_args(int ac, const char **av)
 			singleton()->option.opt_c = TRUE;
 			if (ac < 3)
 			{
-				ft_dprintf(STDERR_FILENO,
-					PROG_NAME ": -c: option requires an argument\n");
+				ft_dprintf(2, PROG_NAME ": -c: option requires an argument\n");
 				exit(EXIT_FAILURE);
 			}
 		}
-		else if (ft_is_openable((char *)av[1], O_RDONLY))
+		else
 		{
 			singleton()->isatty_stdin = 0;
 			singleton()->option.fd = open(av[1], O_RDONLY);
+			if (singleton()->option.fd == -1)
+			{
+				ft_dprintf(2, PROG_NAME ": %s: %s\n", av[1], strerror(errno));
+				ft_free_exit();
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 }
