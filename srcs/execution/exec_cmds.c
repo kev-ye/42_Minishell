@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 15:48:25 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 11:48:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	ft_interrupt(int code)
 	// exit(code);
 	(void)code;
 	ft_putstr_fd("\n", STDERR_FILENO);
-	print_prompt();
+	// print_prompt();
 }
 
 void	simple_cmd(void *cmd)

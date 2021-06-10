@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 11:42:09 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 11:53:37 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,8 @@ void	prompt(void)
 	char	*ret;
 	int		r;
 
-	signal(SIGINT, ft_interrupt);
+	// signal(SIGINT, ft_interrupt);
+	signal(SIGINT, SIG_IGN);
 	// signal(SIGQUIT, ft_interrupt);
 	r = TRUE;
 	while (TRUE)
@@ -150,6 +151,7 @@ void	prompt(void)
 		print_prompt();
 		if (singleton()->option.fd == STDIN_FILENO)
 		{
+			// ft_printf("[on new line: [%d]] ", rl_on_new_line());
 			ret = readline(singleton()->prompt);
 			// ret = readline("> ");
 		}
@@ -163,9 +165,9 @@ void	prompt(void)
 		}
 		if (singleton()->isatty_stdin)
 		{
-			add_history(ret);
+			// add_history(ret);
 			// add2history(ft_strdup(ret));
-			// add2history(ft_strdup(ret));
+			add2history(ret);
 		}
 		// rl_redisplay();
 		ft_parse(ret);

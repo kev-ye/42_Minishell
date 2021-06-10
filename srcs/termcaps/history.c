@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 11:27:26 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 11:53:28 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,5 @@ void	add2history(char *cmd)
 	}
 	ft_putendl_fd(cmd, singleton()->hist.fd);
 	add_history(cmd);
-	ft_memdel((void **)&cmd);
+	// ft_memdel((void **)&cmd);
 }
