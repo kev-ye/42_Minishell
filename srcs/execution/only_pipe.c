@@ -6,26 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/09 15:04:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 11:54:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	count_pipe(t_list *lst_cmd)
-{
-	t_list *tmp;
-	int count;
-
-	tmp = lst_cmd;
-	count = 0;
-	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE))
-	{
-		++count;
-		tmp = tmp->next;
-	}
-	return (count);
-}
 
 static void	*first_cmd_with_pipe(void *cmd, int *fd)
 {
@@ -138,6 +123,21 @@ static void cmd_with_multi_pipe(t_list *lst_cmd, int *fd)
 		tmp = tmp->next;
 	}
 	last_cmd_with_pipe(tmp->content, fd, fd_index);
+}
+
+static int	count_pipe(t_list *lst_cmd)
+{
+	t_list *tmp;
+	int count;
+
+	tmp = lst_cmd;
+	count = 0;
+	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE))
+	{
+		++count;
+		tmp = tmp->next;
+	}
+	return (count);
 }
 
 void cmd_with_pipe(t_list *lst_cmd)

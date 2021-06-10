@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/09 15:02:50 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 12:19:15 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,10 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 	int flag_append;
 	int flag_trunc;
 	int flag_redir_input;
+	int flag_d_input;
+
+	// double input
+	char *input_str;
 
 	// init
 	first = 1;
@@ -75,13 +79,16 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 	flag_append = 0;
 	flag_trunc = 0;
 	flag_redir_input = 0;
+	flag_d_input = 0;
+
+	input_str = NULL;
 
 	// start
 	while(lst_cmd)
 	{
 		if (first == 1)
 			first = 0;
-		else if (!first && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND || ((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT))
+		else if (!first && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND || ((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT))
 		{
 			// try file
 			if (flag_trunc == 1)
@@ -108,6 +115,41 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 					dup2(fd_input, STDIN_FILENO);
 				}
 			}
+			else if (flag_d_input == 1)
+			{
+				tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+				if (tmp_fd_input == -1)
+				{
+					ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					exit(LRV_GENERAL_ERROR);
+				}
+				else
+				{
+					while (1)
+					{
+						input_str = readline("> ");
+						if (!ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
+						{
+							free(input_str);
+							break ;
+						}
+						ft_putendl_fd(input_str, tmp_fd_input);
+					}
+					close(tmp_fd_input);
+					tmp_fd_input = open(TMP_FD, O_RDONLY);
+					if (tmp_fd_input == -1)
+					{
+						ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+						if (tmp_fd_output != -1)
+							close(tmp_fd_output);
+						exit(LRV_GENERAL_ERROR);
+					}
+					fd_input = tmp_fd_input;
+					dup2(fd_input, STDIN_FILENO);
+				}
+			}
 			
 			// check output file
 			if (tmp_fd_output == -1)
@@ -118,6 +160,7 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 		}
 		else if (!first)
 		{
+			// '>' -> create trunc file
 			if (flag_trunc == 1)
 			{
 				// printf("[%s] is trunc\n", ((t_cmd *)lst_cmd->content)->args[0]);
@@ -125,6 +168,7 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 					close(tmp_fd_output);
 				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 			}
+			// '>>' -> create append file
 			else if (flag_append == 1)
 			{
 				// printf("[%s] is append\n", ((t_cmd *)lst_cmd->content)->args[0]);
@@ -132,6 +176,7 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 					close(tmp_fd_output);
 				tmp_fd_output = open(((t_cmd *)lst_cmd->content)->args[0], O_WRONLY | O_APPEND | O_CREAT, 0666);
 			}
+			// '<' -> check if file exit
 			else if (flag_redir_input == 1)
 			{
 				tmp_fd_input = open(((t_cmd *)lst_cmd->content)->args[0], O_RDWR);
@@ -148,6 +193,43 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 					dup2(fd_input, STDIN_FILENO);
 				}
 			}
+			// '<<' -> double input
+			else if (flag_d_input == 1)
+			{
+				tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+				if (tmp_fd_input == -1)
+				{
+					ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					exit(LRV_GENERAL_ERROR);
+				}
+				else
+				{
+					while (1)
+					{
+						input_str = readline("> ");
+						if (!ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
+						{
+							free(input_str);
+							break ;
+						}
+						ft_putendl_fd(input_str, tmp_fd_input);
+					}
+					close(tmp_fd_input);
+					tmp_fd_input = open(TMP_FD, O_RDONLY);
+					if (tmp_fd_input == -1)
+					{
+						ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+						if (tmp_fd_output != -1)
+							close(tmp_fd_output);
+						exit(LRV_GENERAL_ERROR);
+					}
+					fd_input = tmp_fd_input;
+					dup2(fd_input, STDIN_FILENO);
+				}
+			}
+
 			if (tmp_fd_output == -1)
 			{
 				ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
@@ -163,26 +245,31 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 		// active flag
 		if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
 		{
-				flag_redir_input = 1;
-				flag_append = 0;
-				flag_trunc = 0;
+			flag_redir_input = 1;
+			flag_append = 0;
+			flag_trunc = 0;
+			flag_d_input = 0;
 		}
 		else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
 		{
 			flag_trunc = 1;
 			flag_append = 0;
 			flag_redir_input = 0;
+			flag_d_input = 0;
 		}
 		else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
 		{
 			flag_append = 1;
 			flag_trunc = 0;
 			flag_redir_input = 0;
+			flag_d_input = 0;
 		}
 		else if ((((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT))
 		{
-			printf("test\n");
-			exit(0);
+			flag_d_input = 1;
+			flag_append = 0;
+			flag_trunc = 0;
+			flag_redir_input = 0;
 		}
 		else
 			return ;

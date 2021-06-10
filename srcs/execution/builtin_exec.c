@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/08 15:08:30 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 11:48:14 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int ft_exec_builtin_cmd(char **cmds)
 	i = 0;
 	while (builtin[i].cmd)
 	{
-		if (!ft_strcmp(cmds[0], builtin[i].cmd))
+		if (cmds && !ft_strcmp(cmds[0], builtin[i].cmd))
 		{
 			if (!builtin[i].f1)
 				return (builtin[i].f2());
