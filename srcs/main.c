@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 18:32:31 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 11:42:09 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	print_prompt(void)
 		singleton()->cwd_basename = ft_strrchr(singleton()->cwd, '/');
 		if (*(singleton()->cwd_basename + 1))
 			singleton()->cwd_basename++;
-		ft_asprintf(&singleton()->prompt, PROMPT, singleton()->cwd_basename);
+		ft_asprintf(&singleton()->prompt, BPROMPT, singleton()->cwd_basename);
 	}
 	// if (singleton()->isatty_stdin)
 	// 	ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
@@ -149,7 +149,10 @@ void	prompt(void)
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
 		print_prompt();
 		if (singleton()->option.fd == STDIN_FILENO)
+		{
 			ret = readline(singleton()->prompt);
+			// ret = readline("> ");
+		}
 		else
 			r = get_next_line(singleton()->option.fd, &ret);
 		// rl_replace_line
@@ -160,9 +163,9 @@ void	prompt(void)
 		}
 		if (singleton()->isatty_stdin)
 		{
-			// add_history(ret);
+			add_history(ret);
 			// add2history(ft_strdup(ret));
-			add2history(ret);
+			// add2history(ft_strdup(ret));
 		}
 		// rl_redisplay();
 		ft_parse(ret);

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 18:38:58 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 11:43:00 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@
 
 // Prompt
 # define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-# define PROMPT_CPADDING 3
+# define BPROMPT "%s $ " // cause it seems that `readline' doesn't support colors
 
 // History file. May be renamed at compile time
 # ifndef HISTORY_FILENAME
