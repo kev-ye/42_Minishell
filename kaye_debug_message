@@ -13,9 +13,24 @@ cmd0    cmd1   cmd2   cmd3   cmd4
 2 * 2 = 4
 (2 + 1) * 2 + 1 = 7
 
+--------------------------------------------------------------------------
 
 redir ideal :
 
-">>" -> use readline to do this -------------> check test_<<.c file
+">>" -> use readline to do this -------------> check test_<<.c file =====> UP
 
-"> f1" -> seg         -----------------------> do this first
+"> f1" -> seg         -----------------------> do this first =====> UP
+
+--------------------------------------------------------------------------
+
+mix ideal :
+
+ls | wc > f1 => UP
+      ---> pipe test ok
+      ---> need complete redir case
+
+mix wtf situation :
+
+echo lll > f2
+cat > f1 < f2
+cat > f1 < f2 | wc > f1 | wc

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 13:23:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/10 19:02:21 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,14 @@
 # define ONLY_PIPE 1
 # define ONLY_REDIR 2
 # define MIX 4
+# define NO_OPTION 0
+# define PIPE_OPEN 1
+# define REDIR_OPEN 2
+# define NO_FIRST 0
+# define FIRST 1
+
+// check
+# define NO_ONE -1
 
 // Bultin
 # define NO_NUM_ARG 255
@@ -344,15 +352,35 @@ t_list		*search_env(char *tofind, t_list **env);
 /*
 ** Execution
 */
+// generale
 void		ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
-void 		cmd_with_pipe(t_list *lst_cmd);
-void		cmd_with_redir(void *cmd, t_list *lst_cmd);
 int 		part_cmd_check(t_list *lst_cmd);
 int 		syntax_parser(t_list *lst_cmd);
 int 		builtin_exec(char **cmds);
 void		sys_exec(void *ptr);
+// pipe
+void		*first_cmd_with_pipe(void *cmd, int *fd);
+void 		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);
+void		last_cmd_with_pipe(void *cmd, int *fd, int fd_index);
+void 		cmd_with_multi_pipe(t_list *lst_cmd, int *fd);
+int			count_pipe(t_list *lst_cmd);
+void 		cmd_with_pipe(t_list *lst_cmd);
+// redir
+void 		*get_complete_cmd(void *cmd, t_list *lst_cmd);
+void		redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
+void		cmd_with_redir(void *cmd, t_list *lst_cmd);
+// mix
+void		cmd_with_mix(t_list *lst_cmd);
+
+/*
+** Flag
+*/
+int 	flag_check(t_list *lst_cmd);
+int 	is_redir(t_list *lst_cmd);
+int 	is_sep_or_end(t_list *lst_cmd);
+
 /*
 ** Builtin
 */

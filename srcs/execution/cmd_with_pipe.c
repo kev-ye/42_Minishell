@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   only_pipe.c                                        :+:      :+:    :+:   */
+/*   cmd_with_pipe.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/10 11:54:06 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 19:01:09 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	*first_cmd_with_pipe(void *cmd, int *fd)
+void	*first_cmd_with_pipe(void *cmd, int *fd)
 {
 	pid_t	pid;
 	int 	status = 1;
@@ -34,7 +34,8 @@ static void	*first_cmd_with_pipe(void *cmd, int *fd)
 	}
 	else
 	{
-		wait(&status);
+		// wait(&status);
+		waitpid(pid, &status, 0);
 		close(fd[1]);           // get stdout, need to close, because if not, stdout is always open, so the fd for stdin never have EOF
 	}
 	if (WIFEXITED(status) != 0)
@@ -44,7 +45,7 @@ static void	*first_cmd_with_pipe(void *cmd, int *fd)
 	return (fd);
 }
 
-static void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
+void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 {
 	pid_t	pid;
 	int 	status = 1;
@@ -70,7 +71,8 @@ static void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 	}
 	else
 	{
-		wait(&status);
+		// wait(&status);
+		waitpid(pid, &status, 0);
 		close(fd[(fd_index + 1) * 2 + 1]);
 	}
 	if (WIFEXITED(status) != 0)
@@ -79,7 +81,7 @@ static void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
-static void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
+void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 {
 	pid_t	pid;
 	int 	status = 1;
@@ -101,7 +103,8 @@ static void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 	}
 	else
 	{
-		wait(&status);
+		// wait(&status);
+		waitpid(pid, &status, 0);
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -109,14 +112,14 @@ static void	last_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
-static void cmd_with_multi_pipe(t_list *lst_cmd, int *fd)
+void cmd_with_multi_pipe(t_list *lst_cmd, int *fd)
 {
 	t_list 	*tmp;
 	int		fd_index;
 
 	tmp = lst_cmd;
 	fd_index = 0;
-	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE))
+	while (tmp && flag_check(tmp) == FLG_PIPE)
 	{
 		interm_cmd_with_pipe(tmp->content, fd, fd_index);
 		++fd_index;
@@ -125,14 +128,14 @@ static void cmd_with_multi_pipe(t_list *lst_cmd, int *fd)
 	last_cmd_with_pipe(tmp->content, fd, fd_index);
 }
 
-static int	count_pipe(t_list *lst_cmd)
+int	count_pipe(t_list *lst_cmd)
 {
 	t_list *tmp;
 	int count;
 
 	tmp = lst_cmd;
 	count = 0;
-	while (tmp && (((t_cmd *)tmp->content)->status_flag & FLG_PIPE))
+	while (tmp && flag_check(tmp) == FLG_PIPE)
 	{
 		++count;
 		tmp = tmp->next;
@@ -168,4 +171,5 @@ void cmd_with_pipe(t_list *lst_cmd)
 	i = 0;
 	while (i < pipe_len * 2)
 		close(fd[i++]);
+	free(fd);
 }

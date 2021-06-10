@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
+#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/09 18:40:43 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/10 19:01:24 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,12 +39,14 @@ SUB_SRC	:= parser.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= exec_cmds.c \
 		   search_executable.c \
-		   only_pipe.c \
-		   only_redir.c \
+		   cmd_with_pipe.c \
+		   cmd_with_redir.c \
 		   multi_cmds_check.c \
 		   cmds_syntax_check.c \
 		   builtin_exec.c \
-		   sys_exec.c
+		   sys_exec.c \
+		   flag_check.c \
+		   mix.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \

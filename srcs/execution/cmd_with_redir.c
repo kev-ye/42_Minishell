@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   only_redir.c                                       :+:      :+:    :+:   */
+/*   cmd_with_redir.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/10 12:19:15 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/10 18:58:28 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void *get_complete_cmd(void *cmd, t_list *lst_cmd)
+void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 {
 	t_list	*lst_tmp;
 	size_t len;
@@ -54,7 +54,7 @@ static void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 	return (cmd);
 }
 
-static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
+void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 {
 	// first cmd
 	int first;
@@ -88,7 +88,7 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 	{
 		if (first == 1)
 			first = 0;
-		else if (!first && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND || ((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT || ((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT))
+		else if (!first && is_redir(lst_cmd))
 		{
 			// try file
 			if (flag_trunc == 1)
@@ -243,28 +243,28 @@ static void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 		}
 
 		// active flag
-		if (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT)
+		if (flag_check(lst_cmd) == FLG_INPUT)
 		{
 			flag_redir_input = 1;
 			flag_append = 0;
 			flag_trunc = 0;
 			flag_d_input = 0;
 		}
-		else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT)
+		else if (flag_check(lst_cmd) == FLG_OUTPUT)
 		{
 			flag_trunc = 1;
 			flag_append = 0;
 			flag_redir_input = 0;
 			flag_d_input = 0;
 		}
-		else if (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND)
+		else if (flag_check(lst_cmd) == FLG_APPEND)
 		{
 			flag_append = 1;
 			flag_trunc = 0;
 			flag_redir_input = 0;
 			flag_d_input = 0;
 		}
-		else if ((((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT))
+		else if ((flag_check(lst_cmd) == FLG_DINPUT))
 		{
 			flag_d_input = 1;
 			flag_append = 0;
@@ -306,7 +306,8 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	}
 	else
 	{
-		wait(&status);
+		// wait(&status);
+		waitpid(pid, &status, 0);
 		close(input_fd);
 		close(output_fd);
 	}
