@@ -13,6 +13,8 @@ cmd0  |  cmd1  |  cmd2  |  cmd3  |  cmd4
 2 * 2 = 4
 (2 + 1) * 2 + 1 = 7
 
+DONE !
+
 --------------------------------------------------------------------------
 
 redir ideal :
@@ -21,16 +23,18 @@ redir ideal :
 
 "> f1" -> seg         -----------------------> do this first =====> UP
 
+DONE !
+
 --------------------------------------------------------------------------
 
 mix ideal :
 
 ls | wc > f1 => UP
-      ---> pipe test ok
-      ---> need complete redir case
+      ---> pipe test ===== UP
+      ---> need complete redir case ====> UP
 
-mix wtf situation :
+DONE ! (maybe)
 
-echo lll > f2
-cat > f1 < f2
-cat > f1 < f2 | wc > f1 | wc
+--------------------------------------------------------------------------
+
+when have << * 2 -> seg

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/10 18:58:28 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/11 17:46:53 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,36 +20,38 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 	int i;
 	int j;
 
-	lst_tmp = lst_cmd;
-	while (lst_tmp && (((t_cmd *)lst_tmp->content)->status_flag & FLG_OUTPUT
-		|| ((t_cmd *)lst_tmp->content)->status_flag & FLG_APPEND
-		|| ((t_cmd *)lst_tmp->content)->status_flag & FLG_INPUT))
-		lst_tmp = lst_tmp->next;
-	len = ft_strslen(((t_cmd *)lst_tmp->content)->args);
-	if (lst_tmp && len > 1)
+	lst_tmp = lst_cmd->next;
+	while (lst_tmp)
 	{
-		len += ft_strslen(((t_cmd *)cmd)->args);
-		new_cmd = malloc(sizeof(char *) * (len + 1));
-		if (!new_cmd)
-			return (NULL);
-		i = 0;
-		while (((t_cmd *)cmd)->args[i])
+		len = ft_strslen(((t_cmd *)lst_tmp->content)->args);
+		if (lst_tmp && len > 1)
 		{
-			new_cmd[i] = ft_strdup(((t_cmd *)cmd)->args[i]);
-			++i;
-			--len;
+			len += ft_strslen(((t_cmd *)cmd)->args);
+			new_cmd = malloc(sizeof(char *) * (len + 1));
+			if (!new_cmd)
+				return (NULL);
+			i = 0;
+			while (((t_cmd *)cmd)->args[i])
+			{
+				new_cmd[i] = ft_strdup(((t_cmd *)cmd)->args[i]);
+				++i;
+				--len;
+			}
+			j = 1;
+			while (((t_cmd *)lst_tmp->content)->args[j] && len)
+			{
+				new_cmd[i] = ft_strdup(((t_cmd *)lst_tmp->content)->args[j]);
+				++i;
+				++j;
+				--len;
+			}
+			new_cmd[i] = NULL;
+			ft_strsfree(ft_strslen(((t_cmd *)cmd)->args), ((t_cmd *)cmd)->args);
+			((t_cmd *)cmd)->args = new_cmd;
 		}
-		j = 1;
-		while (((t_cmd *)lst_tmp->content)->args[j] && len)
-		{
-			new_cmd[i] = ft_strdup(((t_cmd *)lst_tmp->content)->args[j]);
-			++i;
-			++j;
-			--len;
-		}
-		new_cmd[i] = NULL;
-		ft_strsfree(ft_strslen(((t_cmd *)cmd)->args), ((t_cmd *)cmd)->args);
-		((t_cmd *)cmd)->args = new_cmd;
+		if (!is_redir(lst_tmp))
+			break ;
+		lst_tmp = lst_tmp->next;
 	}
 	return (cmd);
 }
@@ -209,7 +211,7 @@ void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 					while (1)
 					{
 						input_str = readline("> ");
-						if (!ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
+						if (input_str && !ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
 						{
 							free(input_str);
 							break ;
