@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/11 17:57:15 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/11 19:49:17 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void	ft_interrupt(int code)
 	{
 		printf("\n");
 		rl_on_new_line();
-		rl_replace_line("", 0);
+		// rl_replace_line("", 0);
 		rl_redisplay();
 	}
 }
@@ -236,7 +236,7 @@ int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) char **env)
 {
 
-	//////// delete this after
+	//////// delete this comment after
 	printf(B_GREEN"\nread \"msg_for_ben\" by kaye :)\n\n"CLR_COLOR);
 	exit(0);
 	///////

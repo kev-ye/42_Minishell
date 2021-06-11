@@ -3,6 +3,8 @@
 
 2) les signaux sont entrain de faire sur VM (avec readline)
     -> check la fonction "void	ft_interrupt(int code)" que je deplace dans main.c
+    -> active la fonction "rl_replace_line("", 0);" que j'avais met en commentaire.
+    -> compiler sur VM apres avoir install le libreadline-dev
     -> tips : rl_on_new_line() : creer une nouvelle ligne
               rl_replace_line("", 0); : remplace la ligne par VIDE
               rl_redisplay(); : flush
