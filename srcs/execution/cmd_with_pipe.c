@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:39:24 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/10 19:01:09 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/11 16:42:07 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ void interm_cmd_with_pipe(void *cmd, int *fd, int fd_index)
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
 		// need add free here because sys_exec can fail
-		close(fd[1]);
 		if (builtin_status != NOT_FOUND)
 			exit(SUCCESS);
 		exit(EXEC_FAILURE);
