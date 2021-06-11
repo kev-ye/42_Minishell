@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 13:34:26 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/11 17:57:15 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,9 +141,9 @@ void	prompt(void)
 	char	*ret;
 	int		r;
 
+	signal(SIGQUIT, ft_interrupt);
 	signal(SIGINT, ft_interrupt);
-	// signal(SIGINT, SIG_IGN);
-	// signal(SIGQUIT, ft_interrupt);
+
 	r = TRUE;
 	while (TRUE)
 	{
@@ -152,7 +152,8 @@ void	prompt(void)
 		if (singleton()->option.fd == STDIN_FILENO)
 		{
 			ret = readline(singleton()->prompt);
-			// rl_on_new_line();
+			if (!ret)
+				ft_interrupt(3);
 		}
 		else
 			r = get_next_line(singleton()->option.fd, &ret);

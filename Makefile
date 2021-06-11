@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/10 19:01:24 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/11 18:37:15 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ CC			= clang
 CFLAGS 		= -Wall -Wextra -Werror -g3 -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
+# LIBFLAGS 	= -L./libft -lft -lncurses -L/Users/kaye/.brew/opt/readline/lib -I/Users/kaye/.brew/opt/readline/include/readline -lreadline
 
 # DIRECTORIES
 

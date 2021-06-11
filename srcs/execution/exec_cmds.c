@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/11 17:09:10 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/11 18:14:55 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,21 @@ void	ft_quit(int code)
 
 # include <readline/readline.h>
 
-void	ft_interrupt(__attribute__((unused)) int code)
+void	ft_interrupt(int code)
 {
-	ft_putstr_fd("\n", STDERR_FILENO);
-	ft_putstr_fd(singleton()->prompt, STDERR_FILENO);
-	rl_on_new_line();		// does nothing...
-	// rl_replace_line();	// does nothing...
-	// rl_redisplay();		// cannot find its header file
+	// ft_putstr_fd("\n", STDERR_FILENO);
+	// ft_putstr_fd(singleton()->prompt, STDERR_FILENO);
+	if (code == 3)
+	{
+		ft_dprintf(STDIN_FILENO, "exit\n");
+		exit(SUCCESS);
+	}
+	else
+	{
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
 }
 
 void	simple_cmd(void *cmd)

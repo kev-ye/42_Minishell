@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 19:02:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/11 18:37:22 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 
 # include <readline/readline.h>
 # include <readline/history.h>
+// # include "/Users/kaye/.brew/opt/readline/include/readline/readline.h"
+// # include "/Users/kaye/.brew/opt/readline/include/readline/history.h"
 
 // Custom
 # include "libft.h"
