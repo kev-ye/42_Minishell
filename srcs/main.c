@@ -135,6 +135,23 @@ static int	ft_init_minishell(char **env)
 // 	}
 // }
 
+void	ft_interrupt(int code)
+{
+	// ft_putstr_fd("\n", STDERR_FILENO);
+	// ft_putstr_fd(singleton()->prompt, STDERR_FILENO);
+	if (code == 3)
+	{
+		printf("exit\n");
+		exit(SUCCESS);
+	}
+	else
+	{
+		printf("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+}
 
 void	prompt(void)
 {
@@ -218,6 +235,12 @@ int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
 {
+
+	//////// delete this after
+	printf(B_GREEN"\nread \"msg_for_ben\" by kaye :)\n\n"CLR_COLOR);
+	exit(0);
+	///////
+
 	if (!ft_init_minishell(env))
 		return (EXIT_FAILURE);
 	if (singleton()->isatty_stdin)

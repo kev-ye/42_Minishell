@@ -19,25 +19,6 @@ void	ft_quit(int code)
 	// exit(code);
 }
 
-# include <readline/readline.h>
-
-void	ft_interrupt(int code)
-{
-	// ft_putstr_fd("\n", STDERR_FILENO);
-	// ft_putstr_fd(singleton()->prompt, STDERR_FILENO);
-	if (code == 3)
-	{
-		ft_dprintf(STDIN_FILENO, "exit\n");
-		exit(SUCCESS);
-	}
-	else
-	{
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-}
-
 void	simple_cmd(void *cmd)
 {
 	pid_t	pid;

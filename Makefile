@@ -16,7 +16,6 @@ CC			= clang
 CFLAGS 		= -Wall -Wextra -Werror -g3 -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
-# LIBFLAGS 	= -L./libft -lft -lncurses -L/Users/kaye/.brew/opt/readline/lib -I/Users/kaye/.brew/opt/readline/include/readline -lreadline
 
 # DIRECTORIES
 
