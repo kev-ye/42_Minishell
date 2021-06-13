@@ -39,6 +39,8 @@ void	print_prompt(void)
 		** avoid this problem:
 		** mkdir test && cd test && rm -rf ../test
 		*/
+		if (singleton()->prompt)
+			ft_memdel((void **)(&singleton()->prompt));
 		ft_memdel((void **)(&singleton()->cwd));
 		singleton()->cwd = pwd;
 		singleton()->cwd_basename = ft_strrchr(singleton()->cwd, '/');
@@ -139,17 +141,30 @@ void	ft_interrupt(int code)
 {
 	// ft_putstr_fd("\n", STDERR_FILENO);
 	// ft_putstr_fd(singleton()->prompt, STDERR_FILENO);
-	if (code == 3)
+	if (code == SIGQUIT)
 	{
-		printf("exit\n");
+		ft_putstr_fd("exit\n", STDIN_FILENO);
+		ft_free_exit(1);
 		exit(SUCCESS);
 	}
-	else
+	else if (code == SIGINT)
 	{
 		printf("\n");
 		rl_on_new_line();
-		// rl_replace_line("", 0);
+		rl_replace_line("", 0);
 		rl_redisplay();
+	}
+}
+
+void free_cmd(t_list *lst_cmd)
+{
+	t_cmd *cmd;
+
+	if (lst_cmd)
+	{
+		cmd = lst_cmd->content;
+		if (cmd)
+			ft_strsfree(ft_strslen(cmd->args), cmd->args);
 	}
 }
 
@@ -169,21 +184,21 @@ void	prompt(void)
 		if (singleton()->option.fd == STDIN_FILENO)
 		{
 			ret = readline(singleton()->prompt);
-			if (!ret)
-				ft_interrupt(3);
 		}
 		else
 			r = get_next_line(singleton()->option.fd, &ret);
 		if (!ret)
 		{
-			ft_exit_for_prompt();
-			break ;
+			ft_interrupt(SIGQUIT);
+			// ft_exit_for_prompt();
+			// break ;
 		}
 		if (singleton()->isatty_stdin)
 			add2history(ret);
 		// rl_redisplay();
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
+		free_cmd(singleton()->lst);
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{
@@ -224,7 +239,7 @@ static void	parse_args(int ac, const char **av)
 			if (singleton()->option.fd == -1)
 			{
 				ft_dprintf(2, PROG_NAME ": %s: %s\n", av[1], strerror(errno));
-				ft_free_exit();
+				ft_free_exit(0);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -235,12 +250,6 @@ int	main(__attribute__((unused)) int ac,
 		__attribute__((unused)) const char **av,
 		__attribute__((unused)) char **env)
 {
-
-	//////// delete this comment after
-	printf(B_GREEN"\nread \"msg_for_ben\" by kaye :)\n\n"CLR_COLOR);
-	exit(0);
-	///////
-
 	if (!ft_init_minishell(env))
 		return (EXIT_FAILURE);
 	if (singleton()->isatty_stdin)

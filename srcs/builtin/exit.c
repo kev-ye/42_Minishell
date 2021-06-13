@@ -61,6 +61,6 @@ void	ft_exit_for_prompt(void)
 {
 	if (singleton()->isatty_stdin)
 		ft_putstr_fd("exit\n", STDIN_FILENO);
-	ft_free_exit();
+	ft_free_exit(0);
 	exit(SUCCESS);
 }

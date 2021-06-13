@@ -287,8 +287,8 @@ void	ft_parse(char *s)
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
-	ft_lstprint_cmd(singleton()->lst);
-	ft_printf("\n");
+	// ft_lstprint_cmd(singleton()->lst);
+	// ft_printf("\n");
 }
 
 /*******************************************************************************

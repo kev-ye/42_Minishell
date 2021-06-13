@@ -158,11 +158,13 @@ char	*ft_strnclean(char *s, const char *charset, size_t end)
 	return (s);
 }
 
-void	ft_free_exit(void)
+void	ft_free_exit(int if_exit)
 {
 	if (singleton())
 	{
 		ft_lstclear(&singleton()->lst, free);
+		if (singleton()->prompt)
+			ft_memdel((void **)(&singleton()->prompt));
 		if (singleton()->cwd)
 			ft_memdel((void **)(&singleton()->cwd));
 		if (singleton()->env)
@@ -174,14 +176,15 @@ void	ft_free_exit(void)
 			close(singleton()->option.fd);
 		free(singleton());
 	}
-	exit(0);
+	if (if_exit == 1)
+		exit(0);
 }
 
 void	*ft_malloc_error(char *file, int line)
 {
 	ft_dprintf(STDERR_FILENO, B_GREEN "%s:%d: Malloc Error\n" CLR_COLOR,
 		file, line);
-	ft_free_exit();
+	ft_free_exit(1);
 	return (NULL);
 }
 

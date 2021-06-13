@@ -340,7 +340,8 @@ int			ft_find_in_strs(char *s, const char **strs);
 char		*ft_getenv(const char *name);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
-void		ft_free_exit(void) __attribute__((noreturn));
+// void		ft_free_exit(int if_exit) __attribute__((noreturn));
+void		ft_free_exit(int if_exit);
 void		*ft_malloc_error(char *file, int line);
 
 // Parser
