@@ -190,12 +190,9 @@ void	prompt(void)
 		if (!ret)
 		{
 			ft_interrupt(SIGQUIT);
-			// ft_exit_for_prompt();
-			// break ;
 		}
 		if (singleton()->isatty_stdin)
 			add2history(ret);
-		// rl_redisplay();
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
 		free_cmd(singleton()->lst);
