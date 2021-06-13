@@ -16,17 +16,17 @@ int flag_check(t_list *lst_cmd)
 {
     if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_EOL))
         return (FLG_EOL);
-    if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_EO_CMD))
+    else if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_EO_CMD))
         return (FLG_EO_CMD);
-    if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_PIPE))
+    else if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_PIPE))
         return (FLG_PIPE);
-    if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND))
+    else if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_APPEND))
         return (FLG_APPEND);
-    if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT))
+    else if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_INPUT))
         return (FLG_INPUT);
-    if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT))
+    else if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_OUTPUT))
         return (FLG_OUTPUT);
-    if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT))
+    else if (lst_cmd && (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT))
         return (FLG_DINPUT);
     return (NO_ONE);
 }

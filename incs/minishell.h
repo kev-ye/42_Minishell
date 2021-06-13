@@ -323,6 +323,8 @@ typedef struct s_minishl
 	t_history			hist;
 	struct s_options	option;
 	struct termios		tattr;
+
+	int rl_lvl;
 }	t_minishl;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -356,7 +358,7 @@ t_list		*search_env(char *tofind, t_list **env);
 ** Execution
 */
 // generale
-void		ft_exec_each_cmd(t_list *lst);
+int		ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
 int 		part_cmd_check(t_list *lst_cmd);

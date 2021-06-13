@@ -71,6 +71,7 @@ void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 
 	// double input
 	char *input_str;
+	int ctrl_d = 0;
 
 	// init
 	first = 1;
@@ -129,27 +130,53 @@ void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 				}
 				else
 				{
+					ctrl_d = 0;
 					while (1)
 					{
+						singleton()->rl_lvl = 2;
 						input_str = readline("> ");
-						if (!ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
+						if (input_str && !ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
 						{
 							free(input_str);
+							if (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT)
+							{
+								close(tmp_fd_input);
+								tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+								if (tmp_fd_input == -1)
+								{
+									ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+									if (tmp_fd_output != -1)
+										close(tmp_fd_output);
+									exit(LRV_GENERAL_ERROR);
+								}
+								lst_cmd = lst_cmd->next;
+								continue ;
+							}
+							else
+								break ;
+						}
+						else if (!input_str)
+						{
+							ctrl_d = 1;
 							break ;
 						}
-						ft_putendl_fd(input_str, tmp_fd_input);
+						if (input_str)
+							ft_putendl_fd(input_str, tmp_fd_input);
 					}
 					close(tmp_fd_input);
-					tmp_fd_input = open(TMP_FD, O_RDONLY);
-					if (tmp_fd_input == -1)
+					if (ctrl_d == 0)
 					{
-						ft_dprintf(STDERR_FILENO, "open for double input crash\n");
-						if (tmp_fd_output != -1)
-							close(tmp_fd_output);
-						exit(LRV_GENERAL_ERROR);
+						tmp_fd_input = open(TMP_FD, O_RDONLY);
+						if (tmp_fd_input == -1)
+						{
+							ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+							if (tmp_fd_output != -1)
+								close(tmp_fd_output);
+							exit(LRV_GENERAL_ERROR);
+						}
+						fd_input = tmp_fd_input;
+						dup2(fd_input, STDIN_FILENO);
 					}
-					fd_input = tmp_fd_input;
-					dup2(fd_input, STDIN_FILENO);
 				}
 			}
 			
@@ -208,27 +235,53 @@ void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 				}
 				else
 				{
+					ctrl_d = 0;
 					while (1)
 					{
+						singleton()->rl_lvl = 2;
 						input_str = readline("> ");
 						if (input_str && !ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
 						{
 							free(input_str);
+							if (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT)
+							{
+								close(tmp_fd_input);
+								tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+								if (tmp_fd_input == -1)
+								{
+									ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+									if (tmp_fd_output != -1)
+										close(tmp_fd_output);
+									exit(LRV_GENERAL_ERROR);
+								}
+								lst_cmd = lst_cmd->next;
+								continue ;
+							}
+							else
+								break ;
+						}
+						else if (!input_str)
+						{
+							ctrl_d = 1;
 							break ;
 						}
-						ft_putendl_fd(input_str, tmp_fd_input);
+						if (input_str)
+							ft_putendl_fd(input_str, tmp_fd_input);
 					}
 					close(tmp_fd_input);
-					tmp_fd_input = open(TMP_FD, O_RDONLY);
-					if (tmp_fd_input == -1)
+					if (ctrl_d == 0)
 					{
-						ft_dprintf(STDERR_FILENO, "open for double input crash\n");
-						if (tmp_fd_output != -1)
-							close(tmp_fd_output);
-						exit(LRV_GENERAL_ERROR);
+						tmp_fd_input = open(TMP_FD, O_RDONLY);
+						if (tmp_fd_input == -1)
+						{
+							ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+							if (tmp_fd_output != -1)
+								close(tmp_fd_output);
+							exit(LRV_GENERAL_ERROR);
+						}
+						fd_input = tmp_fd_input;
+						dup2(fd_input, STDIN_FILENO);
 					}
-					fd_input = tmp_fd_input;
-					dup2(fd_input, STDIN_FILENO);
 				}
 			}
 

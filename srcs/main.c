@@ -139,21 +139,25 @@ static int	ft_init_minishell(char **env)
 
 void	ft_interrupt(int code)
 {
-	// ft_putstr_fd("\n", STDERR_FILENO);
-	// ft_putstr_fd(singleton()->prompt, STDERR_FILENO);
 	if (code == SIGQUIT)
 	{
 		ft_putstr_fd("exit\n", STDIN_FILENO);
 		ft_free_exit(1);
 		exit(SUCCESS);
 	}
-	else if (code == SIGINT)
+	else if (code == SIGINT && errno == EINTR)
 	{
+		singleton()->last_return_value = 1;
+		if (singleton()->rl_lvl == 2)
+			exit(EXEC_FAILURE);
 		printf("\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
+	else
+		printf("\n");
+	
 }
 
 void free_cmd(t_list *lst_cmd)
@@ -172,6 +176,7 @@ void	prompt(void)
 {
 	char	*ret;
 	int		r;
+	int built_exec = 0;
 
 	signal(SIGQUIT, ft_interrupt);
 	signal(SIGINT, ft_interrupt);
@@ -183,6 +188,7 @@ void	prompt(void)
 		print_prompt();
 		if (singleton()->option.fd == STDIN_FILENO)
 		{
+			singleton()->rl_lvl = 1;
 			ret = readline(singleton()->prompt);
 		}
 		else
@@ -194,8 +200,9 @@ void	prompt(void)
 		if (singleton()->isatty_stdin)
 			add2history(ret);
 		ft_parse(ret);
-		ft_exec_each_cmd(singleton()->lst);
-		free_cmd(singleton()->lst);
+		built_exec = ft_exec_each_cmd(singleton()->lst);
+		if (!built_exec)
+			free_cmd(singleton()->lst);
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{

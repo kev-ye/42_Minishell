@@ -19,12 +19,14 @@ void	ft_quit(int code)
 	// exit(code);
 }
 
-void	simple_cmd(void *cmd)
+int	simple_cmd(void *cmd)
 {
 	pid_t	pid;
 	int status;
+	int built_exec;
 
 	status = 1;
+	built_exec = 0;
 	if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
 	{	
 		pid = fork();
@@ -51,19 +53,24 @@ void	simple_cmd(void *cmd)
 			singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 		}	
 	}
+	else
+		built_exec = 1;
+	return (built_exec);
 }
 
-void	ft_exec_each_cmd(t_list *lst_cmd)
+int	ft_exec_each_cmd(t_list *lst_cmd)
 {
 	t_list	*tmp;
 	int		cmd_line;
+	int		built_exec;
 
 	tmp = lst_cmd;
 	cmd_line = -1;
+	built_exec = 0;
 	if (syntax_parser(tmp))
 	{
 		singleton()->last_return_value = LRV_SYNTAX_ERROR;
-		return ;
+		return (0);
 	}
 	while (tmp)
 	{
@@ -72,7 +79,7 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
 		{
 			printf(B_PURPLE"simple cmd"CLR_COLOR"\n");
-			simple_cmd(tmp->content);
+			built_exec = simple_cmd(tmp->content);
 		}
 		else
 		{
@@ -98,4 +105,5 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 		if (tmp)
 			tmp = tmp->next;
 	}
+	return (built_exec);
 }
