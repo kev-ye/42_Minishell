@@ -156,17 +156,25 @@ void	ft_interrupt(int code)
 	}
 }
 
-void free_cmd(t_list *lst_cmd)
-{
-	t_cmd *cmd;
+// void free_cmd(t_list *lst_cmd)
+// {
+// 	// t_cmd *cmd;
 
-	if (lst_cmd)
-	{
-		cmd = lst_cmd->content;
-		if (cmd)
-			ft_strsfree(ft_strslen(cmd->args), cmd->args);
-	}
-}
+// 	// if (lst_cmd)
+// 	// {
+// 	// 	cmd = (t_cmd *)lst_cmd->content;
+// 	// 	if (cmd && cmd->args)
+// 	// 		ft_strsfree(ft_strslen(cmd->args), cmd->args);
+// 	// }
+// 	t_list	*tmp = ft_lstlast(lst_cmd);
+// 	if (tmp && tmp->content)
+// 	{
+// 		// PRINT_ERR("HERE")
+// 		t_cmd	*c = tmp->content;
+// 		if (c && c->args)
+// 			ft_strsfree(c->args_len, c->args);
+// 	}
+// }
 
 void	prompt(void)
 {
@@ -181,10 +189,8 @@ void	prompt(void)
 	{
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
 		print_prompt();
-		if (singleton()->option.fd == STDIN_FILENO)
-		{
+		if (STDIN_FILENO == singleton()->option.fd && singleton()->isatty_stdin)
 			ret = readline(singleton()->prompt);
-		}
 		else
 			r = get_next_line(singleton()->option.fd, &ret);
 		if (!ret)
@@ -195,7 +201,7 @@ void	prompt(void)
 			add2history(ret);
 		ft_parse(ret);
 		ft_exec_each_cmd(singleton()->lst);
-		free_cmd(singleton()->lst);
+		// free_cmd(singleton()->lst);
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{
