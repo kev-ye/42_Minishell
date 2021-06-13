@@ -158,10 +158,34 @@ char	*ft_strnclean(char *s, const char *charset, size_t end)
 	return (s);
 }
 
+void	__ft_free_cmds__(void)
+{
+	const t_list	*tmp = singleton()->lst;
+	t_cmd			*cmd;
+
+	while (tmp)
+	{
+		cmd = tmp->content;
+		if (cmd && cmd->args)
+		{
+			size_t size = ft_strslen(cmd->args);
+			ft_printf("ARGS_LEN [%lld] REAL [%lld]\n", size, cmd->args_len);
+			while (size-- > 0)
+			{
+				printf(B_RED "PTR => [%p], DATA => [%s]\n", cmd->args[size], cmd->args[size]);
+				ft_memdel((void **)(&cmd->args[size]));
+			}
+		}
+			// ft_strsfree(1, cmd->args);
+		tmp = tmp->next;
+	}
+}
+
 void	ft_free_exit(int if_exit)
 {
 	if (singleton())
 	{
+		__ft_free_cmds__();
 		ft_lstclear(&singleton()->lst, free);
 		if (singleton()->prompt)
 			ft_memdel((void **)(&singleton()->prompt));

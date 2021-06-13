@@ -216,7 +216,6 @@ void cmd_with_redir_mix(void *cmd, t_list *lst_cmd, int input_fd, int **redir_fd
 		cmd = get_complete_cmd(cmd, lst_cmd);
 		redir_parser(input_fd, output_fd, lst_cmd);
 
-		// printf("option [%d] == PIPE_OPEN [%d]\n", option, PIPE_OPEN);
 		if (option == PIPE_OPEN)
 			dup2((*redir_fd)[1], STDOUT_FILENO);
 		close((*redir_fd)[1]);

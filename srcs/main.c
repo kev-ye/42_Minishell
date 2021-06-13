@@ -142,7 +142,6 @@ void	ft_interrupt(int code)
 	if (code == SIGQUIT)
 	{
 		ft_putstr_fd("exit\n", STDIN_FILENO);
-		ft_free_exit(1);
 		exit(SUCCESS);
 	}
 	else if (code == SIGINT && errno == EINTR)
@@ -166,10 +165,18 @@ void free_cmd(t_list *lst_cmd)
 
 	if (lst_cmd)
 	{
-		cmd = lst_cmd->content;
-		if (cmd)
+		cmd = (t_cmd *)lst_cmd->content;
+		if (cmd && cmd->args)
 			ft_strsfree(ft_strslen(cmd->args), cmd->args);
 	}
+	// t_list	*tmp = ft_lstlast(lst_cmd);
+	// if (tmp && tmp->content)
+	// {
+	// 	// PRINT_ERR("HERE")
+	// 	t_cmd	*c = tmp->content;
+	// 	if (c && c->args)
+	// 		ft_strsfree(c->args_len, c->args);
+	// }
 }
 
 void	prompt(void)

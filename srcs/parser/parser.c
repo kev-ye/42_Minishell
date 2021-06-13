@@ -73,6 +73,7 @@ t_cmd	*new_cmd(uint16_t status, t_list **args)
 		exit(1);
 		return (NULL);
 	}
+	// ft_strsfree(cmd->args_len, cmd->args);
 	cmd->args = ft_lst2strs(args);
 	ft_lstclear(args, free);
 	cmd->args_len = ft_strslen(cmd->args);

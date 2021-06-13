@@ -78,7 +78,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 			&& ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
 			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
 		{
-			printf(B_PURPLE"simple cmd"CLR_COLOR"\n");
+			// printf(B_PURPLE"simple cmd"CLR_COLOR"\n");
 			built_exec = simple_cmd(tmp->content);
 		}
 		else
