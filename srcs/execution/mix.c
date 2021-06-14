@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 15:39:17 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/11 17:07:50 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/14 13:49:50 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,7 @@ void cmd_with_redir_mix(void *cmd, t_list *lst_cmd, int input_fd, int **redir_fd
 	int 	tmp_errno;
 	int 	status = 1;
 	int 	builtin_status = 1;
+	int		parser_ret = RET_INIT;
 
 	output_fd = -1;
 	tmp_errno = 0;
@@ -214,9 +215,9 @@ void cmd_with_redir_mix(void *cmd, t_list *lst_cmd, int input_fd, int **redir_fd
 		dup2(input_fd, STDIN_FILENO);
 		
 		cmd = get_complete_cmd(cmd, lst_cmd);
-		redir_parser(input_fd, output_fd, lst_cmd);
+		parser_ret = redir_parser(input_fd, output_fd, lst_cmd);
 
-		if (option == PIPE_OPEN)
+		if ((option == PIPE_OPEN) && (parser_ret != OUTPUT)) // prog get here
 			dup2((*redir_fd)[1], STDOUT_FILENO);
 		close((*redir_fd)[1]);
 

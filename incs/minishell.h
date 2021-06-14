@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/11 18:37:22 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/14 13:44:15 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,11 @@
 # define LRV_CMD_NOT_FOUND 127
 # define LRV_GENERAL_ERROR 1
 # define LRV_KILL_SIG 128
+
+// Redir parser
+# define RET_INIT 0
+# define CTRLD 1
+# define OUTPUT 2
 
 // for '<<'
 # define TMP_FD "/tmp/double_input_fd"

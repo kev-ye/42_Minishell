@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/11 17:46:53 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/14 13:47:21 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 
 	// double input
 	char *input_str;
-	int ctrl_d = 0;
+	int parser_ret = RET_INIT;
 
 	// init
 	first = 1;
@@ -130,7 +130,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 				}
 				else
 				{
-					ctrl_d = 0;
+					parser_ret = RET_INIT;
 					while (1)
 					{
 						singleton()->rl_lvl = 2;
@@ -157,14 +157,14 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 						}
 						else if (!input_str)
 						{
-							ctrl_d = 1;
+							parser_ret = CTRLD;
 							break ;
 						}
 						if (input_str)
 							ft_putendl_fd(input_str, tmp_fd_input);
 					}
 					close(tmp_fd_input);
-					if (ctrl_d == 0)
+					if (parser_ret == RET_INIT)
 					{
 						tmp_fd_input = open(TMP_FD, O_RDONLY);
 						if (tmp_fd_input == -1)
@@ -235,7 +235,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 				}
 				else
 				{
-					ctrl_d = 0;
+					parser_ret = RET_INIT;
 					while (1)
 					{
 						singleton()->rl_lvl = 2;
@@ -262,14 +262,14 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 						}
 						else if (!input_str)
 						{
-							ctrl_d = 1;
+							parser_ret = CTRLD;
 							break ;
 						}
 						if (input_str)
 							ft_putendl_fd(input_str, tmp_fd_input);
 					}
 					close(tmp_fd_input);
-					if (ctrl_d == 0)
+					if (parser_ret == RET_INIT)
 					{
 						tmp_fd_input = open(TMP_FD, O_RDONLY);
 						if (tmp_fd_input == -1)
@@ -307,6 +307,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 		}
 		else if (flag_check(lst_cmd) == FLG_OUTPUT)
 		{
+			parser_ret = OUTPUT;
 			flag_trunc = 1;
 			flag_append = 0;
 			flag_redir_input = 0;
@@ -314,6 +315,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 		}
 		else if (flag_check(lst_cmd) == FLG_APPEND)
 		{
+			parser_ret = OUTPUT;
 			flag_append = 1;
 			flag_trunc = 0;
 			flag_redir_input = 0;
@@ -327,10 +329,10 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 			flag_redir_input = 0;
 		}
 		else
-			return (ctrl_d);
+			return (parser_ret);
 		lst_cmd = lst_cmd->next;
 	}
-	return (ctrl_d);
+	return (parser_ret);
 }
 
 void	cmd_with_redir(void *cmd, t_list *lst_cmd)
@@ -341,7 +343,7 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	int 	tmp_errno;
 	int 	status = 1;
 	int 	builtin_status = 1;
-	int 	ctrl_d = 0;
+	int 	parser_ret = 0;
 
 	input_fd = -1;
 	output_fd = -1;
@@ -352,8 +354,8 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	else if (pid == 0)
 	{
 		cmd = get_complete_cmd(cmd, lst_cmd);
-		ctrl_d = redir_parser(input_fd, output_fd, lst_cmd);
-		if (ctrl_d == 1)
+		parser_ret = redir_parser(input_fd, output_fd, lst_cmd);
+		if (parser_ret == CTRLD)
 			exit(EXEC_FAILURE);
 
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
