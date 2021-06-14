@@ -1,0 +1,8 @@
+- [ ] echo options multi -n
+- [ ] seg with exit cmd and no args - (returns code 139 - it may help...)
+- [ ] export env name with spaces (ex: export "ksjfhg  fglkj")
+- [ ] change PWD and OLDPWD in `cd' cmd
+- [ ] unset PATH, env must not be found (ex: unset PATH; env)
+- [ ] cat << f1 (then type anything, enter, and CTRL-D - bash displays the last line entered)
+- [ ] mix case: ls | wc > f1 | wc
+- [ ] mix case: ls | wc << f1

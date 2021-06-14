@@ -263,6 +263,15 @@ test_parser() {
 }
 
 
+
+
+test_redirections() {
+
+	test_redir "cd > .."
+	
+}
+
+
 ### Do redirections tests
 test_redirections() {
 
