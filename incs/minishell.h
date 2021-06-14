@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 18:13:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 00:14:07 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@
 
 # include <readline/readline.h>
 # include <readline/history.h>
-// # include "/Users/kaye/.brew/opt/readline/include/readline/readline.h"
-// # include "/Users/kaye/.brew/opt/readline/include/readline/history.h"
 
 // Custom
 # include "libft.h"
@@ -48,24 +46,16 @@
 # define PROG_NAME "minishell"
 
 // Prompt
-# define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-# define BPROMPT "%s $ " // cause it seems that `readline' doesn't support colors
+// `readline' in macOS does not support colors
+# if defined(__APPLE__) && defined(__MACH__)
+#  define PROMPT "%s $ "
+# else
+#  define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
+# endif
 
 // History file. May be renamed at compile time
 # ifndef HISTORY_FILENAME
 #  define HISTORY_FILENAME ".minishell_history"
-# endif
-
-/*
-** Used to add an entry to history only if it's different from the last one.
-** For this purpose, a simple strcmp is called between the last and the new
-** entry.
-** This is the behavour of zsh.
-** Bash however adds it whatever the last one was. To replicate this behavour,
-** just set -D ZSH_HISTORY_HANDLING=0 at compile time.
-*/
-# ifndef ZSH_HISTORY_HANDLING
-#  define ZSH_HISTORY_HANDLING 1	// to remove - unused
 # endif
 
 /*
@@ -106,12 +96,15 @@
 # define FIRST 1
 
 // check
-# define NO_ONE -1
+# define NO_ONE (-1)
 
 // Bultin
 # define NO_NUM_ARG 255
 
-// Exec ret for $?
+/*
+** LRV -> LAST RETURN VALUE ($?)
+** Some return codes :
+*/
 # define PID_FAILURE 1
 # define EXEC_FAILURE 1
 # define LRV_SYNTAX_ERROR 258
@@ -127,20 +120,6 @@
 // for '<<'
 # define TMP_FD "/tmp/double_input_fd"
 
-// SET BONUS TO 0 BY DEFAULT
-# ifndef BONUS
-#  define BONUS 0
-# endif
-
-/*
-** LRV -> LAST RETURN VALUE
-** Some return codes :
-*/
-// Command not found
-# define LRV_NOT_FOUND 127
-
-// # define PATH_MAX_LEN 256
-
 // DEBUGGING PURPOSE - TO REMOVE
 # define STRINGIFY(x) #x
 # define TOSTRING(x) STRINGIFY(x)
@@ -152,22 +131,6 @@
 // # define SPEC_CHARS " \\$'\""
 # define SPACES " \t"
 # define QUOTES "\"'"
-
-/*
-** Bonus macro
-** Set to 0 by default
-*/
-# ifndef BONUS
-#  define BONUS 1
-
-
-//##################################
-// REDEFINE BONUS TO 0 WHEN FINISHED
-//##################################
-
-// #  define BONUS 0
-
-# endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // -- DATA STRUCTURES --
@@ -263,14 +226,12 @@ typedef struct s_edition
 ** args:				arguments of a command (may be NULL)
 ** args_len:			len of the arguments of the command
 ** status_flag:			used with the enum's (e_flags) flags
-** fd:					for bonus (aggregation fd)
 */
 typedef struct s_cmd
 {
 	char		**args;
 	int			args_len;
 	uint8_t		status_flag;
-	int			fd;
 }	t_cmd;
 
 /*
@@ -366,20 +327,20 @@ t_list		*search_env(char *tofind, t_list **env);
 int			ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
-int 		part_cmd_check(t_list *lst_cmd);
-int 		syntax_parser(t_list *lst_cmd);
-int 		builtin_exec(char **cmds);
+int			part_cmd_check(t_list *lst_cmd);
+int			syntax_parser(t_list *lst_cmd);
+int			builtin_exec(char **cmds);
 void		sys_exec(void *ptr);
 // pipe
 void		*first_cmd_with_pipe(void *cmd, int *fd);
-void 		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);
+void		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);
 void		last_cmd_with_pipe(void *cmd, int *fd, int fd_index);
-void 		cmd_with_multi_pipe(t_list *lst_cmd, int *fd);
+void		cmd_with_multi_pipe(t_list *lst_cmd, int *fd);
 int			count_pipe(t_list *lst_cmd);
-void 		cmd_with_pipe(t_list *lst_cmd);
+void		cmd_with_pipe(t_list *lst_cmd);
 // redir
-void 		*get_complete_cmd(void *cmd, t_list *lst_cmd);
-int		redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
+void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
+int			redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
 // mix
 void		cmd_with_mix(t_list *lst_cmd);
@@ -387,9 +348,9 @@ void		cmd_with_mix(t_list *lst_cmd);
 /*
 ** Flag
 */
-int 		flag_check(t_list *lst_cmd);
-int 		is_redir(t_list *lst_cmd);
-int 		is_sep_or_end(t_list *lst_cmd);
+int			flag_check(t_list *lst_cmd);
+int			is_redir(t_list *lst_cmd);
+int			is_sep_or_end(t_list *lst_cmd);
 
 /*
 ** Builtin

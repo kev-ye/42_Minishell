@@ -6,13 +6,15 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/10 11:53:28 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 00:12:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// home = ft_getenv("HOME");
+#define __DEFAULT_RIGHTS__ 0644
+
+// home = ft_getenv("HOME"); -> line 23
 static void	create_history(void)
 {
 	char	*path;
@@ -32,7 +34,7 @@ static void	create_history(void)
 		ft_malloc_error(__FILE__, __LINE__);
 	singleton()->hist.path = path;
 	singleton()->hist.fd = open(singleton()->hist.path,
-		O_RDWR | O_CREAT | O_APPEND, 0644);
+		O_RDWR | O_CREAT | O_APPEND, __DEFAULT_RIGHTS__);
 	if (singleton()->hist.fd == -1)
 		ft_malloc_error(__FILE__, __LINE__);
 }
@@ -75,11 +77,10 @@ void	add2history(char *cmd)
 	if (!ft_is_openable(singleton()->hist.path, O_RDONLY))
 	{
 		singleton()->hist.fd = open(singleton()->hist.path,
-			O_RDWR | O_CREAT | O_APPEND, 0644);
+			O_RDWR | O_CREAT | O_APPEND, __DEFAULT_RIGHTS__);
 		if (singleton()->hist.fd == -1)
 			ft_malloc_error(__FILE__, __LINE__);
 	}
 	ft_putendl_fd(cmd, singleton()->hist.fd);
 	add_history(cmd);
-	// ft_memdel((void **)&cmd);
 }

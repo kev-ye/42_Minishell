@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 18:15:39 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 23:53:37 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,6 @@ void	print_prompt(void)
 	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
-		/*
-		** avoid this problem:
-		** mkdir test && cd test && rm -rf ../test
-		*/
 		if (singleton()->prompt)
 			ft_memdel((void **)(&singleton()->prompt));
 		ft_memdel((void **)(&singleton()->cwd));
@@ -46,12 +42,9 @@ void	print_prompt(void)
 		singleton()->cwd_basename = ft_strrchr(singleton()->cwd, '/');
 		if (*(singleton()->cwd_basename + 1))
 			singleton()->cwd_basename++;
-		ft_asprintf(&singleton()->prompt, BPROMPT, singleton()->cwd_basename);
+		ft_asprintf(&singleton()->prompt, PROMPT, singleton()->cwd_basename);
 	}
-	// if (singleton()->isatty_stdin)
-	// 	ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
 }
-
 
 // a revoir : cant add env with export and unset fuck
 t_list	*get_env(char **env)
@@ -139,17 +132,17 @@ static int	ft_init_minishell(char **env)
 
 void	ft_interrupt(int code)
 {
-	if (code == SIGQUIT)
+	if (SIGQUIT == code)
 	{
 		ft_putstr_fd("exit\n", STDIN_FILENO);
 		ft_free_exit(SUCCESS);
 	}
-	else if (code == SIGINT && errno == EINTR)
+	else if (SIGINT == code && errno == EINTR)
 	{
 		singleton()->last_return_value = 1;
 		if (singleton()->rl_lvl == 2)
 			ft_free_exit(EXEC_FAILURE);
-		printf("\n");
+		ft_putstr("\n");
 		rl_on_new_line();
 		#if !defined(__APPLE__) && !defined(__MACH__)
 		rl_replace_line("", 0);
@@ -157,8 +150,7 @@ void	ft_interrupt(int code)
 		rl_redisplay();
 	}
 	else
-		printf("\n");
-	
+		ft_putstr("\n");
 }
 
 void	prompt(void)
