@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 18:02:32 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:06:33 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void	ft_interrupt(int code)
 			exit(EXEC_FAILURE);
 		printf("\n");
 		rl_on_new_line();
-		#ifdef LINUX
+		#if !defined(__APPLE__) && !defined(__MACH__)
 		rl_replace_line("", 0);
 		#endif
 		rl_redisplay();
