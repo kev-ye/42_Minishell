@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 16:06:03 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:02:32 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	print_prompt(void)
 		singleton()->cwd_basename = ft_strrchr(singleton()->cwd, '/');
 		if (*(singleton()->cwd_basename + 1))
 			singleton()->cwd_basename++;
-		ft_asprintf(&singleton()->prompt, PROMPT, singleton()->cwd_basename);
+		ft_asprintf(&singleton()->prompt, BPROMPT, singleton()->cwd_basename);
 	}
 	// if (singleton()->isatty_stdin)
 	// 	ft_dprintf(STDERR_FILENO, PROMPT, singleton()->cwd_basename);
@@ -151,32 +151,14 @@ void	ft_interrupt(int code)
 			exit(EXEC_FAILURE);
 		printf("\n");
 		rl_on_new_line();
-		// rl_replace_line("", 0);
+		#ifdef LINUX
+		rl_replace_line("", 0);
+		#endif
 		rl_redisplay();
 	}
 	else
 		printf("\n");
 	
-}
-
-void free_cmd(t_list *lst_cmd)
-{
-	t_cmd *cmd;
-
-	if (lst_cmd)
-	{
-		cmd = (t_cmd *)lst_cmd->content;
-		if (cmd && cmd->args)
-			ft_strsfree(ft_strslen(cmd->args), cmd->args);
-	}
-	// t_list	*tmp = ft_lstlast(lst_cmd);
-	// if (tmp && tmp->content)
-	// {
-	// 	// PRINT_ERR("HERE")
-	// 	t_cmd	*c = tmp->content;
-	// 	if (c && c->args)
-	// 		ft_strsfree(c->args_len, c->args);
-	// }
 }
 
 void	prompt(void)
@@ -187,7 +169,6 @@ void	prompt(void)
 
 	signal(SIGQUIT, ft_interrupt);
 	signal(SIGINT, ft_interrupt);
-
 	r = TRUE;
 	while (TRUE)
 	{
@@ -209,7 +190,7 @@ void	prompt(void)
 		ft_parse(ret);
 		built_exec = ft_exec_each_cmd(singleton()->lst);
 		if (!built_exec)
-			free_cmd(singleton()->lst);
+			__ft_free_cmds__();
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{

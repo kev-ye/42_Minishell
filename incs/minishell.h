@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 13:44:15 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/14 18:00:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,6 +336,7 @@ typedef struct s_minishl
 // -- PROTOTYPES --
 ////////////////////////////////////////////////////////////////////////////////
 // Utils
+void		__ft_free_cmds__(void);
 int			ft_is_openable(char *path, int flag);
 void		ft_printstrs(int fd, char **strs);
 void		ft_lstprint(t_list *lst, char sep);
@@ -362,8 +363,8 @@ t_list		*search_env(char *tofind, t_list **env);
 /*
 ** Execution
 */
-// generale
-int		ft_exec_each_cmd(t_list *lst);
+// general
+int			ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
 int 		part_cmd_check(t_list *lst_cmd);
@@ -387,9 +388,9 @@ void		cmd_with_mix(t_list *lst_cmd);
 /*
 ** Flag
 */
-int 	flag_check(t_list *lst_cmd);
-int 	is_redir(t_list *lst_cmd);
-int 	is_sep_or_end(t_list *lst_cmd);
+int 		flag_check(t_list *lst_cmd);
+int 		is_redir(t_list *lst_cmd);
+int 		is_sep_or_end(t_list *lst_cmd);
 
 /*
 ** Builtin

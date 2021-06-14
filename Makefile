@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
+#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/11 18:37:15 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/14 17:31:29 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror -g3 #-fsanitize=address
+CFLAGS 		= -Wall -Wextra -Werror -g3 -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
 

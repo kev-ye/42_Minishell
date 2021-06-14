@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 18:41:03 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:02:03 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,10 +169,10 @@ void	__ft_free_cmds__(void)
 		if (cmd && cmd->args)
 		{
 			size_t size = ft_strslen(cmd->args);
-			ft_printf("ARGS_LEN [%lld] REAL [%lld]\n", size, cmd->args_len);
+			// ft_printf("ARGS_LEN [%lld] REAL [%lld]\n", size, cmd->args_len);
 			while (size-- > 0)
 			{
-				printf(B_RED "PTR => [%p], DATA => [%s]\n", cmd->args[size], cmd->args[size]);
+				// ft_printf(B_RED "PTR => [%p], DATA => [%s]\n", cmd->args[size], cmd->args[size]);
 				ft_memdel((void **)(&cmd->args[size]));
 			}
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exec.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/10 11:48:14 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/14 17:59:13 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,6 @@ int builtin_exec(char **cmds)
 	if (ret == NOT_FOUND)
 		return (ret);
 	singleton()->last_return_value = ret;
-	ft_strsfree(ft_strslen(cmds) + 1, cmds);
+	// ft_strsfree(ft_strslen(cmds) + 1, cmds);
 	return (SUCCESS);
 }
