@@ -56,7 +56,7 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 	return (cmd);
 }
 
-void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
+int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 {
 	// first cmd
 	int first;
@@ -327,9 +327,10 @@ void	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 			flag_redir_input = 0;
 		}
 		else
-			return ;
+			return (ctrl_d);
 		lst_cmd = lst_cmd->next;
 	}
+	return (ctrl_d);
 }
 
 void	cmd_with_redir(void *cmd, t_list *lst_cmd)
@@ -340,6 +341,7 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	int 	tmp_errno;
 	int 	status = 1;
 	int 	builtin_status = 1;
+	int 	ctrl_d = 0;
 
 	input_fd = -1;
 	output_fd = -1;
@@ -350,7 +352,9 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	else if (pid == 0)
 	{
 		cmd = get_complete_cmd(cmd, lst_cmd);
-		redir_parser(input_fd, output_fd, lst_cmd);
+		ctrl_d = redir_parser(input_fd, output_fd, lst_cmd);
+		if (ctrl_d == 1)
+			exit(EXEC_FAILURE);
 
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
