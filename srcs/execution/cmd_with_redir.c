@@ -245,7 +245,8 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 							free(input_str);
 							if (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT)
 							{
-								close(tmp_fd_input);
+								if (tmp_fd_output != -1)
+									close(tmp_fd_input);
 								tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
 								if (tmp_fd_input == -1)
 								{

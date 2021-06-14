@@ -166,19 +166,10 @@ void	__ft_free_cmds__(void)
 	while (tmp)
 	{
 		cmd = tmp->content;
-		if (cmd && cmd->args)
-		{
-			size_t size = ft_strslen(cmd->args);
-			// ft_printf("ARGS_LEN [%lld] REAL [%lld]\n", size, cmd->args_len);
-			while (size-- > 0)
-			{
-				// ft_printf(B_RED "PTR => [%p], DATA => [%s]\n", cmd->args[size], cmd->args[size]);
-				ft_memdel((void **)(&cmd->args[size]));
-			}
-		}
-			// ft_strsfree(1, cmd->args);
+		ft_strsfree(cmd->args_len, cmd->args);
 		tmp = tmp->next;
 	}
+	ft_lstclear(&singleton()->lst, free);
 }
 
 void	ft_free_exit(int code)
@@ -187,6 +178,7 @@ void	ft_free_exit(int code)
 	{
 		__ft_free_cmds__();
 		ft_lstclear(&singleton()->lst, free);
+		free(singleton()->lst);
 		if (singleton()->prompt)
 			ft_memdel((void **)(&singleton()->prompt));
 		if (singleton()->cwd)

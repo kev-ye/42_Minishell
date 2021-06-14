@@ -174,7 +174,7 @@ void	prompt(void)
 	{
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
 		print_prompt();
-		if (singleton()->option.fd == STDIN_FILENO)
+		if (singleton()->option.fd == STDIN_FILENO && singleton()->isatty_stdin)
 		{
 			singleton()->rl_lvl = 1;
 			ret = readline(singleton()->prompt);
@@ -189,7 +189,7 @@ void	prompt(void)
 			add2history(ret);
 		ft_parse(ret);
 		built_exec = ft_exec_each_cmd(singleton()->lst);
-		if (!built_exec)
+		// if (built_exec == 0)
 			__ft_free_cmds__();
 		ft_memdel((void **)(&ret));
 		if (r <= 0)

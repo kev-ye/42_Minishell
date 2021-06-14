@@ -73,7 +73,6 @@ t_cmd	*new_cmd(uint16_t status, t_list **args)
 		exit(1);
 		return (NULL);
 	}
-	// ft_strsfree(cmd->args_len, cmd->args);
 	cmd->args = ft_lst2strs(args);
 	ft_lstclear(args, free);
 	cmd->args_len = ft_strslen(cmd->args);
@@ -86,13 +85,6 @@ int	found_str_limit(char *s, size_t i, t_list **args)
 	t_cmd	*new;
 	size_t	k;
 
-	// if (!s[i])
-	// {
-	// 	ft_lstadd_back(args, ft_lstnew(ft_substr(s, 0, i)));
-	// 	new = new_cmd(FLG_EOL, args);
-	// 	ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
-	// 	return (0);
-	// }
 	k = 0;
 	while (g_limits[k].redir)
 	{
