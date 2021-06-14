@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/09 18:38:51 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:15:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,5 @@ void	ft_exit_for_prompt(void)
 {
 	if (singleton()->isatty_stdin)
 		ft_putstr_fd("exit\n", STDIN_FILENO);
-	ft_free_exit(0);
-	exit(SUCCESS);
+	ft_free_exit(SUCCESS);
 }

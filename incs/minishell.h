@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 18:00:30 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:13:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -348,8 +348,7 @@ int			ft_find_in_strs(char *s, const char **strs);
 char		*ft_getenv(const char *name);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
-// void		ft_free_exit(int if_exit) __attribute__((noreturn));
-void		ft_free_exit(int if_exit);
+void		ft_free_exit(int code);
 void		*ft_malloc_error(char *file, int line);
 
 // Parser

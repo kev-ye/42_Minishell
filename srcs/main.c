@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 18:06:33 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/14 18:15:39 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,13 +142,13 @@ void	ft_interrupt(int code)
 	if (code == SIGQUIT)
 	{
 		ft_putstr_fd("exit\n", STDIN_FILENO);
-		exit(SUCCESS);
+		ft_free_exit(SUCCESS);
 	}
 	else if (code == SIGINT && errno == EINTR)
 	{
 		singleton()->last_return_value = 1;
 		if (singleton()->rl_lvl == 2)
-			exit(EXEC_FAILURE);
+			ft_free_exit(EXEC_FAILURE);
 		printf("\n");
 		rl_on_new_line();
 		#if !defined(__APPLE__) && !defined(__MACH__)
@@ -231,8 +231,7 @@ static void	parse_args(int ac, const char **av)
 			if (singleton()->option.fd == -1)
 			{
 				ft_dprintf(2, PROG_NAME ": %s: %s\n", av[1], strerror(errno));
-				ft_free_exit(0);
-				exit(EXIT_FAILURE);
+				ft_free_exit(EXIT_FAILURE);
 			}
 		}
 	}
