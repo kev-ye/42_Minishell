@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 10:58:35 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 12:02:19 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	len_variable(char *s)
 }
 
 // $? case
-size_t	get_var_last_return_case(char **s, size_t i)
+static size_t	get_var_last_return_case(char **s, size_t i)
 {
 	char	*ptr;
 
@@ -126,7 +126,7 @@ size_t	get_var_last_return_case(char **s, size_t i)
 	return (ft_nblen(singleton()->last_return_value) - 1);
 }
 
-size_t	get_env_var(char **s, size_t i)
+static size_t	get_env_var(char **s, size_t i)
 {
 	const int	len_str = len_variable(*s + i);
 	t_list		*tmp;
@@ -198,17 +198,17 @@ void	ft_parse(char *s)
 		}
 
 		// ft_printf("%s:%d: [%.4b] args_size[%2lld] [%s]\n", __FILE__, __LINE__,
-			// quotes.first, ft_lstsize(args), s + i);
+		// 	quotes.first, ft_lstsize(args), s + i);
 
 		if ('\\' == s[i] && 0 == quotes.first)
 		{
-			// if (!quotes.d_quote)
+			if (!quotes.d_quote)
 				ft_strnclean(s + i, "\\", 1); // remove `\' (backslash) from `s'
 			// PRINT_ERR("here")
-			// ft_printf("TO CLOSE: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
+			// ft_printf("IN CHARSET BEF: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
 			if (ft_incharset(SPEC_CHARS, s[i]))
 				++i;
-			// ft_printf("TO CLOSE: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
+			// ft_printf("IN CHARSET AFT: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
 			// quotes2close(s[i], &quotes, SET_FLAG);
 			// continue ; // does nothing
 		}
@@ -247,11 +247,17 @@ void	ft_parse(char *s)
 					// continue ; // does nothing
 				}
 			}
-			else if ((!quotes.first || (quotes.first & (1 << DBL_BSHFT)))
-				&& '$' == s[i])
+			else if ((!quotes.first || quotes.d_quote) && '$' == s[i])
 			{
-				++i;
-				i += get_env_var(&s, i);
+				if (!quotes.first && ft_incharset(QUOTES, s[i + 1]))
+					ft_strnclean(s + i, "$", 1);
+				else
+				{
+					++i;
+					i += get_env_var(&s, i);
+					// equivalent to the two lines above
+					// i += get_env_var(&s, i + 1) + 1;
+				}
 			}
 			else
 				++i;

@@ -99,10 +99,12 @@ init_tester() {
 
 	# Compile
 	echo "🛠  ${B_YLW}Compiling your project...${CLR_COLOR} \c"
-	make >/dev/null 2>&1
-	if [ `ls minishell` != "minishell" ]; then
+	# make >/dev/null 2>&1
+	make 1>/dev/null
+	if [ $? -ne 0 ] || [ `ls minishell` != "minishell" ]; then
 		echo
-		echo "${B_RED}Error:${CLR_COLOR} Check your Makefile"
+		echo "${B_RED}Error:${CLR_COLOR} Cannot compile"
+		exit 1
 	else
 		echo "✅ "
 	fi
@@ -229,7 +231,7 @@ test_parser() {
 	test_cmd "echo '\$'"
 	test_cmd "echo \"\$\""
 	test_cmd "echo \"\$?\""
-	test_cmd "adkjg; echo \"\$?\""
+	test_cmd "abcd; echo \"\$?\""
 	test_cmd "echo '\$?'"
 	test_cmd "echo \"\$DOES_NOT_EXIST\""
 	test_cmd "echo \"\$HOME\""

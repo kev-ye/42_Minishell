@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 11:02:29 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 11:29:51 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,6 @@ void	ft_free_exit(int code)
 	{
 		__ft_free_cmds__();
 		ft_lstclear(&singleton()->lst, free);
-		// free(singleton()->lst);
 		if (singleton()->prompt)
 			ft_memdel((void **)(&singleton()->prompt));
 		if (singleton()->cwd)
