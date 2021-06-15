@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 15:38:52 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/15 19:07:24 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,11 @@ int	found_str_limit(char *s, size_t i, t_list **args)
 				ft_lstadd_back(args, ft_lstnew(ft_substr(s, 0, i)));
 			new = new_cmd(g_limits[k].flag, args);
 			ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
+			// if (g_limits[k].flag & FLG_EO_CMD)
+			// {
+			// 	ft_exec_each_cmd(singleton()->lst);
+			// 	ft_lstclear(&singleton()->lst, free);
+			// }
 			return (g_limits[k].len);
 		}
 		++k;
@@ -164,7 +169,7 @@ static size_t	get_env_var(char **s, size_t i)
 ******************************************************************************/
 
 // TRANSFER TO .H FILE
-#define SPEC_CHARS " \\$'\""
+#define SPEC_CHARS "\\$'\""
 
 void	ft_parse(char *s)
 {
@@ -179,12 +184,12 @@ void	ft_parse(char *s)
 	i = 0;
 	while (s[i])
 	{
-		while (s[i] && ft_incharset(SPACES, s[i]) && quotes.first == 0)
+		while (s[i] && ft_incharset(SPACES, s[i]) && FALSE == quotes.first)
 			++s;
 		if (!s[i])
 			break ;
 
-		if (quotes.first == 0)
+		if (FALSE == quotes.first)
 		{
 			limit = found_str_limit(s, i, &args);
 			// ft_printf("s[%s] i[%d] limit[%d]\n", s, i, limit);
@@ -200,10 +205,20 @@ void	ft_parse(char *s)
 		// ft_printf("%s:%d: [%.4b] args_size[%2lld] [%s]\n", __FILE__, __LINE__,
 		// 	quotes.first, ft_lstsize(args), s + i);
 
-		if ('\\' == s[i] && 0 == quotes.first)
+		if ('\\' == s[i])
 		{
-			if (!quotes.d_quote)
-				ft_strnclean(s + i, "\\", 1); // remove `\' (backslash) from `s'
+			// if (quotes.)
+			// if (quotes.d_quote)
+			// {
+				
+			// }
+
+			// ft_incharset(QUOTES, s[i + 1])
+
+			if ((FALSE == quotes.first))// || (quotes.first && ft_incharset(QUOTES, s[i + 1]))))
+			{
+				ft_strnclean(s + i, "\\", 1);
+			}
 			// PRINT_ERR("here")
 			// ft_printf("IN CHARSET BEF: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
 			if (ft_incharset(SPEC_CHARS, s[i]))
@@ -247,9 +262,9 @@ void	ft_parse(char *s)
 					// continue ; // does nothing
 				}
 			}
-			else if ((!quotes.first || quotes.d_quote) && '$' == s[i])
+			else if ((FALSE == quotes.first || quotes.d_quote) && '$' == s[i])
 			{
-				if (!quotes.first && ft_incharset(QUOTES, s[i + 1]))
+				if (FALSE == quotes.first && ft_incharset(QUOTES, s[i + 1]))
 					ft_strnclean(s + i, "$", 1);
 				else
 				{
@@ -262,7 +277,7 @@ void	ft_parse(char *s)
 			else
 				++i;
 		}
-		if ((ft_incharset(SPACES, s[i]) && quotes.first == 0))
+		if (ft_incharset(SPACES, s[i]) && quotes.first == 0)
 		{
 			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 			s += i;

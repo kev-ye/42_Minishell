@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/15 10:46:47 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 17:14:06 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int	ft_exec_builtin_cmd(char **cmds)
 	i = 0;
 	while (g_builtin[i].cmd)
 	{
-		if (cmds && 0 == ft_strcmp(cmds[0], g_builtin[i].cmd))
+		if (cmds && FALSE == ft_strcmp(cmds[0], g_builtin[i].cmd))
 		{
 			if (!g_builtin[i].f1)
 				return (g_builtin[i].f2());
