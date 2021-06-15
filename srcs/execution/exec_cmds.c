@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/11 18:14:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/15 16:21:54 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,13 @@ int	simple_cmd(void *cmd)
 		}
 		if (WIFEXITED(status) != 0)
 		{
-			// printf("normal exit\n");
 			singleton()->last_return_value = WEXITSTATUS(status);
+			// printf("normal exit LRV[%d]\n", singleton()->last_return_value);
 		}
 		else if (WIFSIGNALED(status) == 1)
 		{
-			// printf("signal exit\n");
 			singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
+			// printf("signal exit LRV[%d]\n", singleton()->last_return_value);
 		}	
 	}
 	else
@@ -67,6 +67,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 	tmp = lst_cmd;
 	cmd_line = -1;
 	built_exec = 0;
+	// PRINT_ERR("BONJOUR")
 	if (syntax_parser(tmp))
 	{
 		singleton()->last_return_value = LRV_SYNTAX_ERROR;
@@ -74,6 +75,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 	}
 	while (tmp)
 	{
+		// PRINT_ERR("BONJOUR")
 		if (((t_cmd *)tmp->content)->args
 			&& ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
 			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
@@ -100,9 +102,9 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 				cmd_with_mix(tmp);
 			}
 		}
-		while (tmp && !(((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))
-			tmp = tmp->next;
-		if (tmp)
+		while (tmp && !(((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))	// to remove -> "ls abcd; echo $?" case
+			tmp = tmp->next;												// to remove -> "ls abcd; echo $?" case
+		if (tmp)															// to remove -> "ls abcd; echo $?" case
 			tmp = tmp->next;
 	}
 	return (built_exec);

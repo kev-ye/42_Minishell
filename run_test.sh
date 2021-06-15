@@ -31,7 +31,7 @@ CLR_SCREEN="\033[2J\033[H"
 
 ### Global constants
 __NAME__="run_test.sh"
-__SHL_TST_PATH__="."
+__SHL_TST_PATH__="$PWD"
 __LOG_FILE__="$__SHL_TST_PATH__/results.log"
 
 ### Global variables
@@ -116,12 +116,14 @@ print_stats() {
 	echo
 	echo "You got ${B_RED}${errors}${CLR_COLOR} errors on ${B_YLW}${i}${CLR_COLOR} tests\c"
 	if [ $# -ge 1 ]; then
-		echo " on your ${1}"
+		echo " on your ${B_BLUE}${1}${CLR_COLOR}"
 	else
 		echo
 	fi
 	if [ $errors -gt 0 ]; then
-		echo "Check ${__LOG_FILE__} to see your errors"
+		echo "${B_RED}Check ${__LOG_FILE__} to see your errors${CLR_COLOR}"
+	else
+		echo "${B_YLW}Great job !${CLR_COLOR}"
 	fi
 }
 
@@ -157,6 +159,65 @@ test_cmd() {
 	# Delete tmp files
 	rm -f $__SHL_TST_PATH__/diffs $__SHL_TST_PATH__/real $__SHL_TST_PATH__/mine
 	
+	# Increment count index
+	i=$((i+1))
+}
+
+BASH_REDIR_PATH="$__SHL_TST_PATH__/bash_redir_test"
+MINISHELL_REDIR_PATH="$__SHL_TST_PATH__/minishell_redir_test"
+
+test_redir_cmd() {
+	
+	printf "Test #%2d " $i
+
+	# Keep $PWD
+	__OLD_PATH__=$(pwd)
+
+	# create tmp folders to make tests
+	if [ ! -d $BASH_REDIR_PATH ]; then
+		mkdir $BASH_REDIR_PATH
+	fi
+	if [ ! -d $MINISHELL_REDIR_PATH ]; then
+		mkdir $MINISHELL_REDIR_PATH
+	fi
+
+	cd $BASH_REDIR_PATH && echo $1 | bash > $__SHL_TST_PATH__/real 2>&1
+	cd $__OLD_PATH__
+
+	cd $MINISHELL_REDIR_PATH && echo $1 | $__SHL_TST_PATH__/minishell > $__SHL_TST_PATH__/mine 2>&1
+	cd $__OLD_PATH__
+
+	cd $BASH_REDIR_PATH && tail -n +1 * 2>/dev/null > $__SHL_TST_PATH__/real_redirs
+	cd $__OLD_PATH__
+
+	cd $MINISHELL_REDIR_PATH && tail -n +1 * 2>/dev/null > $__SHL_TST_PATH__/my_redirs
+	cd $__OLD_PATH__
+
+	diff -r $__SHL_TST_PATH__/real_redirs $__SHL_TST_PATH__/my_redirs > $__SHL_TST_PATH__/diffs
+	GOT_DIFF_IN_EXEC=$?
+
+	# echo >> $__SHL_TST_PATH__/diffs
+
+	diff $__SHL_TST_PATH__/real $__SHL_TST_PATH__/mine >> $__SHL_TST_PATH__/diffs
+
+	# Add diffs in the .log file if any
+	if [ `cat $__SHL_TST_PATH__/diffs | wc -l | xargs` != "0" ]; then
+		echo "❌ => [${1}]"	# debug purpose
+		# echo "❌  "
+		echo "Test #${i}: [$1]" >> $__SHL_TST_PATH__/results.log
+		cat $__SHL_TST_PATH__/diffs >> $__SHL_TST_PATH__/results.log
+		echo >> $__SHL_TST_PATH__/results.log
+		errors=$((errors+1))
+	else
+		echo "✅ => [${1}]"	# debug purpose
+		# echo "✅  "
+	fi
+
+	# Delete tmp files & folders
+	rm -f $__SHL_TST_PATH__/diffs $__SHL_TST_PATH__/real $__SHL_TST_PATH__/mine
+	rm -f $__SHL_TST_PATH__/real_redirs $__SHL_TST_PATH__/my_redirs
+	rm -rf $BASH_REDIR_PATH $MINISHELL_REDIR_PATH
+
 	# Increment count index
 	i=$((i+1))
 }
@@ -210,7 +271,7 @@ test_parser() {
 	test_cmd "echo '\\'"
 	test_cmd "echo '\\\\\\\\'"
 
-	# quotes
+	# quotes hell
 	test_cmd "echo ''"
 	test_cmd "ech\"o\" test"
 	test_cmd "\\ec\\h\\o"
@@ -223,6 +284,7 @@ test_parser() {
 	test_cmd "echo \"''bonjour\""
 	test_cmd "echo '' \"''bonjour\"\"\""
 	test_cmd "echo ''\"''bonjour\"''"
+	test_cmd "echo ''\"''bonjour\" ''"
 	test_cmd "echo \\\"\"''\\\"\"\"bonjour\""
 	test_cmd "echo \"a\"\"b\""
 
@@ -265,22 +327,57 @@ test_parser() {
 }
 
 
-
-
-test_redirections() {
-
-	test_redir "cd > .."
-	
-}
-
-
 ### Do redirections tests
 test_redirections() {
 
-	echo
-	# echo "${B_CYAN}# Testing your redirections...${CLR_COLOR}"
-	echo "${B_RED}Error: Redirections tests are not yet implemented${CLR_COLOR}"
+	# (re)init global variables
+	errors=0
+	i=1
 
+	echo
+	echo "${B_CYAN}# Testing your redirections...${CLR_COLOR}"
+	# echo "${B_RED}Error: Redirections tests are not yet implemented${CLR_COLOR}"
+
+	# Simple redirections
+	test_redir_cmd "ls > f1"
+	test_redir_cmd "ls > f1 > f2 > f3 > f4"
+	test_redir_cmd "echo test > f1 test2 test3"
+	test_redir_cmd "echo je > f1 suis > f2 un > f3 test"
+	test_redir_cmd "echo je > f1 suis > f2 un > f3 test > f4"
+
+	test_redir_cmd "echo test > f1 ; echo test2 > f3"
+	test_redir_cmd "echo test > f1 ; cat f1 >> f2"
+	test_redir_cmd "echo test > f1 ; cat f2 >> f1"
+	# test_redir_cmd "echo test > f1 ; cat f1 >> f2 >> f1"
+	test_redir_cmd "echo test > f1 ; cat f2 >> f1 >> f2"
+	test_redir_cmd "echo test > f1 ; cat f1 >> f2 >> f3"
+
+	test_redir_cmd "echo test > f1 ; cat < f1"
+	test_redir_cmd "echo test > f1 ; echo test2 > f2 ; echo test3 > f3 ; cat < f1 < f2 < f3"
+	test_redir_cmd "echo test > f1 ; ls < f1"
+	# test_redir_cmd "cat < f1" // error case -> to handle in a separate section
+
+	# Mixed redirections
+	test_redir_cmd "echo test > f1 ; echo test2 > f2 ; cat < f1 > f3"
+	test_redir_cmd "echo test > f1 ; echo test2 > f2 ; cat < f1 < f2 > f3"
+	test_redir_cmd "echo test > f1 ; ls < f1 > f2"
+	test_redir_cmd "echo test > f1 ; ls < f1 >> f2 >> f3"
+	test_redir_cmd "echo test > f1 ; echo test2 > f2 ; echo test3 > f3 ; cat < f1 >> f2 >> f3"
+	test_redir_cmd "echo test > f1 ; echo test2 > f2 ; echo test3 > f3 ; cat < f1 > f2 < f3 >> f4"
+	# test_redir_cmd "cat < f1 > f2" // error case -> to handle in a separate section
+
+	# Pipes
+	test_redir_cmd "ls | wc"
+	test_redir_cmd "ls | cat"
+	test_redir_cmd "ls | cat | cat | cat"
+	test_redir_cmd "ls | wc | wc | wc"
+	test_redir_cmd "ls | wc | grep 1"
+	test_redir_cmd "ls | wc | cat"
+	test_redir_cmd "ls | cat | wc"
+	test_redir_cmd "ls | wc | xargs"
+	test_redir_cmd "ls | cut -f1"
+
+	print_stats "redirections"
 }
 
 ################################################################################
