@@ -6,3 +6,4 @@
 - [ ] cat << f1 (then type anything, enter, and CTRL-D - bash displays the last line entered)
 - [ ] mix case: ls | wc > f1 | wc
 - [ ] mix case: ls | wc << f1
+- [ ] mix case: ls | wc > f1 | echo test | wc > f2 

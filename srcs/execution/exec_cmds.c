@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/11 18:14:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/15 17:50:51 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 			&& ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
 			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL)))
 		{
-			// printf(B_PURPLE"simple cmd"CLR_COLOR"\n");
+			printf(B_PURPLE"simple cmd"CLR_COLOR"\n");
 			built_exec = simple_cmd(tmp->content);
 		}
 		else
@@ -86,17 +86,17 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 			cmd_line = part_cmd_check(tmp);
 			if (cmd_line == ONLY_PIPE)
 			{
-				// printf(B_PURPLE"pipe cmd"CLR_COLOR"\n");
+				printf(B_PURPLE"pipe cmd"CLR_COLOR"\n");
 				cmd_with_pipe(tmp);
 			}
 			else if (cmd_line == ONLY_REDIR)
 			{
-				// printf(B_PURPLE"redir cmd"CLR_COLOR"\n");
+				printf(B_PURPLE"redir cmd"CLR_COLOR"\n");
 				cmd_with_redir(tmp->content, tmp);
 			}
 			else if (cmd_line == MIX)
 			{
-				// printf(B_PURPLE"mix cmd"CLR_COLOR"\n");	
+				printf(B_PURPLE"mix cmd"CLR_COLOR"\n");	
 				cmd_with_mix(tmp);
 			}
 		}

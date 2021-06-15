@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 10:59:46 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 19:02:50 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,12 @@
 # define REDIR_OPEN 2
 # define NO_FIRST 0
 # define FIRST 1
+
+// fd flag
+#define F_APPEND 1
+#define F_TRUNC 2
+#define F_INPUT 3
+#define F_DINPUT 4
 
 // check
 # define NO_ONE (-1)
@@ -350,6 +356,8 @@ void		cmd_with_pipe(t_list *lst_cmd);
 void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
 int			redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
+int 		create_fd(t_list *cmd);
+int 		check_for_next(t_list *lst_cmd);
 // mix
 void		cmd_with_mix(t_list *lst_cmd);
 

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/14 13:47:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/15 19:05:45 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 						}
 						else if (!input_str)
 						{
-							parser_ret = CTRLD;
+							// parser_ret = CTRLD;
 							break ;
 						}
 						if (input_str)
@@ -263,7 +263,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 						}
 						else if (!input_str)
 						{
-							parser_ret = CTRLD;
+							// parser_ret = CTRLD;
 							break ;
 						}
 						if (input_str)
@@ -295,6 +295,7 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 			{
 				fd_output = tmp_fd_output;
 				dup2(fd_output, STDOUT_FILENO);
+				dup2(fd_input, STDIN_FILENO);
 			}
 		}
 
@@ -336,6 +337,217 @@ int	redir_parser(int fd_input, int fd_output, t_list *lst_cmd)
 	return (parser_ret);
 }
 
+int	redir_parser1(int fd_input, int fd_output, t_list *lst_cmd)
+{
+	// first cmd
+	int first;
+	
+	int tmp_fd_output;
+	int tmp_fd_input;
+
+	int next_flag = 0;
+
+	// double input
+	char *input_str;
+	int parser_ret = RET_INIT;
+
+	// init
+	first = 1;
+
+	tmp_fd_output = -2;
+	tmp_fd_input = -2;
+
+	input_str = NULL;
+
+	// start
+
+	tmp_fd_output = create_fd(lst_cmd);
+
+	while(lst_cmd)
+	{
+		if (first == 1)
+			first = 0;
+		else if (!first && is_redir(lst_cmd))
+		{
+			// try file
+			if (next_flag == F_INPUT)
+			{
+				tmp_fd_input = open(((t_cmd *)lst_cmd->content)->args[0], O_RDWR);
+				if (tmp_fd_input == -1)
+				{
+					ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					exit(LRV_GENERAL_ERROR);
+				}
+				else
+				{
+					fd_input = tmp_fd_input;
+					dup2(fd_input, STDIN_FILENO);
+				}
+			}
+			else if (next_flag == F_DINPUT)
+			{
+				tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+				if (tmp_fd_input == -1)
+				{
+					ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					exit(LRV_GENERAL_ERROR);
+				}
+				else
+				{
+					parser_ret = RET_INIT;
+					while (1)
+					{
+						singleton()->rl_lvl = 2;
+						input_str = readline("> ");
+						if (input_str && !ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
+						{
+							free(input_str);
+							if (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT)
+							{
+								close(tmp_fd_input);
+								tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+								if (tmp_fd_input == -1)
+								{
+									ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+									if (tmp_fd_output != -1)
+										close(tmp_fd_output);
+									exit(LRV_GENERAL_ERROR);
+								}
+								lst_cmd = lst_cmd->next;
+								continue ;
+							}
+							else
+								break ;
+						}
+						else if (!input_str)
+						{
+							// parser_ret = CTRLD;
+							break ;
+						}
+						if (input_str)
+							ft_putendl_fd(input_str, tmp_fd_input);
+					}
+					close(tmp_fd_input);
+					if (parser_ret == RET_INIT)
+					{
+						tmp_fd_input = open(TMP_FD, O_RDONLY);
+						if (tmp_fd_input == -1)
+						{
+							ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+							if (tmp_fd_output != -1)
+								close(tmp_fd_output);
+							exit(LRV_GENERAL_ERROR);
+						}
+						fd_input = tmp_fd_input;
+						dup2(fd_input, STDIN_FILENO);
+					}
+				}
+			}
+		}
+		else if (!first)
+		{
+			// '<' -> check if file exit
+			if (next_flag == F_INPUT)
+			{
+				tmp_fd_input = open(((t_cmd *)lst_cmd->content)->args[0], O_RDWR);
+				if (tmp_fd_input == -1)
+				{
+					ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)lst_cmd->content)->args[0], strerror(errno));
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					exit(LRV_GENERAL_ERROR);
+				}
+				else
+				{
+					fd_input = tmp_fd_input;
+					dup2(fd_input, STDIN_FILENO);
+				}
+			}
+			// '<<' -> double input
+			else if (next_flag == F_DINPUT)
+			{
+				tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+				if (tmp_fd_input == -1)
+				{
+					ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+					if (tmp_fd_output != -1)
+						close(tmp_fd_output);
+					exit(LRV_GENERAL_ERROR);
+				}
+				else
+				{
+					parser_ret = RET_INIT;
+					while (1)
+					{
+						singleton()->rl_lvl = 2;
+						input_str = readline("> ");
+						if (input_str && !ft_strcmp(input_str, ((t_cmd *)lst_cmd->content)->args[0]))
+						{
+							free(input_str);
+							if (((t_cmd *)lst_cmd->content)->status_flag & FLG_DINPUT)
+							{
+								if (tmp_fd_output != -1)
+									close(tmp_fd_input);
+								tmp_fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
+								if (tmp_fd_input == -1)
+								{
+									ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+									if (tmp_fd_output != -1)
+										close(tmp_fd_output);
+									exit(LRV_GENERAL_ERROR);
+								}
+								lst_cmd = lst_cmd->next;
+								continue ;
+							}
+							else
+								break ;
+						}
+						else if (!input_str)
+						{
+							// parser_ret = CTRLD;
+							break ;
+						}
+						if (input_str)
+							ft_putendl_fd(input_str, tmp_fd_input);
+					}
+					close(tmp_fd_input);
+					if (parser_ret == RET_INIT)
+					{
+						tmp_fd_input = open(TMP_FD, O_RDONLY);
+						if (tmp_fd_input == -1)
+						{
+							ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+							if (tmp_fd_output != -1)
+								close(tmp_fd_output);
+							exit(LRV_GENERAL_ERROR);
+						}
+						fd_input = tmp_fd_input;
+						dup2(fd_input, STDIN_FILENO);
+					}
+				}
+			}
+
+			if (tmp_fd_output != -1 && tmp_fd_output != -2)
+			{
+				fd_output = tmp_fd_output;
+				dup2(fd_output, STDOUT_FILENO);
+				dup2(fd_input, STDIN_FILENO);
+			}
+		}
+
+		// active flag
+		next_flag = check_for_next(lst_cmd);
+		if (!next_flag)
+			return (parser_ret);
+		lst_cmd = lst_cmd->next;
+	}
+	return (parser_ret);
+}
+
 void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 {
 	pid_t	pid;
@@ -356,8 +568,8 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	{
 		cmd = get_complete_cmd(cmd, lst_cmd);
 		parser_ret = redir_parser(input_fd, output_fd, lst_cmd);
-		if (parser_ret == CTRLD)
-			exit(EXEC_FAILURE);
+		// if (parser_ret == CTRLD)
+		// 	exit(EXEC_FAILURE);
 
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
@@ -378,3 +590,4 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	else if (WIFSIGNALED(status) == 1)
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
+

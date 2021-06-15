@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 15:39:17 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/14 13:49:50 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/15 17:57:24 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,60 +37,66 @@ void	show_fd(int fd, char *msg)
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-int     check_last_cmd_flag(t_list *lst_cmd)
-{
-    t_list *tmp;
-
-    tmp = lst_cmd;
-	if (tmp && flag_check(tmp) == FLG_PIPE)
-	{
-    	while (tmp && flag_check(tmp) == FLG_PIPE)
-       		tmp = tmp->next;
-    	if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-        	|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL))
-        	return (NO_OPTION);
-		else
-			return (REDIR_OPEN);
-	}
-	else if (tmp && is_redir(tmp))
-	{
-		while (tmp && is_redir(tmp))
-			tmp = tmp->next;
-		if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-			|| (((t_cmd *)tmp->content)->status_flag & FLG_EOL))
-			return (NO_OPTION);
-		else
-			return (PIPE_OPEN);
-	}
-    return (NO_OPTION);
-}
-
-void interm_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, int next_option, int *redir_fd)
+void	*first_cmd_with_pipe_mix(void *cmd, int *fd, t_list *lst_cmd)
 {
 	pid_t	pid;
 	int 	status = 1;
 	int 	builtin_status = 1;
+    int 	parser_ret = 0;
+    int 	input_fd;
 
+    input_fd = -1;
+	pid = fork();
+	if (pid < 0)
+			exit(PID_FAILURE);
+	else if (pid == 0)
+	{
+        cmd = get_complete_cmd(cmd, lst_cmd);
+		parser_ret = redir_parser(input_fd, fd[1], lst_cmd);
+
+		// printf("\n---> first cmd go in\n");
+		dup2(fd[1], STDOUT_FILENO);
+		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		if (builtin_status == NOT_FOUND)
+			sys_exec(cmd);
+		if (builtin_status != NOT_FOUND)
+			exit(SUCCESS);
+		exit(EXEC_FAILURE);
+	}
+	else
+	{
+		// wait(&status);
+		waitpid(pid, &status, 0);
+		close(fd[1]);           // get stdout, need to close, because if not, stdout is always open, so the fd for stdin never have EOF
+	}
+	if (WIFEXITED(status) != 0)
+		singleton()->last_return_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status) == 1)
+		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
+	return (fd);
+}
+
+void interm_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
+{
+	pid_t	pid;
+	int 	status = 1;
+	int 	builtin_status = 1;
+    int 	parser_ret = 0;
+    int 	input_fd;
+
+    input_fd = -1;
 	pid = fork();
 	if (pid < 0)
 		exit(PID_FAILURE);
 	else if (pid == 0)
 	{
+        cmd = get_complete_cmd(cmd, lst_cmd);
+		parser_ret = redir_parser(fd[fd_index * 2], fd[(fd_index + 1) * 2 + 1], lst_cmd);
+
 		// printf("\n---> interm cmd go in\n");
-		if (next_option)
-		{
-			dup2(redir_fd[0], STDIN_FILENO);
-		}
-		else
-		{
-			dup2(fd[fd_index * 2], STDIN_FILENO);
-		}
-		if (!next_option)
-			dup2(fd[(fd_index + 1) * 2 + 1], STDOUT_FILENO);
-		else
-		{
-			dup2(fd[1], STDOUT_FILENO);
-		}
+		dup2(fd[fd_index * 2], STDIN_FILENO);
+	
+		dup2(fd[(fd_index + 1) * 2 + 1], STDOUT_FILENO);
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
@@ -103,10 +109,7 @@ void interm_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, int next_option,
 	{
 		// wait(&status);
 		waitpid(pid, &status, 0);
-		if (!next_option)
-			close(fd[(fd_index + 1) * 2 + 1]);
-		else
-			close(fd[1]);
+		close(fd[(fd_index + 1) * 2 + 1]);
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -114,27 +117,26 @@ void interm_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, int next_option,
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
-void	last_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, int next_option, int *redir_fd)
+void	last_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 {
-	(void)fd_index;
 	pid_t	pid;
 	int 	status = 1;
 	int 	builtin_status = 1;
+	int 	parser_ret = 0;
+    int		output_fd;
 
+    output_fd = -1;
 	pid = fork();
 	if (pid < 0)
 			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
+        cmd = get_complete_cmd(cmd, lst_cmd);
+		parser_ret = redir_parser(fd[fd_index * 2], output_fd, lst_cmd);
+    
 		// printf("\n---> last cmd go in\n\n");
-		if (next_option)
-		{
-			dup2(redir_fd[0], STDIN_FILENO);
-		}
-		else
-		{
-			dup2(fd[0], STDIN_FILENO);
-		}
+		if (fd[fd_index * 2] == -1)
+			dup2(fd[fd_index * 2], STDIN_FILENO);
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
@@ -153,192 +155,78 @@ void	last_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, int next_option, i
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
-int cmd_with_multi_pipe_mix(t_list *lst_cmd, int *fd, int option, int next_option, int *redir_fd)
+void cmd_with_multi_pipe_mix(t_list *lst_cmd, int *fd)
 {
 	t_list 	*tmp;
 	int		fd_index;
-    int     fd_ret;
 
 	tmp = lst_cmd;
 	fd_index = 0;
-    fd_ret = -1;
 	while (tmp && flag_check(tmp) == FLG_PIPE)
 	{
-		interm_cmd_with_pipe_mix(tmp->content, fd, fd_index, next_option, redir_fd);
-		if (!next_option)
-			++fd_index;
+		show_content(tmp, "inter");
+		interm_cmd_with_pipe_mix(tmp->content, fd, fd_index, tmp);
+        while (tmp && is_redir(tmp))
+            tmp = tmp->next;
+		++fd_index;
 		tmp = tmp->next;
-		if (next_option)
-			next_option = 0;
 	}
-	if (is_redir(tmp) && option == REDIR_OPEN)
-        fd_ret = fd[fd_index * 2];
-	else
-	{
-		last_cmd_with_pipe_mix(tmp->content, fd, fd_index, next_option, redir_fd);
-	}
-	return (fd_ret);
+	show_content(tmp, "last");
+	last_cmd_with_pipe_mix(tmp->content, fd, fd_index, tmp);
 }
 
-int cmd_with_pipe_mix(t_list *lst_cmd, int first, int option, int *pipe_fd, int next_option, int *redir_fd)
+int	count_pipe_mix(t_list *lst_cmd)
 {
-    int fd_ret;
+	t_list *tmp;
+	int count;
 
-    fd_ret = -1;
+	tmp = lst_cmd;
+	count = 0;
+	while (tmp && flag_check(tmp) == FLG_PIPE)
+	{
+		++count;
+		tmp = tmp->next;
+	}
+	return (count);
+}
+
+void cmd_with_pipe_mix(t_list *lst_cmd)
+{
+	t_list 	*tmp;
+	int 	*fd;
+	int 	i;
+	int 	pipe_len;
+
+	tmp = lst_cmd;
+	pipe_len = count_pipe_mix(tmp);
+	fd = malloc(sizeof(int) * (pipe_len * 2));
+	if (!fd)
+		return ;
+	
+	// create pipe for each cmd
+	i = 0;
+	while (i < pipe_len)
+		pipe(fd + (i++ * 2));
 
 	// lauch the first cmd with pipe
-	if (first == FIRST)
-		first_cmd_with_pipe(lst_cmd->content, pipe_fd);
+	show_content(tmp, "first");
+	first_cmd_with_pipe_mix(tmp->content, fd, tmp);
+    while (tmp && is_redir(tmp))
+        tmp = tmp->next;
 
 	// multi cmd with pipe
-	fd_ret = cmd_with_multi_pipe_mix(lst_cmd->next, pipe_fd, option, next_option, redir_fd);
+	cmd_with_multi_pipe_mix(tmp->next, fd);
 
-    return (fd_ret);
-}
-
-void cmd_with_redir_mix(void *cmd, t_list *lst_cmd, int input_fd, int **redir_fd, int option)
-{
-	pid_t	pid;
-	int		output_fd;
-	int 	tmp_errno;
-	int 	status = 1;
-	int 	builtin_status = 1;
-	int		parser_ret = RET_INIT;
-
-	output_fd = -1;
-	tmp_errno = 0;
-	pid = fork();
-	if (pid < 0)
-			exit(1);
-	else if (pid == 0)
-	{
-		dup2(input_fd, STDIN_FILENO);
-		
-		cmd = get_complete_cmd(cmd, lst_cmd);
-		parser_ret = redir_parser(input_fd, output_fd, lst_cmd);
-
-		if ((option == PIPE_OPEN) && (parser_ret != OUTPUT)) // prog get here
-			dup2((*redir_fd)[1], STDOUT_FILENO);
-		close((*redir_fd)[1]);
-
-		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
-		if (builtin_status == NOT_FOUND)
-			sys_exec(cmd);
-		if (builtin_status != NOT_FOUND)
-			exit(SUCCESS);
-		exit(EXEC_FAILURE);
-	}
-	else
-	{
-		// wait(&status);
-		waitpid(pid, &status, 0);
-		close(input_fd);
-		close(output_fd);
-		close((*redir_fd)[1]);
-
-		// show_fd((*redir_fd)[0], "in redir mix");
-	}
-	if (WIFEXITED(status) != 0)
-		singleton()->last_return_value = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status) == 1)
-		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
+	// close all pipe fd
+	i = 0;
+	while (i < pipe_len * 2)
+		close(fd[i++]);
+	free(fd);
 }
 
 void	cmd_with_mix(t_list *lst_cmd)
 {
-    // general
-    t_list *tmp;
-    int option;
-    int first;
-    int input_fd;
-
-    // pipe
-    int 	*pipe_fd = NULL;
-	int 	i = 0;
-	int 	pipe_len = 0;
-
-	// preparation
-	int next_is_pipe = 0;
-	int next_is_redir = 0;
-
-	// redir
-	int *redir_fd = NULL;
-
-    tmp = lst_cmd;
-    option = NO_OPTION;
-    first = FIRST;
-    input_fd = -1;
-    while (tmp)
-    {
-        // check option
-        option = check_last_cmd_flag(tmp);
-        if (flag_check(tmp) == FLG_PIPE)
-        {
-			if (next_is_pipe)
-			{
-            	pipe_len = count_pipe(tmp->next);
-			}
-			else
-				pipe_len = count_pipe(tmp);
-			if (pipe_len > 0)
-			{
-	        	pipe_fd = malloc(sizeof(int) * (pipe_len * 2));
-				if (!pipe_fd)
-					return ;
-			}
-			i = 0;
-            while (i < pipe_len)
-			{
-		        pipe(pipe_fd + (i++ * 2));
-			}
-
-            input_fd = cmd_with_pipe_mix(tmp, first, option, pipe_fd, next_is_pipe, redir_fd);
-            while (flag_check(tmp) == FLG_PIPE)
-                tmp = tmp->next;
-            first = NO_FIRST;
-
-			if (option == REDIR_OPEN)
-			{
-				next_is_redir = 1;
-				next_is_pipe = 0;
-			}
-			else
-			{
-				next_is_pipe = 0;
-				next_is_redir = 0;
-			}
-        }
-        else if (is_redir(tmp))
-        {
-			redir_fd = malloc(sizeof(int) * 2);
-	        if (!redir_fd)
-		        return ; 	
-			pipe(redir_fd);		
-
-            cmd_with_redir_mix(tmp->content, tmp, input_fd, &redir_fd, option);
-            while (is_redir(tmp))
-                tmp = tmp->next; 
-            first = NO_FIRST;
-            i = 0;
-	        while (i < pipe_len * 2)
-	        	close(pipe_fd[i++]);
-			if (pipe_fd)
-	        	free(pipe_fd);
-
-			if (option == PIPE_OPEN)
-			{
-				next_is_pipe = 1;
-				next_is_redir = 0;
-			}
-			else
-			{
-				next_is_pipe = 0;
-				next_is_redir = 0;
-			}
-			
-        }
-        if ((((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD)
-            || (((t_cmd *)tmp->content)->status_flag & FLG_EOL))
-            return ;
-    }
+    if (!((t_cmd *)lst_cmd->content)->args)
+        return ;
+    cmd_with_pipe_mix(lst_cmd);
 }
