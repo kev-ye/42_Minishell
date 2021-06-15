@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 23:53:37 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 11:01:08 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ static int	ft_init_minishell(char **env)
 	char		*shlvl;
 	char		*ret;
 
-	if (singleton() == NULL)
-		return ((int)ft_malloc_error(__FILE__, __LINE__));
+	if (NULL == singleton())
+		return ((int)ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	singleton()->env = get_env(env);
 	shlvl = ft_getenv("SHLVL");
 	if (shlvl)
@@ -90,7 +90,7 @@ static int	ft_init_minishell(char **env)
 	else
 		ret = ft_strdup("SHLVL=1");
 	if (!ret && ft_memdel((void **)&shlvl) == NULL)
-		return ((int)ft_malloc_error(__FILE__, __LINE__));
+		return ((int)ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	args[1] = ret;
 	ft_export((char **)args);
 	ft_memdel((void **)&ret);

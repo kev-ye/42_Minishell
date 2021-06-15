@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 19:15:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 18:15:09 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 11:02:29 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ void	ft_free_exit(int code)
 	{
 		__ft_free_cmds__();
 		ft_lstclear(&singleton()->lst, free);
-		free(singleton()->lst);
+		// free(singleton()->lst);
 		if (singleton()->prompt)
 			ft_memdel((void **)(&singleton()->prompt));
 		if (singleton()->cwd)
@@ -196,10 +196,10 @@ void	ft_free_exit(int code)
 		exit(code);
 }
 
-void	*ft_malloc_error(char *file, int line)
+void	*ft_error(char *message, char *file, int line)
 {
-	ft_dprintf(STDERR_FILENO, B_GREEN "%s:%d: Malloc Error\n" CLR_COLOR,
-		file, line);
+	ft_dprintf(STDERR_FILENO, B_RED "%s:%d: " CLR_COLOR "%s\n",
+		file, line, message);
 	ft_free_exit(EXEC_FAILURE);
 	return (NULL);
 }

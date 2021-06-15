@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 00:14:07 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 10:59:46 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,14 @@
 #  undef FALSE
 #  define FALSE 0
 # endif
+
+
+/*
+** Error messages
+ */
+# define ERR_MALLOC "malloc error"
+# define ERR_OPEN "cannot open file"
+
 
 // Exec
 # define SYNTAXERR "syntax error near unexpected token"
@@ -310,7 +318,7 @@ char		*ft_getenv(const char *name);
 char		*ft_strclean(char *s, const char *charset);
 char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_free_exit(int code);
-void		*ft_malloc_error(char *file, int line);
+void		*ft_error(char *message, char *file, int line);
 
 // Parser
 t_minishl	*singleton(void);

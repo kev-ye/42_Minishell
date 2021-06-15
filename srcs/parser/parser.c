@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/14 23:47:39 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/15 10:58:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,7 @@ t_cmd	*new_cmd(uint16_t status, t_list **args)
 
 	cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
-	{
-		ft_dprintf(STDERR_FILENO, "%s:%d: Error\n", __FILE__, __LINE__);
-		exit(1);
-		return (NULL);
-	}
+		return (ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	cmd->args = ft_lst2strs(args);
 	ft_lstclear(args, free);
 	cmd->args_len = ft_strslen(cmd->args);
@@ -144,14 +140,14 @@ size_t	get_env_var(char **s, size_t i)
 		return (0);
 	p = ft_substr(*s, (unsigned int)i, len_str);
 	if (!p)
-		return ((size_t)ft_malloc_error(__FILE__, __LINE__));
+		return ((size_t)ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	ptr = NULL;
 	tmp = search_env(p, &singleton()->env);
 	if (tmp)
 		ptr = ft_strchr(tmp->content, '=');
 	new = ft_calloc(ft_strlen(*s) + ft_strlen(ptr) - len_str + 1, sizeof(char));
 	if (!new)
-		return ((size_t)ft_malloc_error(__FILE__, __LINE__));
+		return ((size_t)ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	ft_memcpy(new, *s, i - 1);
 	if (ptr && ptr + 1)
 		ft_memcpy(new + i - 1, ptr + 1, ft_strlen(ptr) - 1);
