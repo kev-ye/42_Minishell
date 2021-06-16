@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 15:39:17 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/15 17:57:24 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 17:58:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	show_fd(int fd, char *msg)
 		r = get_next_line(fd, &line);
 		printf("> %s\n", line);
 		free(line);
-		break ;
+		// break ;
 	}
 }
 
@@ -42,20 +42,24 @@ void	*first_cmd_with_pipe_mix(void *cmd, int *fd, t_list *lst_cmd)
 	pid_t	pid;
 	int 	status = 1;
 	int 	builtin_status = 1;
-    int 	parser_ret = 0;
     int 	input_fd;
+	int		output_fd;
 
     input_fd = -1;
+	output_fd = -1;
 	pid = fork();
 	if (pid < 0)
 			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
         cmd = get_complete_cmd(cmd, lst_cmd);
-		parser_ret = redir_parser(input_fd, fd[1], lst_cmd);
+		redir_parser2(lst_cmd, &input_fd, &output_fd);
+	
+		if (output_fd == -1)
+			dup2(fd[1], STDOUT_FILENO);
+		else
+			dup2(fd[1], output_fd);
 
-		// printf("\n---> first cmd go in\n");
-		dup2(fd[1], STDOUT_FILENO);
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
@@ -67,6 +71,8 @@ void	*first_cmd_with_pipe_mix(void *cmd, int *fd, t_list *lst_cmd)
 	{
 		// wait(&status);
 		waitpid(pid, &status, 0);
+		close(input_fd);
+		close(output_fd);
 		close(fd[1]);           // get stdout, need to close, because if not, stdout is always open, so the fd for stdin never have EOF
 	}
 	if (WIFEXITED(status) != 0)
@@ -81,22 +87,29 @@ void interm_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	pid_t	pid;
 	int 	status = 1;
 	int 	builtin_status = 1;
-    int 	parser_ret = 0;
+	int 	output_fd;
     int 	input_fd;
 
     input_fd = -1;
+	output_fd = -1;
 	pid = fork();
 	if (pid < 0)
 		exit(PID_FAILURE);
 	else if (pid == 0)
 	{
         cmd = get_complete_cmd(cmd, lst_cmd);
-		parser_ret = redir_parser(fd[fd_index * 2], fd[(fd_index + 1) * 2 + 1], lst_cmd);
+		redir_parser2(lst_cmd, &input_fd, &output_fd);
 
-		// printf("\n---> interm cmd go in\n");
-		dup2(fd[fd_index * 2], STDIN_FILENO);
-	
-		dup2(fd[(fd_index + 1) * 2 + 1], STDOUT_FILENO);
+		if (input_fd == -1)
+			dup2(fd[fd_index * 2], STDIN_FILENO);
+		else
+			dup2(fd[fd_index * 2], input_fd);
+		
+		if (output_fd == -1)
+			dup2(fd[(fd_index + 1) * 2 + 1], STDOUT_FILENO);
+		else
+			dup2(fd[(fd_index + 1) * 2 + 1], output_fd);
+
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
@@ -122,21 +135,24 @@ void	last_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	pid_t	pid;
 	int 	status = 1;
 	int 	builtin_status = 1;
-	int 	parser_ret = 0;
+	int 	input_fd;
     int		output_fd;
 
     output_fd = -1;
+	input_fd = -1;
 	pid = fork();
 	if (pid < 0)
 			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
         cmd = get_complete_cmd(cmd, lst_cmd);
-		parser_ret = redir_parser(fd[fd_index * 2], output_fd, lst_cmd);
+		redir_parser2(lst_cmd, &input_fd, &output_fd);
     
-		// printf("\n---> last cmd go in\n\n");
-		if (fd[fd_index * 2] == -1)
+		if (input_fd == -1)
 			dup2(fd[fd_index * 2], STDIN_FILENO);
+		else
+			dup2(fd[fd_index * 2], input_fd);
+			
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
@@ -155,6 +171,15 @@ void	last_cmd_with_pipe_mix(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
+int check_is_inter(t_list *lst_cmd)
+{
+	while (lst_cmd && is_redir(lst_cmd))
+		lst_cmd = lst_cmd->next;
+	if (flag_check(lst_cmd) == FLG_EO_CMD || flag_check(lst_cmd) == FLG_EOL)
+		return (0);
+	return (1);
+}
+
 void cmd_with_multi_pipe_mix(t_list *lst_cmd, int *fd)
 {
 	t_list 	*tmp;
@@ -162,16 +187,18 @@ void cmd_with_multi_pipe_mix(t_list *lst_cmd, int *fd)
 
 	tmp = lst_cmd;
 	fd_index = 0;
-	while (tmp && flag_check(tmp) == FLG_PIPE)
+	while (tmp && (is_redir(tmp) || flag_check(tmp) == FLG_PIPE))
 	{
-		show_content(tmp, "inter");
+		if (!check_is_inter(tmp))
+			break ;
+		// show_content(tmp, "inter");
 		interm_cmd_with_pipe_mix(tmp->content, fd, fd_index, tmp);
         while (tmp && is_redir(tmp))
             tmp = tmp->next;
 		++fd_index;
 		tmp = tmp->next;
 	}
-	show_content(tmp, "last");
+	// show_content(tmp, "last");
 	last_cmd_with_pipe_mix(tmp->content, fd, fd_index, tmp);
 }
 
@@ -182,9 +209,10 @@ int	count_pipe_mix(t_list *lst_cmd)
 
 	tmp = lst_cmd;
 	count = 0;
-	while (tmp && flag_check(tmp) == FLG_PIPE)
+	while (tmp && (flag_check(tmp) != FLG_EO_CMD || flag_check(tmp) != FLG_EOL))
 	{
-		++count;
+		if (flag_check(tmp) == FLG_PIPE)
+			++count;
 		tmp = tmp->next;
 	}
 	return (count);
@@ -203,13 +231,16 @@ void cmd_with_pipe_mix(t_list *lst_cmd)
 	if (!fd)
 		return ;
 	
+	// create fd
+	create_fd(lst_cmd);
+
 	// create pipe for each cmd
 	i = 0;
 	while (i < pipe_len)
 		pipe(fd + (i++ * 2));
 
 	// lauch the first cmd with pipe
-	show_content(tmp, "first");
+	// show_content(tmp, "first");
 	first_cmd_with_pipe_mix(tmp->content, fd, tmp);
     while (tmp && is_redir(tmp))
         tmp = tmp->next;

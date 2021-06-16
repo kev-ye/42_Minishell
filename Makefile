@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/15 18:59:19 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/16 15:03:17 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,8 @@ SUB_SRC	:= exec_cmds.c \
 		   sys_exec.c \
 		   flag_check.c \
 		   mix.c \
-		   redir_output_utils.c
+		   create_fd.c \
+		   redir_parser_utils.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= cd.c \
 		   clear.c \

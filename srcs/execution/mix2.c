@@ -1,41 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mix.c                                              :+:      :+:    :+:   */
+/*   mix2.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 15:39:17 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/15 17:31:13 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 15:37:55 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void show_content(t_list *lst_cmd, char *msg)
-{
-	if (msg)
-		printf("%s\n", msg);
-	printf("arg[0] : -> %s\n", ((t_cmd *)lst_cmd->content)->args[0]);
-}
-
-void	show_fd(int fd, char *msg)
-{
-	char *line = NULL;
-	int r = 1;
-
-	if (msg)
-		printf("%s\n", msg);
-	while (r)
-	{
-		r = get_next_line(fd, &line);
-		printf("> %s\n", line);
-		free(line);
-		break ;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////
 
 int     check_last_cmd_flag(t_list *lst_cmd)
 {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redir_output_utils.c                               :+:      :+:    :+:   */
+/*   create_fd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/15 18:59:56 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 16:38:17 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int check_for_next(t_list *lst_cmd)
     if (flag_check(lst_cmd) == FLG_INPUT)
         next_flag = F_INPUT;
     else if (flag_check(lst_cmd) == FLG_OUTPUT)
-        next_flag = FLG_OUTPUT;
+        next_flag = F_TRUNC;
     else if (flag_check(lst_cmd) == FLG_APPEND)
         next_flag = F_APPEND;
     else if (flag_check(lst_cmd) == FLG_DINPUT)
@@ -31,57 +31,54 @@ int check_for_next(t_list *lst_cmd)
     return (next_flag);
 }
 
-void creat_fd_inter(t_list *cmd, int *fd_output, int flag_is)
+void creat_output_fd(t_list *cmd, int fd_output, int flag_is)
 {
-    if (flag_is == F_INPUT)
-        *fd_output = open(((t_cmd *)cmd->content)->args[0], trunc_fd, 0666);
+    if (flag_is == F_TRUNC)
+        fd_output = open(((t_cmd *)cmd->content)->args[0], trunc_fd, 0666);
     else if (flag_is == F_APPEND)
-        *fd_output = open(((t_cmd *)cmd->content)->args[0], append_fd, 0666);
-    if (*fd_output == -1)
-    {
-        ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)cmd->content)->args[0], strerror(errno));
+        fd_output = open(((t_cmd *)cmd->content)->args[0], append_fd, 0666);
+    if (fd_output == -1)
 		exit(LRV_GENERAL_ERROR);
-    }
+    else
+        close(fd_output);
 }
 
-void creat_fd_last(t_list *cmd, int *fd_output, int flag_is)
+t_list *check_input_fd(t_list *cmd, int fd_input, int flag_is)
 {
     if (flag_is == F_INPUT)
     {
-        if (*fd_output != -1 && *fd_output != -2)
-            close(*fd_output);
-        *fd_output = open(((t_cmd *)cmd->content)->args[0], trunc_fd, 0666);
+        fd_input = open(((t_cmd *)cmd->content)->args[0], O_RDWR);
+        if (fd_input == -1)
+        {
+            while (cmd && is_redir(cmd))
+                cmd = cmd->next;
+            cmd = cmd->next;
+        }
+        else
+            close(fd_input);
     }
-    else if (flag_is == F_APPEND)
-    {
-        if (*fd_output != -1 && *fd_output != -2)
-            close(*fd_output);
-        *fd_output = open(((t_cmd *)cmd->content)->args[0], append_fd, 0666);
-    }
-    if (*fd_output == -1)
-    {
-        ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)cmd->content)->args[0], strerror(errno));
-		exit(LRV_GENERAL_ERROR);
-    }
+    return (cmd);
 }
 
 int create_fd(t_list *cmd)
 {
     int first;
     int fd_output;
+    int fd_input;
     int flag_is;
 
     fd_output = -2;
+    fd_input = -2;
     flag_is = 0;
     first = 1;
-    while (cmd && is_redir(cmd))
+    while (cmd)
     {
         if (first == 1)
             first = 0;
-        else if (!first && is_redir(cmd))
-            creat_fd_inter(cmd, &fd_output, flag_is);
-        else if (!first)
-            creat_fd_last(cmd, &fd_output, flag_is);
+        else if (!first && (flag_is == F_APPEND || flag_is == F_TRUNC))
+            creat_output_fd(cmd, fd_output, flag_is);
+        else
+            cmd = check_input_fd(cmd, fd_input, flag_is);
         flag_is = check_for_next(cmd);
         cmd = cmd->next;
     }

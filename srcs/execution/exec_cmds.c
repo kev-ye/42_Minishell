@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 12:37:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/16 17:03:02 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int	simple_cmd(void *cmd)
 		{
 			// wait(&status);
 			waitpid(pid, &status, 0);
+
 		}
 		if (WIFEXITED(status) != 0)
 		{
@@ -99,7 +100,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 			else if (cmd_line == MIX)
 			{
 				// printf(B_PURPLE"mix cmd"CLR_COLOR"\n");	
-				cmd_with_mix(tmp);
+				cmd_with_pipe_mix(tmp);
 			}
 		}
 		while (tmp && !(((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))	// to remove -> "ls abcd; echo $?" case
