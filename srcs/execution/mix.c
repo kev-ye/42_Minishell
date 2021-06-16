@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 15:39:17 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/16 17:58:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 18:17:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,7 +257,7 @@ void cmd_with_pipe_mix(t_list *lst_cmd)
 
 void	cmd_with_mix(t_list *lst_cmd)
 {
-    if (!((t_cmd *)lst_cmd->content)->args)
+    if (!lst_cmd || !((t_cmd *)lst_cmd->content)->args)
         return ;
     cmd_with_pipe_mix(lst_cmd);
 }

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/16 17:20:54 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 18:12:44 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,11 +344,6 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	int 	status = 1;
 	int 	builtin_status = 1;
 
-	//
-	int fd[2];
-	pipe(fd);
-	//
-
 	input_fd = -1;
 	output_fd = -1;
 	pid = fork();
@@ -357,15 +352,9 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 	else if (pid == 0)
 	{
 		cmd = get_complete_cmd(cmd, lst_cmd);
-		redir_parser2(lst_cmd, &input_fd, &output_fd);
-		// redir_parser(input_fd, output_fd, lst_cmd);
-
-		//
-		if (output_fd == -1)
-			dup2(fd[1], STDOUT_FILENO);
-		else
-			dup2(fd[1], output_fd);
-
+		// redir_parser2(lst_cmd, &input_fd, &output_fd);
+		redir_parser(input_fd, output_fd, lst_cmd);
+	
 		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
@@ -379,11 +368,6 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 		waitpid(pid, &status, 0);
 		close(input_fd);
 		close(output_fd);
-		
-		//
-		close(fd[1]);
-		show_fd(fd[0], "-- test --");
-		//
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
