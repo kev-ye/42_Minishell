@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 19:07:24 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 12:56:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,7 @@ static size_t	get_env_var(char **s, size_t i)
 
 // TRANSFER TO .H FILE
 #define SPEC_CHARS "\\$'\""
+#define SPEC_CHARS_2 "\\$\""
 
 void	ft_parse(char *s)
 {
@@ -215,7 +216,7 @@ void	ft_parse(char *s)
 
 			// ft_incharset(QUOTES, s[i + 1])
 
-			if ((FALSE == quotes.first))// || (quotes.first && ft_incharset(QUOTES, s[i + 1]))))
+			if (FALSE == quotes.first || (quotes.first && quotes.d_quote && ft_incharset(SPEC_CHARS_2, s[i + 1])))
 			{
 				ft_strnclean(s + i, "\\", 1);
 			}

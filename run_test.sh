@@ -293,6 +293,7 @@ test_parser() {
 	test_cmd "echo '\$'"
 	test_cmd "echo \"\$\""
 	test_cmd "echo \"\$?\""
+	test_cmd "echo bo\"njou\\\$r\""
 	test_cmd "abcd; echo \"\$?\""
 	test_cmd "echo '\$?'"
 	test_cmd "echo \"\$DOES_NOT_EXIST\""
