@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 18:01:26 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 19:13:23 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,6 +363,9 @@ void 		redir_parser2(t_list *cmd, int *fd_input, int *fd_output);
 // mix
 void		cmd_with_mix(t_list *lst_cmd);
 void 		cmd_with_pipe_mix(t_list *lst_cmd);
+
+int			simple_cmd(void *cmd);
+void	exec_all_in_one(t_list *lst_cmd);
 
 // debug to delete
 void show_content(t_list *lst_cmd, char *msg);

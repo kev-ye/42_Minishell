@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 18:19:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 19:22:10 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 				cmd_with_mix(tmp);
 			}
 		}
+		// exec_all_in_one(tmp);
 		while (tmp && !(((t_cmd *)tmp->content)->status_flag & FLG_EO_CMD))	// to remove -> "ls abcd; echo $?" case
 			tmp = tmp->next;												// to remove -> "ls abcd; echo $?" case
 		if (tmp)															// to remove -> "ls abcd; echo $?" case
