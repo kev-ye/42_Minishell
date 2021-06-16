@@ -234,9 +234,10 @@ test_parser() {
 		echo "Your shell must not print its prompt when passing it through stdin"
 		echo "Try this command:              ${B_YLW}echo | ./minishell${B_RED}"
 		echo "Then compare it with this one: ${B_YLW}echo | bash${B_RED}"
-		echo "You'll see that minishell is printing your prompt but not bash"
-		echo "This is because you must print the prompt on STDIN (fd = 0)"
-		echo ${CLR_COLOR}
+		echo "You'll see that minishell is printing your prompt (or something else)"
+		echo "but not bash."
+		echo "This is because you must print the prompt on STDERR (fd = 2) only"
+		echo "when istty(STDIN_FILENO) == 1"${CLR_COLOR}
 		exit 1
 	fi
 

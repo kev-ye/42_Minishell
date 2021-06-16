@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 12:56:25 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/16 16:40:02 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,9 +168,14 @@ static size_t	get_env_var(char **s, size_t i)
 -------- PARSER --------
 ******************************************************************************/
 
+////////////////////////
+// FOR DEBUGGING PURPOSE
+#define __DEBUG__	FALSE
+////////////////////////
+
 // TRANSFER TO .H FILE
-#define SPEC_CHARS "\\$'\""
-#define SPEC_CHARS_2 "\\$\""
+#define SPEC_CHARS "\\$'\""		/* Special chars n1 */
+#define SC2 "\\$\""				/* Special chars for `\' in double quotes */
 
 void	ft_parse(char *s)
 {
@@ -203,39 +208,50 @@ void	ft_parse(char *s)
 			}
 		}
 
-		// ft_printf("%s:%d: [%.4b] args_size[%2lld] [%s]\n", __FILE__, __LINE__,
-		// 	quotes.first, ft_lstsize(args), s + i);
+		if (__DEBUG__)
+		{
+			ft_printf(B_YELLOW "%s:%d:" CLR_COLOR " q.first[%.4b] ",
+				__FILE__, __LINE__, quotes.first);
+			ft_printf("s.sq[%s%d" CLR_COLOR "] ",
+				(quotes.s_quote != 0 ? B_RED : ""), quotes.s_quote);
+			ft_printf("s.dq[%s%d" CLR_COLOR "] ",
+				(quotes.d_quote != 0 ? B_RED : ""), quotes.d_quote);
+			ft_printf("args_size[%2d] [%s]\n", ft_lstsize(args), s + i);
+		}
+
 
 		if ('\\' == s[i])
 		{
-			// if (quotes.)
-			// if (quotes.d_quote)
-			// {
-				
-			// }
-
-			// ft_incharset(QUOTES, s[i + 1])
-
-			if (FALSE == quotes.first || (quotes.first && quotes.d_quote && ft_incharset(SPEC_CHARS_2, s[i + 1])))
+			if ((quotes.first && quotes.d_quote && ft_incharset(SC2, s[i + 1]))
+				|| FALSE == quotes.first)
 			{
 				ft_strnclean(s + i, "\\", 1);
 			}
-			// PRINT_ERR("here")
-			// ft_printf("IN CHARSET BEF: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
 			if (ft_incharset(SPEC_CHARS, s[i]))
 				++i;
-			// ft_printf("IN CHARSET AFT: [%d]\n", ft_incharset(SPEC_CHARS, s[i]));
-			// quotes2close(s[i], &quotes, SET_FLAG);
-			// continue ; // does nothing
 		}
 		else
 		{
 			quotes2close(s[i], &quotes, SET_FLAG);
 			if ((('"' == s[i]) || ('\'' == s[i])) && quotes.did_change)
 			{
-				// PRINT_ERR("here")
+				
+				if (__DEBUG__)
+				{
+					ft_printf(B_BLUE "q.first[%.4b] q.changed[%d] q.s[%d] q.d[%d]\n" CLR_COLOR,
+						quotes.first, quotes.did_change, quotes.s_quote, quotes.d_quote);
+				}
+
 				ft_strnclean(s + i, QUOTES, 1); // remove ``'"`` from `s'
-				quotes2close(s[i], &quotes, SET_FLAG);
+				
+				if (!ft_incharset(QUOTES, s[i]))
+					quotes2close(s[i], &quotes, SET_FLAG);
+
+				if (__DEBUG__)
+				{
+					ft_printf(B_BLUE "q.first[%.4b] q.changed[%d] q.s[%d] q.d[%d]\n" CLR_COLOR,
+						quotes.first, quotes.did_change, quotes.s_quote, quotes.d_quote);
+				}
 
 				// if (quotes.did_change && ft_incharset(QUOTES, s[i]))
 				// {
@@ -278,7 +294,7 @@ void	ft_parse(char *s)
 			else
 				++i;
 		}
-		if (ft_incharset(SPACES, s[i]) && quotes.first == 0)
+		if (ft_incharset(SPACES, s[i]) && FALSE == quotes.first)
 		{
 			ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 			s += i;
@@ -297,8 +313,15 @@ void	ft_parse(char *s)
 		new = new_cmd(FLG_EOL, &args);
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
-	// ft_lstprint_cmd(singleton()->lst);
-	// ft_printf("\n");
+
+
+	if (__DEBUG__)
+	{
+		ft_lstprint_cmd(singleton()->lst);
+		ft_printf("\n");
+	}
+
+
 }
 
 /*******************************************************************************

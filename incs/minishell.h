@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 19:02:50 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/16 14:44:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,8 +137,8 @@
 // DEBUGGING PURPOSE - TO REMOVE
 # define STRINGIFY(x) #x
 # define TOSTRING(x) STRINGIFY(x)
-# define PRINT_ERR(s) ft_printf("\e[1;31m" __FILE__ ":" TOSTRING(__LINE__) \
-						":\e[0m " s "\n");
+# define PRINT_ERR(s) \
+	ft_printf(B_RED "" __FILE__ ":%d:" CLR_COLOR " " s " -> Here\n", __LINE__);
 // END DEBUGGING PURPOSE - TO REMOVE
 
 // Charsets used in the parsing
