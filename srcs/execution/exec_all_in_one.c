@@ -6,11 +6,27 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/16 19:22:02 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/18 18:29:32 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static int check_is_inter(t_list *lst_cmd)
+{
+	while (lst_cmd && is_redir(lst_cmd))
+		lst_cmd = lst_cmd->next;
+	if (flag_check(lst_cmd) == FLG_EO_CMD || flag_check(lst_cmd) == FLG_EOL)
+		return (0);
+	return (1);
+}
+
+static int check_is_redir_cmd(t_list *lst_cmd)
+{
+	if (lst_cmd && is_redir(lst_cmd))
+		return (1);
+	return (0);
+}
 
 void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 {
@@ -27,9 +43,11 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
-        cmd = get_complete_cmd(cmd, lst_cmd);
-		redir_parser2(lst_cmd, &input_fd, &output_fd);
-	
+		if (check_is_redir_cmd(lst_cmd))
+		{
+			cmd = get_complete_cmd(cmd, lst_cmd);
+			redir_parser2(lst_cmd, &input_fd, &output_fd);
+		}
         if (pipe_len > 0)
         {
             if (output_fd == -1)
@@ -46,11 +64,10 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 	}
 	else
 	{
-		// wait(&status);
 		waitpid(pid, &status, 0);
-		close(input_fd);
-		close(output_fd);
-		close(fd[1]);           // get stdout, need to close, because if not, stdout is always open, so the fd for stdin never have EOF
+		// close(input_fd);
+		// close(output_fd);
+		close(fd[1]);
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -74,9 +91,11 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		exit(PID_FAILURE);
 	else if (pid == 0)
 	{
-        cmd = get_complete_cmd(cmd, lst_cmd);
-		redir_parser2(lst_cmd, &input_fd, &output_fd);
-
+		if (check_is_redir_cmd(lst_cmd))
+		{
+			cmd = get_complete_cmd(cmd, lst_cmd);
+			redir_parser2(lst_cmd, &input_fd, &output_fd);
+		}
 		if (input_fd == -1)
 			dup2(fd[fd_index * 2], STDIN_FILENO);
 		else
@@ -122,9 +141,11 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 			exit(PID_FAILURE);
 	else if (pid == 0)
 	{
-        cmd = get_complete_cmd(cmd, lst_cmd);
-		redir_parser2(lst_cmd, &input_fd, &output_fd);
-    
+		if (check_is_redir_cmd(lst_cmd))
+		{
+			cmd = get_complete_cmd(cmd, lst_cmd);
+			redir_parser2(lst_cmd, &input_fd, &output_fd);
+		}
 		if (input_fd == -1)
 			dup2(fd[fd_index * 2], STDIN_FILENO);
 		else
@@ -146,15 +167,6 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		singleton()->last_return_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status) == 1)
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
-}
-
-static int check_is_inter(t_list *lst_cmd)
-{
-	while (lst_cmd && is_redir(lst_cmd))
-		lst_cmd = lst_cmd->next;
-	if (flag_check(lst_cmd) == FLG_EO_CMD || flag_check(lst_cmd) == FLG_EOL)
-		return (0);
-	return (1);
 }
 
 void cmd_with_multi_flag(t_list *lst_cmd, int *fd)

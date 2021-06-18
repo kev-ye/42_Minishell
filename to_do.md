@@ -3,7 +3,11 @@
 - [ ] export env name with spaces (ex: export "ksjfhg  fglkj")
 - [ ] change PWD and OLDPWD in `cd' cmd
 - [ ] unset PATH, env must not be found (ex: unset PATH; env)
-- [ ] cat << f1 (then type anything, enter, and CTRL-D - bash displays the last line entered)
-- [ ] mix case: ls | wc > f1 | wc
-- [ ] mix case: ls | wc << f1
-- [ ] mix case: ls | wc > f1 | echo test | wc > f2 
+- [x] cat << f1 (then type anything, enter, and CTRL-D - bash displays the last line entered)
+- [x] mix case: ls | wc > f1 | wc
+- [x] mix case: ls | wc << f1
+- [x] mix case: ls | wc > f1 | echo test | wc > f2
+- [ ] mix case: ls ; ls | wc ; echo test ; ls | wc << 1 ; cat << 1 << 2 ; ls (doube input first)
+- [x] ls > f1 | echo test < f2 | echo test > f3 | echo test > f4 ; echo test > f5
+- [ ] ls ; wc < f1 ; ls > f1 ; echo test
+- [ ] wc < f1 : seg

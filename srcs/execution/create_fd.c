@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/16 16:38:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/18 18:31:20 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ t_list *check_input_fd(t_list *cmd, int fd_input, int flag_is)
             while (cmd && is_redir(cmd))
                 cmd = cmd->next;
             cmd = cmd->next;
+            // return (NULL);
         }
         else
             close(fd_input);
@@ -76,9 +77,17 @@ int create_fd(t_list *cmd)
         if (first == 1)
             first = 0;
         else if (!first && (flag_is == F_APPEND || flag_is == F_TRUNC))
+        {
             creat_output_fd(cmd, fd_output, flag_is);
+        }
         else
+        {
             cmd = check_input_fd(cmd, fd_input, flag_is);
+            // if (!cmd)
+            //     return (fd_output);
+        }
+        if (flag_check(cmd) == FLG_EO_CMD)
+            break ;
         flag_is = check_for_next(cmd);
         cmd = cmd->next;
     }

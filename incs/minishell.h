@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 19:13:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/18 15:35:11 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -354,7 +354,7 @@ int			count_pipe(t_list *lst_cmd);
 void		cmd_with_pipe(t_list *lst_cmd);
 // redir
 void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
-int			redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
+void			redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
 int 		create_fd(t_list *cmd);
 int 		check_for_next(t_list *lst_cmd);

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 13:53:35 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/16 17:33:08 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/18 18:28:01 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,13 @@ void parser_output_fd_last(t_list *cmd, int *fd_output, int flag_is)
     }
 }
 
-void parser_input_fd(t_list *cmd, int *fd_input, int flag_is, char **input_str)
+t_list *parser_input_fd(t_list *cmd, int *fd_input, int flag_is, char **input_str)
 {
+    int ctrld;
+
     if (flag_is == F_INPUT)
     {
+        PRINT_ERR();
         *fd_input = open(((t_cmd *)cmd->content)->args[0], O_RDWR);
         if (*fd_input == -1)
         {
@@ -66,6 +69,7 @@ void parser_input_fd(t_list *cmd, int *fd_input, int flag_is, char **input_str)
 		}
         else
         {
+            ctrld = 0;
             while (1)
             {
                 singleton()->rl_lvl = 2;
@@ -88,26 +92,33 @@ void parser_input_fd(t_list *cmd, int *fd_input, int flag_is, char **input_str)
                     else
                         break ;
                 }
-                else if (!input_str)
+                else if (!*input_str)
+                {
+                    if (flag_check(cmd) == FLG_DINPUT)
+                        ctrld = 1;
                     break ;
-                if (input_str)
+                }
+                if (*input_str)
                     ft_putendl_fd(*input_str, *fd_input);
             }
             if (*fd_input != -1)
                 close(*fd_input);
-            *fd_input = open(TMP_FD, O_RDONLY);
-            if (*fd_input == -1)
+            if (!ctrld)
             {
-                ft_dprintf(STDERR_FILENO, "open for double input crash\n");
-                exit(LRV_GENERAL_ERROR);
+                *fd_input = open(TMP_FD, O_RDONLY);
+                if (*fd_input == -1)
+                {
+                    ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+                    exit(LRV_GENERAL_ERROR);
+                }
+                dup2(*fd_input, STDIN_FILENO);
             }
-            dup2(*fd_input, STDIN_FILENO);
         }
-        
     }
+    return (cmd);
 }
 
-void parser_input_fd_last(t_list *cmd, int *fd_input, int flag_is, char **input_str)
+t_list *parser_input_fd_last(t_list *cmd, int *fd_input, int flag_is, char **input_str)
 {
     if (flag_is == F_INPUT)
     {
@@ -152,9 +163,9 @@ void parser_input_fd_last(t_list *cmd, int *fd_input, int flag_is, char **input_
                     else
                         break ;
                 }
-                else if (!input_str)
+                else if (!*input_str)
                     break ;
-                if (input_str)
+                if (*input_str)
                     ft_putendl_fd(*input_str, *fd_input);
             }
             if (*fd_input != -1)
@@ -168,6 +179,7 @@ void parser_input_fd_last(t_list *cmd, int *fd_input, int flag_is, char **input_
             dup2(*fd_input, STDIN_FILENO);
         }
     }
+    return (cmd);
 }
 
 void redir_parser2(t_list *cmd, int *fd_input, int *fd_output)
@@ -184,25 +196,13 @@ void redir_parser2(t_list *cmd, int *fd_input, int *fd_output)
         if (first == 1)
             first = 0;
         else if (!first && is_redir(cmd) && (flag_is == F_APPEND || flag_is == F_TRUNC))
-        {
-            // PRINT_ERR("inter output")
             parser_output_fd(cmd, fd_output, flag_is);
-        }
         else if (!first && is_redir(cmd) && (flag_is == F_INPUT || flag_is == F_DINPUT))
-        {
-            // PRINT_ERR("inter input")
-            parser_input_fd(cmd, fd_input, flag_is, &input_str);
-        }
+            cmd = parser_input_fd(cmd, fd_input, flag_is, &input_str);
         else if (!first && (flag_is == F_APPEND || flag_is == F_TRUNC))
-        {
-            // PRINT_ERR("last output")
             parser_output_fd_last(cmd, fd_output, flag_is);
-        }
         else if (!first && (flag_is == F_INPUT || flag_is == F_DINPUT))
-        {
-            // PRINT_ERR("last input")
-            parser_input_fd_last(cmd, fd_input, flag_is, &input_str);
-        }
+            cmd = parser_input_fd_last(cmd, fd_input, flag_is, &input_str);
         flag_is = check_for_next(cmd);
         if (!flag_is)
             return ;
