@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/18 18:29:33 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 17:42:26 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,20 +49,52 @@ int	simple_cmd(void *cmd)
 	return (built_exec);
 }
 
+void 	unlink_all_tmp_fd(int i)
+{
+	char *old_name;
+    char *new_name;
+    char *fd_nbr;
+	int fd;
+
+	fd = -1;
+    fd_nbr = ft_itoa(i);
+    old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
+    if (!old_name)
+        return ;
+    ft_strcpy(old_name, TMP_FD);
+    new_name = ft_strjoin(old_name, fd_nbr);
+    free(old_name);
+    free(fd_nbr);
+    fd = open(new_name, O_RDWR);
+    if (fd != -1)
+    {
+        close(fd);
+		unlink(new_name);
+        free(new_name);
+        unlink_all_tmp_fd(i++);
+    }
+	else
+		return ;
+}
+
 int	ft_exec_each_cmd(t_list *lst_cmd)
 {
 	t_list	*tmp;
 	int		cmd_line;
 	int		built_exec;
+	int i;
 
 	tmp = lst_cmd;
 	cmd_line = -1;
 	built_exec = 0;
+	i = 0;
 	if (syntax_parser(tmp))
 	{
 		singleton()->last_return_value = LRV_SYNTAX_ERROR;
 		return (0);
 	}
+	if (tmp)
+		create_fd_input(tmp);
 	while (tmp)
 	{
 		exec_all_in_one(tmp);
@@ -71,5 +103,6 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 		if (tmp)															// to remove -> "ls abcd; echo $?" case
 			tmp = tmp->next;
 	}
+	unlink_all_tmp_fd(i);
 	return (built_exec);
 }

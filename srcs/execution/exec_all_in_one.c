@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/18 18:29:32 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 17:37:40 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,33 @@ static int check_is_redir_cmd(t_list *lst_cmd)
 	if (lst_cmd && is_redir(lst_cmd))
 		return (1);
 	return (0);
+}
+
+static int check_have_dinput(t_list *lst_cmd)
+{
+	int is_dinput;
+
+	is_dinput = 0;
+	while (lst_cmd)
+	{
+		if (flag_check(lst_cmd) == FLG_PIPE)
+			break ;
+		if (flag_check(lst_cmd) == FLG_DINPUT)
+			is_dinput = 1;
+		lst_cmd = lst_cmd->next;
+	}
+	return (is_dinput);
+}
+
+void	unlink_fd(void)
+{
+	char *fd_to_unlink;
+	int i;
+
+	i = 0;
+	fd_to_unlink = get_tmp_fd(i);
+	if (fd_to_unlink)
+		unlink(fd_to_unlink);
 }
 
 void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
@@ -67,7 +94,10 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 		waitpid(pid, &status, 0);
 		// close(input_fd);
 		// close(output_fd);
-		close(fd[1]);
+		if (fd)
+			close(fd[1]);
+		if (check_have_dinput(lst_cmd) == 1)
+			unlink_fd();
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -119,6 +149,8 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		// wait(&status);
 		waitpid(pid, &status, 0);
 		close(fd[(fd_index + 1) * 2 + 1]);
+		if (check_have_dinput(lst_cmd) == 1)
+			unlink_fd();
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -162,6 +194,8 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	{
 		// wait(&status);
 		waitpid(pid, &status, 0);
+		if (check_have_dinput(lst_cmd) == 1)
+			unlink_fd();
 	}
 	if (WIFEXITED(status) != 0)
 		singleton()->last_return_value = WEXITSTATUS(status);
@@ -215,29 +249,35 @@ void all_in_one(t_list *lst_cmd)
 	int 	pipe_len;
 
 	tmp = lst_cmd;
+	fd = NULL;
     if (tmp && (flag_check(tmp) == FLG_EO_CMD || flag_check(tmp) == FLG_EOL))
     {
         simple_cmd(tmp->content);
         return ;
     }
     pipe_len = count_pipe_mix(tmp);
-	fd = malloc(sizeof(int) * (pipe_len * 2));
-	if (!fd)
-		return ;
+	if (pipe_len > 0)
+	{
+		fd = malloc(sizeof(int) * (pipe_len * 2));
+		if (!fd)
+			return ;
+		i = 0;
+		while (i < pipe_len)
+			pipe(fd + (i++ * 2));
+	}
 	create_fd(lst_cmd);
-	i = 0;
-	while (i < pipe_len)
-		pipe(fd + (i++ * 2));
 	first_cmd(tmp->content, fd, tmp, pipe_len);
     while (tmp && is_redir(tmp))
         tmp = tmp->next;
     if (pipe_len > 0)
+	{
 	    cmd_with_multi_flag(tmp->next, fd);
-	i = 0;
-	while (i < pipe_len * 2)
-		close(fd[i++]);
-    if (fd)
-	    free(fd);
+		i = 0;
+		while (i < pipe_len * 2)
+			close(fd[i++]);
+		if (fd)
+			free(fd);
+	}
 }
 
 void	exec_all_in_one(t_list *lst_cmd)

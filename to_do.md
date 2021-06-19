@@ -7,7 +7,7 @@
 - [x] mix case: ls | wc > f1 | wc
 - [x] mix case: ls | wc << f1
 - [x] mix case: ls | wc > f1 | echo test | wc > f2
-- [ ] mix case: ls ; ls | wc ; echo test ; ls | wc << 1 ; cat << 1 << 2 ; ls (doube input first)
+- [x] mix case: ls ; ls | wc ; echo test ; ls | wc << 1 ; cat << 1 << 2 ; ls (doube input first)
 - [x] ls > f1 | echo test < f2 | echo test > f3 | echo test > f4 ; echo test > f5
-- [ ] ls ; wc < f1 ; ls > f1 ; echo test
-- [ ] wc < f1 : seg
+- [x] ls ; wc < f1 ; ls > f1 ; echo test
+- [x] wc < f1 : seg
