@@ -4,6 +4,7 @@
 - [x] change PWD and OLDPWD in `cd' cmd
 - [ ] unset PATH, env must not be found (ex: unset PATH; env)
 - [x] .. : command not found
+- [x] . -> is short for "source cmd", and source is a builtin cmd, we don't need do this
 - [x] cat << f1 (then type anything, enter, and CTRL-D - bash displays the last line entered)
 - [x] mix case: ls | wc > f1 | wc
 - [x] mix case: ls | wc << f1
