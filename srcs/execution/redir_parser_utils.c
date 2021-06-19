@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 13:53:35 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 17:27:27 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 18:34:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,80 +32,6 @@ void parser_output_fd(t_list *cmd, int *fd_output, int flag_is)
     if (*fd_output != -1)
         dup2(*fd_output, STDOUT_FILENO);
 }
-
-// t_list *parser_input_fd(t_list *cmd, int *fd_input, int flag_is, char **input_str)
-// {
-//     int ctrld;
-
-//     if (flag_is == F_INPUT)
-//     {
-//         *fd_input = open(((t_cmd *)cmd->content)->args[0], O_RDWR);
-//         if (*fd_input == -1)
-//         {
-//             ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n", ((t_cmd *)cmd->content)->args[0], strerror(errno));
-// 			exit(LRV_GENERAL_ERROR);
-//         }
-//         else
-//             dup2(*fd_input, STDIN_FILENO);
-//     }
-//     else if (flag_is == F_DINPUT)
-//     {
-//         *fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
-// 		if (*fd_input == -1)
-// 		{
-// 			ft_dprintf(STDERR_FILENO, "open for double input crash\n");
-// 			exit(LRV_GENERAL_ERROR);
-// 		}
-//         else
-//         {
-//             ctrld = 0;
-//             while (1)
-//             {
-//                 singleton()->rl_lvl = 2;
-//                 *input_str = readline("> ");
-//                 if (*input_str && !ft_strcmp(*input_str, ((t_cmd *)cmd->content)->args[0]))
-//                 {
-//                     free(*input_str);
-//                     if (((t_cmd *)cmd->content)->status_flag & FLG_DINPUT)
-//                     {
-//                         close(*fd_input);
-//                         *fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
-//                         if (*fd_input == -1)
-//                         {
-//                             ft_dprintf(STDERR_FILENO, "open for double input crash\n");
-//                             exit(LRV_GENERAL_ERROR);
-//                         }
-//                         cmd = cmd->next;
-//                         continue ;
-//                     }
-//                     else
-//                         break ;
-//                 }
-//                 else if (!*input_str)
-//                 {
-//                     if (flag_check(cmd) == FLG_DINPUT)
-//                         ctrld = 1;
-//                     break ;
-//                 }
-//                 if (*input_str)
-//                     ft_putendl_fd(*input_str, *fd_input);
-//             }
-//             if (*fd_input != -1)
-//                 close(*fd_input);
-//             if (!ctrld)
-//             {
-//                 *fd_input = open(TMP_FD, O_RDONLY);
-//                 if (*fd_input == -1)
-//                 {
-//                     ft_dprintf(STDERR_FILENO, "open for double input crash\n");
-//                     exit(LRV_GENERAL_ERROR);
-//                 }
-//                 dup2(*fd_input, STDIN_FILENO);
-//             }
-//         }
-//     }
-//     return (cmd);
-// }
 
 char *get_tmp_fd(int i)
 {
@@ -167,9 +93,7 @@ t_list *parser_input_fd(t_list *cmd, int *fd_input, int flag_is, char **input_st
 			exit(LRV_GENERAL_ERROR);
 		}
         else
-        {
             dup2(*fd_input, STDIN_FILENO);
-        }
     }
     return (cmd);
 }

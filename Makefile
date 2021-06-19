@@ -6,14 +6,14 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/19 15:31:44 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/19 18:40:49 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror -g3 #-fsanitize=address
+CFLAGS 		= -Wall -Wextra -Werror -g3 -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
 
@@ -39,14 +39,11 @@ SUB_SRC	:= parser.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= exec_cmds.c \
 		   search_executable.c \
-		   cmd_with_pipe.c \
-		   cmd_with_redir.c \
 		   multi_cmds_check.c \
 		   cmds_syntax_check.c \
 		   builtin_exec.c \
 		   sys_exec.c \
 		   flag_check.c \
-		   mix.c \
 		   create_fd.c \
 		   redir_parser_utils.c \
 		   exec_all_in_one.c

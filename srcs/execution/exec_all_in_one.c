@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 17:37:40 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 18:33:23 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,50 @@ static int check_have_dinput(t_list *lst_cmd)
 		lst_cmd = lst_cmd->next;
 	}
 	return (is_dinput);
+}
+
+void *get_complete_cmd(void *cmd, t_list *lst_cmd)
+{
+	t_list	*lst_tmp;
+	size_t len;
+	char **new_cmd;
+	int i;
+	int j;
+
+	lst_tmp = lst_cmd->next;
+	while (lst_tmp)
+	{
+		len = ft_strslen(((t_cmd *)lst_tmp->content)->args);
+		if (lst_tmp && len > 1)
+		{
+			len += ft_strslen(((t_cmd *)cmd)->args);
+			new_cmd = malloc(sizeof(char *) * (len + 1));
+			if (!new_cmd)
+				return (NULL);
+			i = 0;
+			while (((t_cmd *)cmd)->args[i])
+			{
+				new_cmd[i] = ft_strdup(((t_cmd *)cmd)->args[i]);
+				++i;
+				--len;
+			}
+			j = 1;
+			while (((t_cmd *)lst_tmp->content)->args[j] && len)
+			{
+				new_cmd[i] = ft_strdup(((t_cmd *)lst_tmp->content)->args[j]);
+				++i;
+				++j;
+				--len;
+			}
+			new_cmd[i] = NULL;
+			ft_strsfree(ft_strslen(((t_cmd *)cmd)->args), ((t_cmd *)cmd)->args);
+			((t_cmd *)cmd)->args = new_cmd;
+		}
+		if (!is_redir(lst_tmp))
+			break ;
+		lst_tmp = lst_tmp->next;
+	}
+	return (cmd);
 }
 
 void	unlink_fd(void)

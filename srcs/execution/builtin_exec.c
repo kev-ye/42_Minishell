@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exec.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/15 17:14:06 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/19 19:51:45 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,11 @@ int	builtin_exec(char **cmds)
 	int	ret;
 
 	ret = ft_exec_builtin_cmd(cmds);
+	if (!ft_strcmp(cmds[0], ".."))
+	{
+		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: command not found\n", cmds[0]);
+		ret = LRV_CMD_NOT_FOUND;
+	}
 	if (NOT_FOUND == ret)
 		return (ret);
 	singleton()->last_return_value = ret;

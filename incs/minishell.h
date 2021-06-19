@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/19 17:26:26 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 18:50:54 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,7 +390,7 @@ int			ft_env(char **cmds);
 int			ft_export(char **cmds);
 int			ft_unset(char **cmds);
 void		ft_exit_for_prompt(void);
-int			ft_exit(char **cmds) __attribute__((noreturn));
+int			ft_exit(char **cmds);
 int			ft_clear(void);
 
 void		print_inline(char **ptr, char *buffer);

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/18 16:38:14 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 19:25:21 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ t_list	*get_env(char **env)
 	i = 0;
 	while (env[i])
 	{
+		if (env[i] && !ft_strncmp(env[i], "OLDPWD=", 7))
+			++i;
 		ptr = ft_strdup(env[i++]);
 		if (!ptr)
 		{

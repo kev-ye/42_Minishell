@@ -6,11 +6,31 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 19:14:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 18:58:50 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int check_opt_n(char *opt)
+{
+	int i;
+
+	i = 0;
+	if (opt && opt[i] && !ft_strncmp(opt, "-", 1) && opt[i + 1])
+	{
+		++i;
+		while (opt[i])
+		{
+			if (opt[i] && ft_strncmp(opt + i, "n", 1) != 0)
+				return (0);
+			++i;
+		}
+	}
+	else
+		return (0);
+	return (1);
+}
 
 int	ft_echo(char **cmds)
 {
@@ -20,11 +40,10 @@ int	ft_echo(char **cmds)
 	i = 0;
 	if (!cmds || !*cmds)
 		return (ERROR);
-		// exit(1);
 	while (cmds[i])
 		++i;
 	len_cmd = i;
-	if (*cmds && *(cmds + 1) && !ft_strcmp(cmds[1], "-n"))
+	if (*cmds && *(cmds + 1) && check_opt_n(cmds[1]))
 	{
 		i = 2;
 		while (i < len_cmd)
@@ -46,5 +65,4 @@ int	ft_echo(char **cmds)
 		ft_dprintf(STDOUT_FILENO, "\n");
 	}
 	return (SUCCESS);
-	// exit(0);
 }

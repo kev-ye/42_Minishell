@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 17:49:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/19 18:34:14 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ t_list    *check_input_fd(t_list *cmd, int fd_input, int flag_is)
     tmp_fd = NULL;
     if (flag_is == F_DINPUT)
     {
-        // fd_input = open(TMP_FD, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
         tmp_fd = new_tmp_fd_name(i);
         fd_input = open(tmp_fd, O_RDWR | O_CREAT | O_TRUNC | O_APPEND, 0666);
 		if (fd_input == -1)
