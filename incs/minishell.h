@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 16:54:47 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 20:14:01 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@
 # define PID_FAILURE 1
 # define EXEC_FAILURE 1
 # define LRV_SYNTAX_ERROR 258
+# define LRV_PERMISSION 126
 # define LRV_CMD_NOT_FOUND 127
 # define LRV_GENERAL_ERROR 1
 # define LRV_KILL_SIG 128
@@ -134,7 +135,7 @@
 # define OUTPUT 2
 
 // for '<<'
-# define TMP_FD "/tmp/double_input_fd"
+# define TMP_FD "./double_input_fd"
 
 // DEBUGGING PURPOSE - TO REMOVE
 # define STRINGIFY(x) #x
@@ -348,7 +349,8 @@ void		ft_pre_exec_cmd(void *ptr);
 int			part_cmd_check(t_list *lst_cmd);
 int			syntax_parser(t_list *lst_cmd);
 int			builtin_exec(t_cmd *cmds);
-void		sys_exec(void *ptr);
+int			sys_exec(void *ptr);
+int			check_if_path_exist(t_list *env);
 // pipe
 void		*first_cmd_with_pipe(void *cmd, int *fd);
 void		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);

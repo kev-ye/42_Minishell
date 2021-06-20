@@ -1,8 +1,8 @@
 - [x] echo options multi -n
 - [x] seg with exit cmd and no args - (returns code 139 - it may help...)
-- [ ] export env name with spaces (ex: export "ksjfhg  fglkj")
+- [x] export env name with spaces (ex: export "ksjfhg  fglkj")
 - [x] change PWD and OLDPWD in `cd' cmd
-- [ ] unset PATH, env must not be found (ex: unset PATH; env)
+- [x] unset PATH, env must not be found (ex: unset PATH; env)
 - [x] .. : command not found
 - [x] . -> is short for "source cmd", and source is a builtin cmd, we don't need do this
 - [x] cat << f1 (then type anything, enter, and CTRL-D - bash displays the last line entered)
@@ -14,4 +14,7 @@
 - [x] ls ; wc < f1 ; ls > f1 ; echo test
 - [x] wc < f1 : seg
 - [x] ls | ./minishill : command not found, idk why
-- [ ] cat << f$?
+- [x] cat << f$?
+- [x] export lol ; export "lol = fuck" tt ---> result : ttl ???
+- [ ] check env, maybe is not complet
+- [ ] some change with exec -> need to check (unset PATH get some new case)

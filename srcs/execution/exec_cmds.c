@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 18:10:45 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 20:11:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	simple_cmd(void *cmd)
 	pid_t	pid;
 	int status;
 	int built_exec;
+	int lrv;
 
 	status = 1;
 	built_exec = 0;
@@ -34,8 +35,8 @@ int	simple_cmd(void *cmd)
 				exit(PID_FAILURE);
 		else if (pid == 0)
 		{
-			sys_exec(cmd);
-			exit(EXEC_FAILURE);
+			lrv = sys_exec(cmd);
+			exit(lrv);
 		}
 		else
 			waitpid(pid, &status, 0);

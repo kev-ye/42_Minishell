@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/09 14:59:06 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 19:32:55 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,15 @@ char	*search_executable(char *command)
 		** message
 		*/
 		// printf("%s: %s: %s\n", PROG_NAME, command, strerror(errno));
-		return (NULL);
+		return (command);
 	}
 	exectbl = ft_split(path, ':');
 	ft_memdel((void **)&path);
 	if (!exectbl)
 		return (NULL);
 	cmd = find_exec(exectbl, command);
+	if (!cmd)
+		cmd = command;
 	ft_strsfree(ft_strslen(exectbl), exectbl);
 	return (cmd);
 }

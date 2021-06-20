@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_all_in_one.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 16:16:12 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 20:12:12 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,11 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 	int 	builtin_status = 1;
     int 	input_fd;
 	int		output_fd;
+	int 	lrv;
 
     input_fd = -1;
 	output_fd = -1;
+	lrv = 0;
 	pid = fork();
 	if (pid < 0)
 			exit(PID_FAILURE);
@@ -128,10 +130,10 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
         }
 		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
-			sys_exec(cmd);
+			lrv = sys_exec(cmd);
 		if (builtin_status != NOT_FOUND)
 			exit(SUCCESS);
-		exit(EXEC_FAILURE);
+		exit(lrv);
 	}
 	else
 	{
@@ -157,9 +159,11 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	int 	builtin_status = 1;
 	int 	output_fd;
     int 	input_fd;
+	int 	lrv;
 
     input_fd = -1;
 	output_fd = -1;
+	lrv = 0;
 	pid = fork();
 	if (pid < 0)
 		exit(PID_FAILURE);
@@ -182,11 +186,11 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 
 		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
-			sys_exec(cmd);
+			lrv = sys_exec(cmd);
 		// need add free here because sys_exec can fail
 		if (builtin_status != NOT_FOUND)
 			exit(SUCCESS);
-		exit(EXEC_FAILURE);
+		exit(lrv);
 	}
 	else
 	{
@@ -209,9 +213,11 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	int 	builtin_status = 1;
 	int 	input_fd;
     int		output_fd;
+	int 	lrv;
 
     output_fd = -1;
 	input_fd = -1;
+	lrv = 0;
 	pid = fork();
 	if (pid < 0)
 			exit(PID_FAILURE);
@@ -229,10 +235,10 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 			
 		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
-			sys_exec(cmd);
+			lrv = sys_exec(cmd);
 		if (builtin_status != NOT_FOUND)
 			exit(SUCCESS);
-		exit(EXEC_FAILURE);
+		exit(lrv);
 	}
 	else
 	{

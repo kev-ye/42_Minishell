@@ -3,14 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 14:15:41 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 19:06:03 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static int check_space(char *s)
+{
+	int i;
+
+	i = 0;
+	while (s && s[i] && s[i] != '=')
+	{
+		if (s[i] == ' ')
+			return (1);
+		++i;
+	}
+	return (0);
+}
 
 static char	*head_env(char *env)
 {
@@ -30,11 +44,10 @@ static char	*head_env(char *env)
 	}
 	else
 	{
-		// env_head = ft_strdup(env);
 		env_head = ft_calloc(len, sizeof(char));
 		if (!env_head)
 			return (NULL);
-		ft_memcpy(env_head, env, len);
+		ft_memcpy(env_head, env, len + 1);
 	}
 	return (env_head);
 }
@@ -48,6 +61,8 @@ static void	add_quote(t_list **lst_env)
 
 	tmp = *lst_env;
 	env_head = NULL;
+	tmp_env = NULL;
+	new_env = NULL;
 	while (tmp)
 	{
 		tmp_env = ft_strchr((char *)tmp->content, '=');
@@ -92,7 +107,7 @@ static void	new_shell_env(char *new_env, t_list *to_change, int to_add)
 
 static int	cmds_check(char *cmd)
 {
-	if (ft_isalpha(cmd[0]) || cmd[0] == '_')
+	if (!check_space(cmd) && (ft_isalpha(cmd[0]) || cmd[0] == '_'))
 		return (1);
 	else
 		ft_dprintf(STDERR_FILENO, "%s: export: `%s\': not a valid identifier\n",
@@ -107,6 +122,7 @@ static void	add_env(char **cmds)
 	int		i;
 
 	i = 1;
+	new_env = NULL;
 	while (cmds[i])
 	{
 		if (cmds_check(cmds[i]))
@@ -116,10 +132,7 @@ static void	add_env(char **cmds)
 			if (!new_env)
 				return ;
 			if (to_change)
-			{
 				new_shell_env(new_env, to_change, 0);
-				return ;
-			}
 			else
 				new_shell_env(new_env, NULL, 1);
 		}
@@ -127,7 +140,6 @@ static void	add_env(char **cmds)
 	}
 }
 
-//	compile without fsanitize get some strange characters
 t_list	*env_export(t_list **lst_env)
 {
 	t_list	*tmp;
@@ -135,6 +147,7 @@ t_list	*env_export(t_list **lst_env)
 	char	*env_content;
 
 	new_lst_env = NULL;
+	env_content = NULL;
 	tmp = *lst_env;
 	while(tmp)
 	{
@@ -154,7 +167,7 @@ int	ft_export(t_cmd *cmds)
 
 	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
-		// exit(1);
+	env_to_print = NULL;
 	len_cmds = ft_strslen(cmds->args);
 	add_env(cmds->args);
 	if (len_cmds == 1)
@@ -163,7 +176,5 @@ int	ft_export(t_cmd *cmds)
 		ft_lstprint(env_to_print, '\n');
 		ft_lstclear(&env_to_print, free);
 	}
-	////////////////////////////////////////////////////// exit prob for builtin kaye
 	return (SUCCESS);
-	// exit(0);
 }
