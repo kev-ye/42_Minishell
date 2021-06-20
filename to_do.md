@@ -13,3 +13,4 @@
 - [x] ls > f1 | echo test < f2 | echo test > f3 | echo test > f4 ; echo test > f5
 - [x] ls ; wc < f1 ; ls > f1 ; echo test
 - [x] wc < f1 : seg
+- [ ] ls | ./minishill : command not found, idk why
