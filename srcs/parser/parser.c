@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 16:54:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 18:06:45 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,13 +262,13 @@ void	ft_parse(char *s)
 			{
 				if (FALSE == quotes.first && ft_incharset(QUOTES, s[i + 1]))
 					ft_strnclean(s + i, "$", 1);
-				else
+				else if (!singleton()->lst || !(((t_cmd *)ft_lstlast(singleton()->lst)->content)->status_flag & FLG_DINPUT))
 				{
 					++i;
-						i += get_env_var(&s, i);
-					// equivalent to the two lines above
-					// i += get_env_var(&s, i + 1) + 1;
+					i += get_env_var(&s, i);
 				}
+				else
+					++i;
 			}
 			else
 				++i;

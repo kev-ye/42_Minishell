@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 16:58:06 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 18:10:45 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,16 +77,36 @@ void 	unlink_all_tmp_fd(int i)
 		return ;
 }
 
-void cmd_up(t_list *lst_cmd, int lrv)
+void cmd_up(t_list *lst_cmd)
 {
-	t_cmd *cmd;
-	int i;
+	int		i;
+	int		j;
+	char	*new;
+	char	*tmp;
 
-	cmd = lst_cmd->content;
-	i = 0;
-	while (cmd && cmd->args[i])
+	while (lst_cmd)
 	{
-		
+		i = 0;
+		while ((t_cmd *)lst_cmd->content && ((t_cmd *)lst_cmd->content)->args && ((t_cmd *)lst_cmd->content)->args[i])
+		{
+			j = 0;
+			while (TRUE)
+			{
+				while (((t_cmd *)lst_cmd->content)->args[i][j] && ((t_cmd *)lst_cmd->content)->args[i][j] != -1)
+					++j;
+				if (((t_cmd *)lst_cmd->content)->args[i][j] == '\0')
+					break ;
+				ft_asprintf(&new, "%.*s%d%s", j, ((t_cmd *)lst_cmd->content)->args[i], singleton()->last_return_value, ((t_cmd *)lst_cmd->content)->args[i] + j + 1);
+				tmp = ((t_cmd *)lst_cmd->content)->args[i];
+				((t_cmd *)lst_cmd->content)->args[i] = new;
+				ft_memdel((void **)&tmp);
+				j += ft_nblen(singleton()->last_return_value);
+			}
+			++i;
+		}
+		if (flag_check(lst_cmd) == FLG_EO_CMD)
+			break ;
+		lst_cmd = lst_cmd->next;
 	}
 }
 
@@ -110,6 +130,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 		create_fd_input(tmp);
 	while (tmp)
 	{
+		cmd_up(tmp);
 		exec_all_in_one(tmp);
 		while (tmp && flag_check(tmp) != FLG_EO_CMD)	// to remove -> "ls abcd; echo $?" case
 			tmp = tmp->next;												// to remove -> "ls abcd; echo $?" case
