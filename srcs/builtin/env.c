@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:43 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 19:14:24 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 14:14:33 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,16 @@ static void	show_env(t_list **env)
 	}
 }
 
-int	ft_env(char **cmds)
+int	ft_env(t_cmd *cmds)
 {
 	int	len_cmd;
 	int	i;
 
 	i = 0;
-	if (!cmds || !*cmds)
+	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
 		// exit(1);
-	while (cmds[i])
+	while (cmds->args[i])
 		++i;
 	len_cmd = i;
 	i = 0;

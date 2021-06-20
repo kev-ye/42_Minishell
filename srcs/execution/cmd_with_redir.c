@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_with_redir.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/06 19:55:19 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 17:32:33 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 15:54:10 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,7 +360,7 @@ void	cmd_with_redir(void *cmd, t_list *lst_cmd)
 		redir_parser2(lst_cmd, &input_fd, &output_fd);
 		// redir_parser(input_fd, output_fd, lst_cmd);
 	
-		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
 		if (builtin_status != NOT_FOUND)

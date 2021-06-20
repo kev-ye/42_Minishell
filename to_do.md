@@ -14,3 +14,4 @@
 - [x] ls ; wc < f1 ; ls > f1 ; echo test
 - [x] wc < f1 : seg
 - [ ] ls | ./minishill : command not found, idk why
+- [ ] cat << f$?

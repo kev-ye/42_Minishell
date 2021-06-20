@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 10:43:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 16:17:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	simple_cmd(void *cmd)
 
 	status = 1;
 	built_exec = 0;
-	if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+	if (builtin_exec((t_cmd *)cmd) == NOT_FOUND)
 	{
 		pid = fork();
 		if (pid < 0)

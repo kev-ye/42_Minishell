@@ -3,18 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/18 13:53:16 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 16:21:52 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static struct s_redirections	g_limits[] = {
-	{";", 1, FLG_EO_CMD}, {"|", 1, FLG_PIPE}, {">>", 2, FLG_APPEND},
-	{">", 1, FLG_OUTPUT}, {"<<", 2, FLG_DINPUT}, {"<", 1, FLG_INPUT},
+	{";", 1, FLG_EO_CMD},
+	{"|", 1, FLG_PIPE},
+	{">>", 2, FLG_APPEND},
+	{">", 1, FLG_OUTPUT},
+	{"<<", 2, FLG_DINPUT},
+	{"<", 1, FLG_INPUT},
 	{NULL, 0, 0}
 };
 
@@ -71,7 +75,7 @@ t_cmd	*new_cmd(uint16_t status, t_list **args)
 		return (ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	cmd->args = ft_lst2strs(args);
 	ft_lstclear(args, free);
-	cmd->args_len = ft_strslen(cmd->args);
+	cmd->args_len = ft_strslen((char **)cmd->args);
 	cmd->status_flag = status;
 	return (cmd);
 }
@@ -90,11 +94,6 @@ int	found_str_limit(char *s, size_t i, t_list **args)
 				ft_lstadd_back(args, ft_lstnew(ft_substr(s, 0, i)));
 			new = new_cmd(g_limits[k].flag, args);
 			ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
-			// if (g_limits[k].flag & FLG_EO_CMD)
-			// {
-			// 	ft_exec_each_cmd(singleton()->lst);
-			// 	ft_lstclear(&singleton()->lst, free);
-			// }
 			return (g_limits[k].len);
 		}
 		++k;
@@ -121,14 +120,14 @@ int	len_variable(char *s)
 }
 
 // $? case
-static size_t	get_var_last_return_case(char **s, size_t i)
+size_t	get_var_last_return_case(char **s, size_t i)
 {
 	char	*ptr;
 
-	ft_asprintf(&ptr, "%.*s%d%s", i - 1, *s, singleton()->last_return_value,
+	ft_asprintf(&ptr, "%.*s%c%s", i - 1, *s, DOUILLE_POUR_CASSER_LA_NORME,
 		*s + i + 1);
 	*s = ptr;
-	return (ft_nblen(singleton()->last_return_value) - 1);
+	return (ft_nblen(DOUILLE_POUR_CASSER_LA_NORME) - 1);
 }
 
 static size_t	get_env_var(char **s, size_t i)
@@ -198,7 +197,6 @@ void	ft_parse(char *s)
 		if (FALSE == quotes.first)
 		{
 			limit = found_str_limit(s, i, &args);
-			// ft_printf("s[%s] i[%d] limit[%d]\n", s, i, limit);
 			if (limit)
 			{
 				quotes2close(0, &quotes, RESET_FLAG);
@@ -218,7 +216,6 @@ void	ft_parse(char *s)
 				(quotes.d_quote != 0 ? B_RED : ""), quotes.d_quote);
 			ft_printf("args_size[%2d] [%s]\n", ft_lstsize(args), s + i);
 		}
-
 
 		if ('\\' == s[i])
 		{
@@ -253,30 +250,12 @@ void	ft_parse(char *s)
 						quotes.first, quotes.did_change, quotes.s_quote, quotes.d_quote);
 				}
 
-				// if (quotes.did_change && ft_incharset(QUOTES, s[i]))
-				// {
-				// 	PRINT_ERR("NEW -- -- ")
-				// 	ft_strnclean(s + i, QUOTES, 1);
-				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
-				// 	s += i;
-				// 	i = 0;
-				// 	continue ;
-				// }
-				// ft_printf("quotes.first[%d] quotes.changed[%d] s[%s] (s + i)[%s] i[%d]\n",
-					// quotes.first, quotes.did_change, s, s + i, i);
-				// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
-				// 	|| (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
-				// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
 				if ((quotes.did_change && !ft_incharset(QUOTES, s[i]))
-				|| (!quotes.did_change && !s[i]))
-				// if (quotes.did_change)
+					|| (!quotes.did_change && !s[i]))
 				{
-					// PRINT_ERR("NEW")
-					// ft_printf("%s%d: s[%s]\n", __FILE__, __LINE__, s);
 					ft_lstadd_back(&args, ft_lstnew(ft_substr(s, 0, i)));
 					s += i;
 					i = 0;
-					// continue ; // does nothing
 				}
 			}
 			else if ((FALSE == quotes.first || quotes.d_quote) && '$' == s[i])
@@ -286,7 +265,7 @@ void	ft_parse(char *s)
 				else
 				{
 					++i;
-					i += get_env_var(&s, i);
+						i += get_env_var(&s, i);
 					// equivalent to the two lines above
 					// i += get_env_var(&s, i + 1) + 1;
 				}
@@ -300,9 +279,6 @@ void	ft_parse(char *s)
 			s += i;
 			i = 0;
 		}
-		// if ((('"' == s[i]) && (('"' == s[i]) << DBL_BSHFT) & quotes.first)
-		// || (('\'' == s[i]) && (('\'' == s[i]) << SGL_BSHFT) & quotes.first))
-		// 	ft_lstadd_back(&args, ft_lstnew(ft_strdup("")));
 	}
 	if (!s[i])
 	{
@@ -314,14 +290,11 @@ void	ft_parse(char *s)
 		ft_lstadd_back(&singleton()->lst, ft_lstnew(new));
 	}
 
-
 	if (__DEBUG__)
 	{
 		ft_lstprint_cmd(singleton()->lst);
 		ft_printf("\n");
 	}
-
-
 }
 
 /*******************************************************************************

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/19 18:50:54 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 16:19:55 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,8 @@
 # define ERR_OPEN "cannot open file"
 
 
+# define DOUILLE_POUR_CASSER_LA_NORME	-1	/* before the ascii table */
+
 // Exec
 # define SYNTAXERR "syntax error near unexpected token"
 # define SIMPLE 0
@@ -159,6 +161,7 @@
 ** FLG_INPUT:			`<'
 ** FLG_DINPUT:			`<<'
 ** FLG_EOL:				`\0' (end of line)
+** FLG_LRV:				`$?' that needs an expension has been found
 */
 enum	e_flags
 {
@@ -168,7 +171,8 @@ enum	e_flags
 	FLG_APPEND = (1U << 3),
 	FLG_INPUT = (1U << 4),
 	FLG_DINPUT = (1U << 5),
-	FLG_EOL = (1U << 6)
+	FLG_EOL = (1U << 6),
+	FLG_LRV = (1U << 7)
 };
 
 // Only used whithin a lookup table for the parsing
@@ -243,9 +247,9 @@ typedef struct s_edition
 */
 typedef struct s_cmd
 {
-	char		**args;
-	int			args_len;
-	uint8_t		status_flag;
+	char	**args;
+	int		args_len;
+	uint8_t	status_flag;
 }	t_cmd;
 
 /*
@@ -258,7 +262,7 @@ typedef struct s_cmd
 typedef struct s_builtin
 {
 	char	*cmd;
-	int		(*f1)(char **cmds);
+	int		(*f1)(t_cmd *cmds);
 	int		(*f2)(void);
 }	t_builtin;
 
@@ -343,7 +347,7 @@ char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
 int			part_cmd_check(t_list *lst_cmd);
 int			syntax_parser(t_list *lst_cmd);
-int			builtin_exec(char **cmds);
+int			builtin_exec(t_cmd *cmds);
 void		sys_exec(void *ptr);
 // pipe
 void		*first_cmd_with_pipe(void *cmd, int *fd);
@@ -383,14 +387,14 @@ int			is_sep_or_end(t_list *lst_cmd);
 /*
 ** Builtin
 */
-int			ft_echo(char **cmds);
-int			ft_cd(char **cmds);
+int			ft_echo(t_cmd *cmds);
+int			ft_cd(t_cmd *cmds);
 int			ft_pwd(void);
-int			ft_env(char **cmds);
-int			ft_export(char **cmds);
-int			ft_unset(char **cmds);
+int			ft_env(t_cmd *cmds);
+int			ft_export(t_cmd *cmds);
+int			ft_unset(t_cmd *cmds);
 void		ft_exit_for_prompt(void);
-int			ft_exit(char **cmds);
+int			ft_exit(t_cmd *cmds);
 int			ft_clear(void);
 
 void		print_inline(char **ptr, char *buffer);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exec.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 10:51:58 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 15:53:53 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,14 @@ static t_builtin	g_builtin[] = {
 	{NULL, NULL, NULL}
 };
 
-static int	ft_exec_builtin_cmd(char **cmds)
+static int	ft_exec_builtin_cmd(t_cmd *cmds)
 {
 	int	i;
 
 	i = 0;
 	while (g_builtin[i].cmd)
 	{
-		if (cmds && FALSE == ft_strcmp(cmds[0], g_builtin[i].cmd))
+		if (cmds && FALSE == ft_strcmp(cmds->args[0], g_builtin[i].cmd))
 		{
 			if (!g_builtin[i].f1)
 				return (g_builtin[i].f2());
@@ -43,14 +43,15 @@ static int	ft_exec_builtin_cmd(char **cmds)
 	return (NOT_FOUND);
 }
 
-int	builtin_exec(char **cmds)
+int	builtin_exec(t_cmd *cmds)
 {
 	int	ret;
 
 	ret = ft_exec_builtin_cmd(cmds);
-	if (!ft_strcmp(cmds[0], ".."))
+	if (!ft_strcmp(cmds->args[0], ".."))
 	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: command not found\n", cmds[0]);
+		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: command not found\n",
+			cmds->args[0]);
 		ret = LRV_CMD_NOT_FOUND;
 	}
 	if (NOT_FOUND == ret)
