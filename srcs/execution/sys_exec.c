@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sys_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:07:20 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/08 15:12:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 15:49:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ void	sys_exec(void *ptr)
 	}
 	else
 	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n", cmd->args[0]);
+		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
+			cmd->args[0]);
 		not_found = 1;
 	}
 	if (not_found == 1)

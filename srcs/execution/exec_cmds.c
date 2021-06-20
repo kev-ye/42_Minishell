@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 16:52:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 16:58:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	simple_cmd(void *cmd)
 
 	status = 1;
 	built_exec = 0;
-	if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
+	if (builtin_exec((t_cmd *)cmd) == NOT_FOUND)
 	{
 		pid = fork();
 		if (pid < 0)
@@ -75,6 +75,19 @@ void 	unlink_all_tmp_fd(int i)
     }
 	else
 		return ;
+}
+
+void cmd_up(t_list *lst_cmd, int lrv)
+{
+	t_cmd *cmd;
+	int i;
+
+	cmd = lst_cmd->content;
+	i = 0;
+	while (cmd && cmd->args[i])
+	{
+		
+	}
 }
 
 int	ft_exec_each_cmd(t_list *lst_cmd)

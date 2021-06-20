@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:11:08 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 19:43:47 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 14:12:59 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,13 +77,13 @@ void	update_pwd_env(char *old_pwd)
 	replace_pwd(new_old_pwd, pwd_add_to_env, singleton()->env);
 }
 
-int	ft_cd(char **cmds)
+int	ft_cd(t_cmd *cmds)
 {
 	const char *old_pwd = get_old_pwd();
 
-	if (!cmds || !*cmds)
+	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
-	if (*cmds && !*(cmds + 1))
+	if (*cmds->args && !*(cmds->args + 1))
 	{
 		if (chdir(getenv("HOME")) == -1)
 		{
@@ -91,10 +91,10 @@ int	ft_cd(char **cmds)
 			return (ERROR);
 		}
 	}
-	if (*cmds && *(cmds + 1) && chdir(cmds[1]) == -1)
+	if (*cmds->args && *(cmds->args + 1) && chdir(cmds->args[1]) == -1)
 	{
 		ft_dprintf(STDERR_FILENO, "%s: cd: %s: %s\n",
-			PROG_NAME, cmds[1], strerror(errno));
+			PROG_NAME, cmds->args[1], strerror(errno));
 		return (ERROR);
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 15:09:46 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 16:54:39 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ t_list	*get_env(char **env)
 static int	ft_init_minishell(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
+	const t_cmd	cmd = {.args = (char **)args, .args_len = 0, .status_flag = 0};
 	char		*shlvl;
 	char		*ret;
 
@@ -97,7 +98,7 @@ static int	ft_init_minishell(char **env)
 	if (!ret && ft_memdel((void **)&shlvl) == NULL)
 		return ((int)ft_error(ERR_MALLOC, __FILE__, __LINE__));
 	args[1] = ret;
-	ft_export((char **)args);
+	ft_export((t_cmd *)&cmd);
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
 	singleton()->isatty_stdin = isatty(STDIN_FILENO);

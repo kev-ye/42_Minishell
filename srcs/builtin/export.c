@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/02 23:32:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 14:15:41 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,16 +147,16 @@ t_list	*env_export(t_list **lst_env)
 	return (new_lst_env);
 }
 
-int	ft_export(char **cmds)
+int	ft_export(t_cmd *cmds)
 {
 	t_list	*env_to_print;
 	size_t	len_cmds;
 
-	if (!cmds || !*cmds)
+	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
 		// exit(1);
-	len_cmds = ft_strslen(cmds);
-	add_env(cmds);
+	len_cmds = ft_strslen(cmds->args);
+	add_env(cmds->args);
 	if (len_cmds == 1)
 	{
 		env_to_print = env_export(&singleton()->env);

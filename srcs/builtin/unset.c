@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/05/30 19:14:49 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 14:16:04 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,15 @@ void	del_env(t_list **lst_env, size_t len, char *cmd)
 		}
 }
 
-int	ft_unset(char **cmds)
+int	ft_unset(t_cmd *cmds)
 {
-	if (!cmds || !*cmds)
+	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
 		// exit(1);
-	if (!*(cmds + 1))
+	if (!*(cmds->args + 1))
 		return (SUCCESS);
 		// exit(0);
-	del_env(&singleton()->env, ft_strlen(cmds[1]), cmds[1]);
+	del_env(&singleton()->env, ft_strlen(cmds->args[1]), cmds->args[1]);
 	return (SUCCESS);
 	// exit(0);
 }

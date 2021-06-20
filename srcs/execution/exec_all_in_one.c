@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_all_in_one.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 18:33:23 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 16:16:12 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
             else
                 dup2(fd[1], output_fd);
         }
-		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
 		if (builtin_status != NOT_FOUND)
@@ -180,7 +180,7 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		else
 			dup2(fd[(fd_index + 1) * 2 + 1], output_fd);
 
-		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
 		// need add free here because sys_exec can fail
@@ -227,7 +227,7 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		else
 			dup2(fd[fd_index * 2], input_fd);
 			
-		builtin_status = builtin_exec(((t_cmd *)cmd)->args);
+		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
 			sys_exec(cmd);
 		if (builtin_status != NOT_FOUND)

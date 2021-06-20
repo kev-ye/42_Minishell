@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/19 18:58:50 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 14:26:12 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,33 +32,58 @@ int check_opt_n(char *opt)
 	return (1);
 }
 
-int	ft_echo(char **cmds)
+// void	case_last_return_value(char *arg)
+// {
+// 	ft_
+// }
+
+
+// void	get_var_last_return_case(char *s)
+// {
+// 	char	*ptr;
+// 	char	*found = ft_strstr(s, "$?");
+
+// 	ft_asprintf(&ptr, "%.*s%d%s", i - 1, s, singleton()->last_return_value,
+// 		s + i + 1);
+// 	*s = ptr;
+// 	return (ft_nblen(singleton()->last_return_value) - 1);
+// }
+
+
+
+int	ft_echo(t_cmd *cmds)
 {
 	int	len_cmd;
 	int	i;
 
 	i = 0;
-	if (!cmds || !*cmds)
+	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
-	while (cmds[i])
+	while (cmds->args[i])
 		++i;
 	len_cmd = i;
-	if (*cmds && *(cmds + 1) && check_opt_n(cmds[1]))
+	if (*cmds->args && *(cmds->args + 1) && check_opt_n(cmds->args[1]))
 	{
 		i = 2;
 		while (i < len_cmd)
 		{
-			ft_dprintf(STDOUT_FILENO, "%s", cmds[i++]);
+
+			// echo " bonjour          $? "
+			// if (cmds->status_flag & FLG_LRV)
+			// 	ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i]);
+			// else
+				ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i]);
 			if (i < len_cmd)
 				ft_dprintf(STDOUT_FILENO, " ");
+			++i;
 		}
 	}
 	else
 	{
 		i = 1;
-		while (i < len_cmd && cmds[i])
+		while (i < len_cmd && cmds->args[i])
 		{
-			ft_dprintf(STDOUT_FILENO, "%s", cmds[i++]);
+			ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i++]);
 			if (i < len_cmd)
 				ft_dprintf(STDOUT_FILENO, " ");
 		}
