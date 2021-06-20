@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/19 19:50:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/20 10:43:03 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ int	simple_cmd(void *cmd)
 	built_exec = 0;
 	if (builtin_exec(((t_cmd *)cmd)->args) == NOT_FOUND)
 	{
-		PRINT_ERR()
 		pid = fork();
 		if (pid < 0)
 				exit(PID_FAILURE);
