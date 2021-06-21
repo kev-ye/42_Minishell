@@ -1,6 +1,0 @@
-Test #41: [abcd; echo "$?"]
-1c1
-< bash: line 1: abcd: command not found
----
-> minishell: abcd: command not found
-

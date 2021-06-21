@@ -54,6 +54,7 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 
 	lst_tmp = lst_cmd->next;
 	len = 0;
+	new_cmd = NULL;
 	while (lst_tmp)
 	{
 		if (((t_cmd *)lst_tmp->content)->args)
@@ -61,7 +62,7 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 		if (lst_tmp && ((t_cmd *)lst_tmp->content)->args && len > 1)
 		{
 			len += ft_strslen(((t_cmd *)cmd)->args);
-			new_cmd = malloc(sizeof(char *) * (len + 1));
+			new_cmd = (char **)ft_calloc(len + 1, sizeof(char *));
 			if (!new_cmd)
 				return (NULL);
 			i = 0;
@@ -75,15 +76,14 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 			while (((t_cmd *)lst_tmp->content)->args[j] && len)
 			{
 				new_cmd[i] = ft_strdup(((t_cmd *)lst_tmp->content)->args[j]);
-				free(((t_cmd *)lst_tmp->content)->args[j]);
-				((t_cmd *)lst_tmp->content)->args[j] = NULL;
+				ft_memdel((void **)&((t_cmd *)lst_tmp->content)->args[j]);
 				++i;
 				++j;
 				--len;
 			}
-			new_cmd[i] = NULL;
-			ft_strsfree(ft_strslen(((t_cmd *)cmd)->args), ((t_cmd *)cmd)->args);
+			ft_strsfree(((t_cmd *)cmd)->args_len, ((t_cmd *)cmd)->args);
 			((t_cmd *)cmd)->args = new_cmd;
+			((t_cmd *)cmd)->args_len = ft_strslen(((t_cmd *)cmd)->args);
 		}
 		if (!is_redir(lst_tmp))
 			break ;

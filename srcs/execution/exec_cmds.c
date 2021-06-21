@@ -75,7 +75,10 @@ void 	unlink_all_tmp_fd(int i)
         unlink_all_tmp_fd(i++);
     }
 	else
+	{
+		ft_memdel((void **)&new_name);
 		return ;
+	}
 }
 
 void cmd_up(t_list *lst_cmd)
@@ -116,7 +119,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 	t_list	*tmp;
 	int		cmd_line;
 	int		built_exec;
-	int i;
+	int		i;
 
 	tmp = lst_cmd;
 	cmd_line = -1;
@@ -133,6 +136,7 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 	{
 		cmd_up(tmp);
 		exec_all_in_one(tmp);
+		// printf("cur [%s]\n", ((t_cmd *)tmp->content)->args[1]);
 		while (tmp && flag_check(tmp) != FLG_EO_CMD)	// to remove -> "ls abcd; echo $?" case
 			tmp = tmp->next;												// to remove -> "ls abcd; echo $?" case
 		if (tmp)															// to remove -> "ls abcd; echo $?" case

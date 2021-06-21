@@ -58,28 +58,24 @@ void	replace_pwd(char *old_pwd, char *new_pwd, t_list *env)
 
 void	update_pwd_env(char *old_pwd)
 {
-	char *new_old_pwd;
 	char *new_pwd;
-	char *pwd_add_to_env;
+	char *old_replacement;
 	char *tmp;
 
-	tmp = ft_strdup("PWD=");
-	new_pwd = getcwd(NULL, 0);
-	if (!new_pwd)
+	tmp = getcwd(NULL, 0);
+	if (!tmp)
 		return ;
-	pwd_add_to_env = ft_strjoin(tmp, new_pwd);
-	free(tmp);
-	free(new_pwd);
-	tmp = ft_strdup("OLDPWD=");
-	new_old_pwd = ft_strjoin(tmp, old_pwd);
-	free(tmp);
-	free(old_pwd);
-	replace_pwd(new_old_pwd, pwd_add_to_env, singleton()->env);
+	ft_asprintf(&new_pwd, "PWD=%s", tmp);
+	ft_asprintf(&old_replacement, "OLDPWD=%s", old_pwd);
+	replace_pwd(old_replacement, new_pwd, singleton()->env);
+	ft_memdel((void **)&tmp);
+	ft_memdel((void **)&old_replacement);
+	ft_memdel((void **)&new_pwd);
 }
 
 int	ft_cd(t_cmd *cmds)
 {
-	const char *old_pwd = get_old_pwd();
+	char	*old_pwd;
 
 	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
@@ -98,6 +94,10 @@ int	ft_cd(t_cmd *cmds)
 		return (ERROR);
 	}
 	else
-		update_pwd_env((char *)old_pwd);
+	{
+		old_pwd = get_old_pwd();
+		update_pwd_env(old_pwd);
+		ft_memdel((void **)&old_pwd);
+	}
 	return (SUCCESS);
 }

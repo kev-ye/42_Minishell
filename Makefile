@@ -13,7 +13,7 @@
 # COMPILATION
 
 CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror -g3 #-fsanitize=address
+CFLAGS 		= -Wall -Wextra -Werror -g3# -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
 LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
 
@@ -106,7 +106,7 @@ $(BUILD):
 	@echo "Creating $(RED_COLOR)$@ $(DEFAULT_COLOR)..."
 	@mkdir $@ $(DIRS)
 	
-$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c | $(BUILD)
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c ./incs/minishell.h | $(BUILD)
 	@echo "Compiling $(YELLOW_COLOR)$< $(DEFAULT_COLOR)..."
 	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 

@@ -127,37 +127,6 @@ static int	ft_init_minishell(char **env)
 	return (1);
 }
 
-// void	prompt(void)
-// {
-// 	char	*ret;
-// 	int		r;
-
-// 	signal(SIGINT, ft_interrupt);
-// 	// signal(SIGQUIT, ft_interrupt);
-// 	while (TRUE)
-// 	{
-// 		ft_bzero(&singleton()->edit, sizeof(t_edition));
-// 		__reset_termcaps__(SET_TERMCAPS);
-// 		print_prompt();
-// 		if (singleton()->option.fd == STDIN_FILENO)
-// 			r = ft_gnl(singleton()->option.fd, &ret);
-// 		else
-// 			r = get_next_line(singleton()->option.fd, &ret);
-// 		__reset_termcaps__(RESET_TERMCAPS);
-// 		if (singleton()->isatty_stdin)
-// 			add2history(ft_strdup(ret));
-// 		ft_parse(ret);
-// 		ft_exec_each_cmd(singleton()->lst);
-// 		ft_memdel((void **)(&ret));
-// 		if (r <= 0)
-// 		{
-// 			ft_exit();
-// 			break ;
-// 		}
-// 		// signal(SIGQUIT)
-// 	}
-// }
-
 void	ft_interrupt(int code)
 {
 	if (SIGQUIT == code)
@@ -209,8 +178,7 @@ void	prompt(void)
 			add2history(ret);
 		ft_parse(ret);
 		built_exec = ft_exec_each_cmd(singleton()->lst);
-		// if (built_exec == 0)
-			__ft_free_cmds__();
+		__ft_free_cmds__();
 		ft_memdel((void **)(&ret));
 		if (r <= 0)
 		{

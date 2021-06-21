@@ -141,7 +141,7 @@
 # define STRINGIFY(x) #x
 # define TOSTRING(x) STRINGIFY(x)
 # define PRINT_ERR(s) \
-	ft_printf(B_RED "" __FILE__ ":%d:" CLR_COLOR " " s " -> Here\n", __LINE__);
+	ft_dprintf(2, B_RED "" __FILE__ ":%d:" CLR_COLOR " " s " -> Here\n", __LINE__);
 // END DEBUGGING PURPOSE - TO REMOVE
 
 // Charsets used in the parsing

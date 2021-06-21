@@ -44,11 +44,11 @@ static int	ft_exec_cmd(char *file, t_cmd *cmds)
 	int		ret = 0;
 	int 	lrv = 0;
 
-	env = ft_lst2strs(&singleton()->env);            //// maybe get leak here --- need to check
+	env = ft_lst2strs(&singleton()->env);
 	ret = execve(file, cmds->args, env);
 	lrv = sys_exec_msg_error(cmds);
 	if (ret == -1)
-		ft_memdel((void **)env);
+		ft_strsfree(ft_strslen(env), env);
 	return (lrv);
 }
 
