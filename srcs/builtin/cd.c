@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:11:08 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 14:12:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 17:57:44 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ void	replace_pwd(char *old_pwd, char *new_pwd, t_list *env)
 			free(env->content);
 			env->content = new_pwd;
 		}
-		if (env && !ft_strncmp((char *)env->content, "OLDPWD=", 7) && oldpwd_check)
+		if (env && !ft_strncmp((char *)env->content, "OLDPWD=", 7)
+			&& oldpwd_check)
 		{
 			free(env->content);
 			env->content = old_pwd;
@@ -68,9 +69,10 @@ void	update_pwd_env(char *old_pwd)
 	ft_asprintf(&new_pwd, "PWD=%s", tmp);
 	ft_asprintf(&old_replacement, "OLDPWD=%s", old_pwd);
 	replace_pwd(old_replacement, new_pwd, singleton()->env);
+	
 	ft_memdel((void **)&tmp);
-	ft_memdel((void **)&old_replacement);
-	ft_memdel((void **)&new_pwd);
+	// ft_memdel((void **)&old_replacement);
+	// ft_memdel((void **)&new_pwd);
 }
 
 int	ft_cd(t_cmd *cmds)
