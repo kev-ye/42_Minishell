@@ -275,7 +275,7 @@ test_parser() {
 	# quotes hell
 	test_cmd "echo ''"
 	test_cmd "ech\"o\" test"
-	test_cmd "\\ec\\h\\o"
+	test_cmd "ec\\h\\o"
 	test_cmd "echo \"\'a\""
 	test_cmd "echo '\"a'"
 	test_cmd "echo \\\"'\"a'"
