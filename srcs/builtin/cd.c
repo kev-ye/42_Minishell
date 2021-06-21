@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 14:11:08 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/21 17:57:44 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 18:32:44 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	*get_old_pwd(void)
 {
-	char *path;
+	char	*path;
 
 	path = getcwd(NULL, 0);
 	if (!path)
@@ -22,7 +22,7 @@ char	*get_old_pwd(void)
 	return (path);
 }
 
-int		check_if_oldpwd_exist(t_list *env)
+int	check_if_oldpwd_exist(t_list *env)
 {
 	while (env)
 	{
@@ -35,7 +35,7 @@ int		check_if_oldpwd_exist(t_list *env)
 
 void	replace_pwd(char *old_pwd, char *new_pwd, t_list *env)
 {
-	int oldpwd_check;
+	int	oldpwd_check;
 
 	oldpwd_check = check_if_oldpwd_exist(env);
 	if (!oldpwd_check)
@@ -59,9 +59,9 @@ void	replace_pwd(char *old_pwd, char *new_pwd, t_list *env)
 
 void	update_pwd_env(char *old_pwd)
 {
-	char *new_pwd;
-	char *old_replacement;
-	char *tmp;
+	char	*new_pwd;
+	char	*old_replacement;
+	char	*tmp;
 
 	tmp = getcwd(NULL, 0);
 	if (!tmp)
@@ -69,10 +69,7 @@ void	update_pwd_env(char *old_pwd)
 	ft_asprintf(&new_pwd, "PWD=%s", tmp);
 	ft_asprintf(&old_replacement, "OLDPWD=%s", old_pwd);
 	replace_pwd(old_replacement, new_pwd, singleton()->env);
-	
 	ft_memdel((void **)&tmp);
-	// ft_memdel((void **)&old_replacement);
-	// ft_memdel((void **)&new_pwd);
 }
 
 int	ft_cd(t_cmd *cmds)

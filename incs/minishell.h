@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 14:03:12 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 19:18:40 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // -- INCLUDES --
 ////////////////////////////////////////////////////////////////////////////////
-// System's
+
 # include <stdio.h>
 # include <stdint.h>
 # include <stdlib.h>
@@ -31,22 +31,15 @@
 # include <sys/stat.h>
 # include <sys/errno.h>
 # include <sys/ioctl.h>
-
 # include <readline/readline.h>
 # include <readline/history.h>
-
-// Custom
 # include "libft.h"
 # include "ft_termcaps.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // -- DEFINES --
 ////////////////////////////////////////////////////////////////////////////////
-// Program name
 # define PROG_NAME "minishell"
-
-// Prompt
-// `readline' in macOS does not support colors
 # if defined(__APPLE__) && defined(__MACH__)
 #  define PROMPT "%s $ "
 # else
@@ -65,7 +58,7 @@
 # define ERROR 1
 
 # define FOUND 0
-# define NOT_FOUND (-1)
+# define NOT_FOUND -1
 
 # ifndef TRUE
 #  define TRUE 1
@@ -394,6 +387,9 @@ int			ft_cd(t_cmd *cmds);
 int			ft_pwd(void);
 int			ft_env(t_cmd *cmds);
 int			ft_export(t_cmd *cmds);
+void		add_quote(t_list **lst_env);
+char		*head_env(char *env);
+int			check_space(char *s);
 int			ft_unset(t_cmd *cmds);
 void		ft_exit_for_prompt(void);
 int			ft_exit(t_cmd *cmds);

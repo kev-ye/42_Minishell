@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 19:47:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 19:31:49 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ int	builtin_exec(t_cmd *cmds)
 {
 	int	ret;
 
-	if (!check_if_path_exist(singleton()->env) && !ft_strcmp(cmds->args[0], "env"))
+	if (!check_if_path_exist(singleton()->env)
+		&& !ft_strcmp(cmds->args[0], "env"))
 		return (NOT_FOUND);
 	ret = ft_exec_builtin_cmd(cmds);
 	if (!ft_strcmp(cmds->args[0], ".."))

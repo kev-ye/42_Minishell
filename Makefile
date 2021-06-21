@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/20 20:15:59 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/21 18:39:27 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,7 +55,8 @@ SUB_SRC	:= cd.c \
 		   exit.c \
 		   export.c \
 		   pwd.c \
-		   unset.c
+		   unset.c \
+		   export_utils.c
 SRC		+= $(addprefix builtin/, $(SUB_SRC))
 SUB_SRC	:= history.c
 SRC		+= $(addprefix termcaps/, $(SUB_SRC))

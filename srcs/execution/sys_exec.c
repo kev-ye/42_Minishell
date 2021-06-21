@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sys_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:07:20 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/21 14:02:52 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 19:50:42 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,20 @@ int	sys_exec_msg_error(t_cmd *cmds)
 		lstat(cmds->args[0], &buf);
 	if (check_if_path_exist(singleton()->env))
 	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: command not found\n", cmds->args[0]);
+		ft_dprintf(STDERR_FILENO,
+			PROG_NAME": %s: command not found\n", cmds->args[0]);
 		return (LRV_CMD_NOT_FOUND);
 	}
 	else if (S_ISDIR(buf.st_mode))
 	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: is a directory\n", cmds->args[0]);
+		ft_dprintf(STDERR_FILENO,
+			PROG_NAME": %s: is a directory\n", cmds->args[0]);
 		return (LRV_PERMISSION);
 	}
 	else
 	{
-		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: %s\n", cmds->args[0], strerror(errno));
+		ft_dprintf(STDERR_FILENO,
+			PROG_NAME": %s: %s\n", cmds->args[0], strerror(errno));
 		if (13 == errno)
 			return (LRV_PERMISSION);
 		else
@@ -41,9 +44,11 @@ int	sys_exec_msg_error(t_cmd *cmds)
 static int	ft_exec_cmd(char *file, t_cmd *cmds)
 {
 	char	**env;
-	int		ret = 0;
-	int 	lrv = 0;
+	int		ret;
+	int		lrv;
 
+	ret = 0;
+	lrv = 0;
 	env = ft_lst2strs(&singleton()->env);
 	ret = execve(file, cmds->args, env);
 	lrv = sys_exec_msg_error(cmds);
@@ -56,8 +61,8 @@ int	sys_exec(void *ptr)
 {
 	t_cmd	*cmd;
 	char	*ex;
-	int 	not_found;
-	int 	lrv;
+	int		not_found;
+	int		lrv;
 
 	cmd = ptr;
 	not_found = 0;
@@ -65,21 +70,8 @@ int	sys_exec(void *ptr)
 	if (!cmd->args || !cmd->args)
 		return (EXEC_FAILURE);
 	ex = search_executable(cmd->args[0]);
-	// if (ex)
-	// {
-		lrv = ft_exec_cmd(ex, cmd);
-		ft_memdel((void **)&ex);
-	// }
-	// else
-	// {
-	// 	if (check_if_path_exist(singleton()->env))
-	// 		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: command not found\n",
-	// 			cmd->args[0]);
-	// 	else
-	// 		ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: No such file or directory\n",
-	// 			cmd->args[0]);
-	// 	not_found = 1;
-	// }
+	lrv = ft_exec_cmd(ex, cmd);
+	ft_memdel((void **)&ex);
 	if (not_found == 1)
 		exit(LRV_CMD_NOT_FOUND);
 	return (lrv);

@@ -6,93 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 19:06:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 19:17:11 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int check_space(char *s)
-{
-	int i;
-
-	i = 0;
-	while (s && s[i] && s[i] != '=')
-	{
-		if (s[i] == ' ')
-			return (1);
-		++i;
-	}
-	return (0);
-}
-
-static char	*head_env(char *env)
-{
-	char	*env_head;
-	int		len;
-
-	len = 0;
-	env_head = NULL;
-	while (env[len] && env[len] != '=')
-		++len;
-	if (env[len] && env[len] == '=')
-	{
-		env_head = ft_calloc(len + 2, sizeof(char));
-		if (!env_head)
-			return (NULL);
-		ft_memcpy(env_head, env, len + 1);
-	}
-	else
-	{
-		env_head = ft_calloc(len, sizeof(char));
-		if (!env_head)
-			return (NULL);
-		ft_memcpy(env_head, env, len + 1);
-	}
-	return (env_head);
-}
-
-static void	add_quote(t_list **lst_env)
-{
-	t_list	*tmp;
-	char	*new_env;
-	char	*tmp_env;
-	char	*env_head;
-
-	tmp = *lst_env;
-	env_head = NULL;
-	tmp_env = NULL;
-	new_env = NULL;
-	while (tmp)
-	{
-		tmp_env = ft_strchr((char *)tmp->content, '=');
-		if (tmp_env != NULL)
-		{
-			env_head = head_env((char *)tmp->content);
-			if (!env_head)
-				return ;
-			ft_asprintf(&new_env, "declare -x %s\"%s\"", env_head, tmp_env + 1);
-			if (!new_env && ft_memdel((void **)(&env_head)) == NULL)
-				return ;
-			free(env_head);
-			free(tmp->content);
-			tmp->content = new_env;
-		}
-		else
-		{
-			env_head = head_env((char *)tmp->content);
-			if (!env_head)
-				return ;
-			ft_asprintf(&new_env, "declare -x %s", env_head);
-			if (!new_env && ft_memdel((void **)(&env_head)) == NULL)
-				return ;
-			free(env_head);
-			free(tmp->content);
-			tmp->content = new_env;
-		}
-		tmp = tmp->next;
-	}
-}
 
 static void	new_shell_env(char *new_env, t_list *to_change, int to_add)
 {
@@ -140,7 +58,7 @@ static void	add_env(char **cmds)
 	}
 }
 
-t_list	*env_export(t_list **lst_env)
+static t_list	*env_export(t_list **lst_env)
 {
 	t_list	*tmp;
 	t_list	*new_lst_env;
@@ -149,7 +67,7 @@ t_list	*env_export(t_list **lst_env)
 	new_lst_env = NULL;
 	env_content = NULL;
 	tmp = *lst_env;
-	while(tmp)
+	while (tmp)
 	{
 		env_content = ft_strdup((char *)tmp->content);
 		ft_lstadd_back(&new_lst_env, ft_lstnew((void *)env_content));

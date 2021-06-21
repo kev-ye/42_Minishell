@@ -6,25 +6,18 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 20:11:36 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 19:59:18 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// seems that it must be used on forked commands - not on the main program
-void	ft_quit(int code)
-{
-	ft_dprintf(STDERR_FILENO, B_RED "SIGNAL: Quit: %d\n" CLR_COLOR, code);
-	// exit(code);
-}
-
 int	simple_cmd(void *cmd)
 {
 	pid_t	pid;
-	int status;
-	int built_exec;
-	int lrv;
+	int		status;
+	int		built_exec;
+	int		lrv;
 
 	status = 1;
 	built_exec = 0;
@@ -32,7 +25,7 @@ int	simple_cmd(void *cmd)
 	{
 		pid = fork();
 		if (pid < 0)
-				exit(PID_FAILURE);
+			exit(PID_FAILURE);
 		else if (pid == 0)
 		{
 			lrv = sys_exec(cmd);
@@ -52,28 +45,28 @@ int	simple_cmd(void *cmd)
 
 void 	unlink_all_tmp_fd(int i)
 {
-	char *old_name;
-    char *new_name;
-    char *fd_nbr;
-	int fd;
+	char	*old_name;
+	char	*new_name;
+	char	*fd_nbr;
+	int		fd;
 
 	fd = -1;
-    fd_nbr = ft_itoa(i);
-    old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
-    if (!old_name)
-        return ;
-    ft_strcpy(old_name, TMP_FD);
-    new_name = ft_strjoin(old_name, fd_nbr);
-    free(old_name);
-    free(fd_nbr);
-    fd = open(new_name, O_RDWR);
-    if (fd != -1)
-    {
-        close(fd);
+	fd_nbr = ft_itoa(i);
+	old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
+	if (!old_name)
+		return ;
+	ft_strcpy(old_name, TMP_FD);
+	new_name = ft_strjoin(old_name, fd_nbr);
+	free(old_name);
+	free(fd_nbr);
+	fd = open(new_name, O_RDWR);
+	if (fd != -1)
+	{
+		close(fd);
 		unlink(new_name);
-        free(new_name);
-        unlink_all_tmp_fd(i++);
-    }
+		free(new_name);
+		unlink_all_tmp_fd(i++);
+	}
 	else
 	{
 		ft_memdel((void **)&new_name);
@@ -81,7 +74,7 @@ void 	unlink_all_tmp_fd(int i)
 	}
 }
 
-void cmd_up(t_list *lst_cmd)
+void	cmd_up(t_list *lst_cmd)
 {
 	int		i;
 	int		j;
@@ -91,16 +84,22 @@ void cmd_up(t_list *lst_cmd)
 	while (lst_cmd)
 	{
 		i = 0;
-		while ((t_cmd *)lst_cmd->content && ((t_cmd *)lst_cmd->content)->args && ((t_cmd *)lst_cmd->content)->args[i])
+		while ((t_cmd *)lst_cmd->content
+			&& ((t_cmd *)lst_cmd->content)->args
+			&& ((t_cmd *)lst_cmd->content)->args[i])
 		{
 			j = 0;
 			while (TRUE)
 			{
-				while (((t_cmd *)lst_cmd->content)->args[i][j] && ((t_cmd *)lst_cmd->content)->args[i][j] != -1)
+				while (((t_cmd *)lst_cmd->content)->args[i][j]
+					&& ((t_cmd *)lst_cmd->content)->args[i][j] != -1)
 					++j;
 				if (((t_cmd *)lst_cmd->content)->args[i][j] == '\0')
 					break ;
-				ft_asprintf(&new, "%.*s%d%s", j, ((t_cmd *)lst_cmd->content)->args[i], singleton()->last_return_value, ((t_cmd *)lst_cmd->content)->args[i] + j + 1);
+				ft_asprintf(&new, "%.*s%d%s", j,
+					((t_cmd *)lst_cmd->content)->args[i],
+					singleton()->last_return_value,
+					((t_cmd *)lst_cmd->content)->args[i] + j + 1);
 				tmp = ((t_cmd *)lst_cmd->content)->args[i];
 				((t_cmd *)lst_cmd->content)->args[i] = new;
 				ft_memdel((void **)&tmp);
@@ -136,10 +135,9 @@ int	ft_exec_each_cmd(t_list *lst_cmd)
 	{
 		cmd_up(tmp);
 		exec_all_in_one(tmp);
-		// printf("cur [%s]\n", ((t_cmd *)tmp->content)->args[1]);
-		while (tmp && flag_check(tmp) != FLG_EO_CMD)	// to remove -> "ls abcd; echo $?" case
-			tmp = tmp->next;												// to remove -> "ls abcd; echo $?" case
-		if (tmp)															// to remove -> "ls abcd; echo $?" case
+		while (tmp && flag_check(tmp) != FLG_EO_CMD)
+			tmp = tmp->next;
+		if (tmp)
 			tmp = tmp->next;
 	}
 	unlink_all_tmp_fd(i);

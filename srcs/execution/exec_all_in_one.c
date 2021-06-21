@@ -6,13 +6,13 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/21 15:57:35 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 20:04:08 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int check_is_inter(t_list *lst_cmd)
+static int	check_is_inter(t_list *lst_cmd)
 {
 	while (lst_cmd && is_redir(lst_cmd))
 		lst_cmd = lst_cmd->next;
@@ -21,16 +21,16 @@ static int check_is_inter(t_list *lst_cmd)
 	return (1);
 }
 
-static int check_is_redir_cmd(t_list *lst_cmd)
+static int	check_is_redir_cmd(t_list *lst_cmd)
 {
 	if (lst_cmd && is_redir(lst_cmd))
 		return (1);
 	return (0);
 }
 
-static int check_have_dinput(t_list *lst_cmd)
+static int	check_have_dinput(t_list *lst_cmd)
 {
-	int is_dinput;
+	int	is_dinput;
 
 	is_dinput = 0;
 	while (lst_cmd)
@@ -44,13 +44,13 @@ static int check_have_dinput(t_list *lst_cmd)
 	return (is_dinput);
 }
 
-void *get_complete_cmd(void *cmd, t_list *lst_cmd)
+void	*get_complete_cmd(void *cmd, t_list *lst_cmd)
 {
 	t_list	*lst_tmp;
-	size_t len;
-	char **new_cmd;
-	int i;
-	int j;
+	size_t	len;
+	char	**new_cmd;
+	int		i;
+	int		j;
 
 	lst_tmp = lst_cmd->next;
 	len = 0;
@@ -94,8 +94,8 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 
 void	unlink_fd(void)
 {
-	char *fd_to_unlink;
-	int i;
+	char	*fd_to_unlink;
+	int		i;
 
 	i = 0;
 	fd_to_unlink = get_tmp_fd(i);
@@ -106,18 +106,20 @@ void	unlink_fd(void)
 void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 {
 	pid_t	pid;
-	int 	status = 1;
-	int 	builtin_status = 1;
-    int 	input_fd;
+	int		status;
+	int		builtin_status;
+	int		input_fd;
 	int		output_fd;
-	int 	lrv;
+	int		lrv;
 
-    input_fd = -1;
+	status = 1;
+	builtin_status = 1;
+	input_fd = -1;
 	output_fd = -1;
 	lrv = 0;
 	pid = fork();
 	if (pid < 0)
-			exit(PID_FAILURE);
+		exit(PID_FAILURE);
 	else if (pid == 0)
 	{
 		if (check_is_redir_cmd(lst_cmd))
@@ -125,13 +127,13 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 			cmd = get_complete_cmd(cmd, lst_cmd);
 			redir_parser2(lst_cmd, &input_fd, &output_fd);
 		}
-        if (pipe_len > 0)
-        {
-            if (output_fd == -1)
-                dup2(fd[1], STDOUT_FILENO);
-            else
-                dup2(fd[1], output_fd);
-        }
+		if (pipe_len > 0)
+		{
+			if (output_fd == -1)
+				dup2(fd[1], STDOUT_FILENO);
+			else
+				dup2(fd[1], output_fd);
+		}
 		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
 			lrv = sys_exec(cmd);
@@ -142,8 +144,6 @@ void	*first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 	else
 	{
 		waitpid(pid, &status, 0);
-		// close(input_fd);
-		// close(output_fd);
 		if (fd)
 			close(fd[1]);
 		if (check_have_dinput(lst_cmd) == 1)
@@ -162,11 +162,11 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	int 	status = 1;
 	int 	builtin_status = 1;
 	int 	output_fd;
-    int 	input_fd;
+	int 	input_fd;
 	int 	lrv;
-	pipe(fd + ((fd_index + 1) * 2));
 
-    input_fd = -1;
+	pipe(fd + ((fd_index + 1) * 2));
+	input_fd = -1;
 	output_fd = -1;
 	lrv = 0;
 	pid = fork();
@@ -191,14 +191,12 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		builtin_status = builtin_exec((t_cmd *)cmd);
 		if (builtin_status == NOT_FOUND)
 			lrv = sys_exec(cmd);
-		// need add free here because sys_exec can fail
 		if (builtin_status != NOT_FOUND)
 			exit(SUCCESS);
 		exit(lrv);
 	}
 	else
 	{
-		// wait(&status);
 		waitpid(pid, &status, 0);
 		close(fd[(fd_index + 1) * 2 + 1]);
 		close(fd[fd_index]);
@@ -217,10 +215,10 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	int 	status = 1;
 	int 	builtin_status = 1;
 	int 	input_fd;
-    int		output_fd;
+	int		output_fd;
 	int 	lrv;
 
-    output_fd = -1;
+	output_fd = -1;
 	input_fd = -1;
 	lrv = 0;
 	pid = fork();
@@ -257,7 +255,7 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		singleton()->last_return_value = LRV_KILL_SIG + WTERMSIG(status);
 }
 
-void cmd_with_multi_flag(t_list *lst_cmd, int *fd)
+void	cmd_with_multi_flag(t_list *lst_cmd, int *fd)
 {
 	t_list 	*tmp;
 	int		fd_index;
@@ -269,8 +267,8 @@ void cmd_with_multi_flag(t_list *lst_cmd, int *fd)
 		if (!check_is_inter(tmp))
 			break ;
 		interm_cmd(tmp->content, fd, fd_index, tmp);
-        while (tmp && is_redir(tmp))
-            tmp = tmp->next;
+	while (tmp && is_redir(tmp))
+	tmp = tmp->next;
 		++fd_index;
 		tmp = tmp->next;
 	}
@@ -293,7 +291,7 @@ static int	count_pipe_mix(t_list *lst_cmd)
 	return (count);
 }
 
-void all_in_one(t_list *lst_cmd)
+void	all_in_one(t_list *lst_cmd)
 {
 	t_list 	*tmp;
 	int 	*fd;
@@ -302,12 +300,12 @@ void all_in_one(t_list *lst_cmd)
 
 	tmp = lst_cmd;
 	fd = NULL;
-    if (tmp && (flag_check(tmp) == FLG_EO_CMD || flag_check(tmp) == FLG_EOL))
-    {
-        simple_cmd(tmp->content);
-        return ;
-    }
-    pipe_len = count_pipe_mix(tmp);
+	if (tmp && (flag_check(tmp) == FLG_EO_CMD || flag_check(tmp) == FLG_EOL))
+	{
+		simple_cmd(tmp->content);
+		return ;
+	}
+	pipe_len = count_pipe_mix(tmp);
 	if (pipe_len > 0)
 	{
 		fd = malloc(sizeof(int) * (pipe_len * 2));
@@ -317,11 +315,11 @@ void all_in_one(t_list *lst_cmd)
 	}
 	create_fd(lst_cmd);
 	first_cmd(tmp->content, fd, tmp, pipe_len);
-    while (tmp && is_redir(tmp))
-        tmp = tmp->next;
-    if (pipe_len > 0)
+	while (tmp && is_redir(tmp))
+		tmp = tmp->next;
+	if (pipe_len > 0)
 	{
-	    cmd_with_multi_flag(tmp->next, fd);
+		cmd_with_multi_flag(tmp->next, fd);
 		i = 0;
 		while (i < pipe_len * 2)
 			close(fd[i++]);
@@ -332,11 +330,11 @@ void all_in_one(t_list *lst_cmd)
 
 void	exec_all_in_one(t_list *lst_cmd)
 {
-    if (!lst_cmd)
-        return ;
+	if (!lst_cmd)
+		return ;
 	if (!((t_cmd *)lst_cmd->content)->args && check_is_redir_cmd(lst_cmd))
 		lst_cmd->content = get_complete_cmd(lst_cmd->content, lst_cmd);
 	if (!((t_cmd *)lst_cmd->content)->args)
 		return ;
-    all_in_one(lst_cmd);
+	all_in_one(lst_cmd);
 }

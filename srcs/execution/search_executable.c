@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 17:51:02 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 19:32:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 18:29:18 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,7 @@ char	*search_executable(char *command)
 	char		*cmd;
 
 	if (!path)
-	{
-		/*
-		** if $PATH is not set, bash does return a "No such file or directory"
-		** message
-		*/
-		// printf("%s: %s: %s\n", PROG_NAME, command, strerror(errno));
 		return (command);
-	}
 	exectbl = ft_split(path, ':');
 	ft_memdel((void **)&path);
 	if (!exectbl)

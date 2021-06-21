@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:41 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 14:26:12 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 19:05:29 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int check_opt_n(char *opt)
+static int	check_opt_n(char *opt)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (opt && opt[i] && !ft_strncmp(opt, "-", 1) && opt[i + 1])
@@ -32,24 +32,41 @@ int check_opt_n(char *opt)
 	return (1);
 }
 
-// void	case_last_return_value(char *arg)
-// {
-// 	ft_
-// }
+static int	cmd_parse_opt_n(char **cmd)
+{
+	int	i;
 
+	i = 1;
+	while (cmd && cmd[i])
+	{
+		if (check_opt_n(cmd[i]))
+			++i;
+		else
+			return (i);
+	}
+	return (i);
+}
 
-// void	get_var_last_return_case(char *s)
-// {
-// 	char	*ptr;
-// 	char	*found = ft_strstr(s, "$?");
+static void	echo_print_opt_n(t_cmd *cmds, int len_cmd, int i)
+{
+	while (i < len_cmd)
+	{
+		ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i++]);
+		if (i < len_cmd)
+			ft_dprintf(STDOUT_FILENO, " ");
+	}
+}
 
-// 	ft_asprintf(&ptr, "%.*s%d%s", i - 1, s, singleton()->last_return_value,
-// 		s + i + 1);
-// 	*s = ptr;
-// 	return (ft_nblen(singleton()->last_return_value) - 1);
-// }
-
-
+static void	echo_print(t_cmd *cmds, int len_cmd, int i)
+{
+	while (i < len_cmd && cmds->args[i])
+	{
+		ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i++]);
+		if (i < len_cmd)
+			ft_dprintf(STDOUT_FILENO, " ");
+	}
+	ft_dprintf(STDOUT_FILENO, "\n");
+}
 
 int	ft_echo(t_cmd *cmds)
 {
@@ -59,35 +76,14 @@ int	ft_echo(t_cmd *cmds)
 	i = 0;
 	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
-	while (cmds->args[i])
-		++i;
-	len_cmd = i;
-	if (*cmds->args && *(cmds->args + 1) && check_opt_n(cmds->args[1]))
-	{
-		i = 2;
-		while (i < len_cmd)
-		{
-
-			// echo " bonjour          $? "
-			// if (cmds->status_flag & FLG_LRV)
-			// 	ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i]);
-			// else
-				ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i]);
-			if (i < len_cmd)
-				ft_dprintf(STDOUT_FILENO, " ");
-			++i;
-		}
-	}
+	len_cmd = ft_strslen(cmds->args);
+	i = cmd_parse_opt_n(cmds->args);
+	if (*cmds->args && *(cmds->args + 1) && i >= 2)
+		echo_print_opt_n(cmds, len_cmd, i);
 	else
 	{
 		i = 1;
-		while (i < len_cmd && cmds->args[i])
-		{
-			ft_dprintf(STDOUT_FILENO, "%s", cmds->args[i++]);
-			if (i < len_cmd)
-				ft_dprintf(STDOUT_FILENO, " ");
-		}
-		ft_dprintf(STDOUT_FILENO, "\n");
+		echo_print(cmds, len_cmd, i);
 	}
 	return (SUCCESS);
 }
