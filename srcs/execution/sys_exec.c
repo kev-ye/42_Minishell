@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sys_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:07:20 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 20:10:29 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 14:02:52 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	sys_exec_msg_error(t_cmd *cmds)
 {
-	struct stat buf;
+	struct stat	buf;
 
 	if (cmds->args)
 		lstat(cmds->args[0], &buf);
@@ -31,8 +31,7 @@ int	sys_exec_msg_error(t_cmd *cmds)
 	else
 	{
 		ft_dprintf(STDERR_FILENO, PROG_NAME": %s: %s\n", cmds->args[0], strerror(errno));
-		printf("errno %d\n", errno);
-		if (errno == 13)
+		if (13 == errno)
 			return (LRV_PERMISSION);
 		else
 			return (LRV_CMD_NOT_FOUND);

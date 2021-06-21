@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 20:14:01 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 14:03:12 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@
 # define ERR_OPEN "cannot open file"
 
 
-# define DOUILLE_POUR_CASSER_LA_NORME	-1	/* before the ascii table */
+# define LRV_REPLACEMENT (-1)	/* before the ascii table */
 
 // Exec
 # define SYNTAXERR "syntax error near unexpected token"

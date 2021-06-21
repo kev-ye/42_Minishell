@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:02:00 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 18:06:45 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 14:02:37 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,10 @@ size_t	get_var_last_return_case(char **s, size_t i)
 {
 	char	*ptr;
 
-	ft_asprintf(&ptr, "%.*s%c%s", i - 1, *s, DOUILLE_POUR_CASSER_LA_NORME,
+	ft_asprintf(&ptr, "%.*s%c%s", i - 1, *s, LRV_REPLACEMENT,
 		*s + i + 1);
 	*s = ptr;
-	return (ft_nblen(DOUILLE_POUR_CASSER_LA_NORME) - 1);
+	return (ft_nblen(LRV_REPLACEMENT) - 1);
 }
 
 static size_t	get_env_var(char **s, size_t i)
