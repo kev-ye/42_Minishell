@@ -18,3 +18,7 @@
 - [x] export lol ; export "lol = fuck" tt ---> result : ttl ???
 - [ ] check env, maybe is not complet
 - [ ] some change with exec -> need to check (unset PATH get some new case)
+
+
+cmd1    cm2    cmd3   cmd3  cmd4
+     0 1    2 3    4 5    6 7 

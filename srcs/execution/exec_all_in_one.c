@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/20 20:12:12 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/21 15:57:35 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,19 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 	int j;
 
 	lst_tmp = lst_cmd->next;
+	len = 0;
 	while (lst_tmp)
 	{
-		len = ft_strslen(((t_cmd *)lst_tmp->content)->args);
-		if (lst_tmp && len > 1)
+		if (((t_cmd *)lst_tmp->content)->args)
+			len = ft_strslen(((t_cmd *)lst_tmp->content)->args);
+		if (lst_tmp && ((t_cmd *)lst_tmp->content)->args && len > 1)
 		{
 			len += ft_strslen(((t_cmd *)cmd)->args);
 			new_cmd = malloc(sizeof(char *) * (len + 1));
 			if (!new_cmd)
 				return (NULL);
 			i = 0;
-			while (((t_cmd *)cmd)->args[i])
+			while (((t_cmd *)cmd)->args && ((t_cmd *)cmd)->args[i])
 			{
 				new_cmd[i] = ft_strdup(((t_cmd *)cmd)->args[i]);
 				++i;
@@ -73,6 +75,8 @@ void *get_complete_cmd(void *cmd, t_list *lst_cmd)
 			while (((t_cmd *)lst_tmp->content)->args[j] && len)
 			{
 				new_cmd[i] = ft_strdup(((t_cmd *)lst_tmp->content)->args[j]);
+				free(((t_cmd *)lst_tmp->content)->args[j]);
+				((t_cmd *)lst_tmp->content)->args[j] = NULL;
 				++i;
 				++j;
 				--len;
@@ -160,6 +164,7 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	int 	output_fd;
     int 	input_fd;
 	int 	lrv;
+	pipe(fd + ((fd_index + 1) * 2));
 
     input_fd = -1;
 	output_fd = -1;
@@ -178,7 +183,6 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 			dup2(fd[fd_index * 2], STDIN_FILENO);
 		else
 			dup2(fd[fd_index * 2], input_fd);
-		
 		if (output_fd == -1)
 			dup2(fd[(fd_index + 1) * 2 + 1], STDOUT_FILENO);
 		else
@@ -197,6 +201,7 @@ void interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 		// wait(&status);
 		waitpid(pid, &status, 0);
 		close(fd[(fd_index + 1) * 2 + 1]);
+		close(fd[fd_index]);
 		if (check_have_dinput(lst_cmd) == 1)
 			unlink_fd();
 	}
@@ -242,7 +247,6 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	}
 	else
 	{
-		// wait(&status);
 		waitpid(pid, &status, 0);
 		if (check_have_dinput(lst_cmd) == 1)
 			unlink_fd();
@@ -264,14 +268,12 @@ void cmd_with_multi_flag(t_list *lst_cmd, int *fd)
 	{
 		if (!check_is_inter(tmp))
 			break ;
-		// show_content(tmp, "inter");
 		interm_cmd(tmp->content, fd, fd_index, tmp);
         while (tmp && is_redir(tmp))
             tmp = tmp->next;
 		++fd_index;
 		tmp = tmp->next;
 	}
-	// show_content(tmp, "last");
 	last_cmd(tmp->content, fd, fd_index, tmp);
 }
 
@@ -311,9 +313,7 @@ void all_in_one(t_list *lst_cmd)
 		fd = malloc(sizeof(int) * (pipe_len * 2));
 		if (!fd)
 			return ;
-		i = 0;
-		while (i < pipe_len)
-			pipe(fd + (i++ * 2));
+		pipe(fd);
 	}
 	create_fd(lst_cmd);
 	first_cmd(tmp->content, fd, tmp, pipe_len);
@@ -332,7 +332,11 @@ void all_in_one(t_list *lst_cmd)
 
 void	exec_all_in_one(t_list *lst_cmd)
 {
-    if (!lst_cmd || !((t_cmd *)lst_cmd->content)->args)
+    if (!lst_cmd)
         return ;
+	if (!((t_cmd *)lst_cmd->content)->args && check_is_redir_cmd(lst_cmd))
+		lst_cmd->content = get_complete_cmd(lst_cmd->content, lst_cmd);
+	if (!((t_cmd *)lst_cmd->content)->args)
+		return ;
     all_in_one(lst_cmd);
 }
