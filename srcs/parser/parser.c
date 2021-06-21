@@ -88,7 +88,7 @@ int	found_str_limit(char *s, size_t i, t_list **args)
 	k = 0;
 	while (g_limits[k].redir)
 	{
-		if (ft_strncmp(s + i, g_limits[k].redir, g_limits[k].len) == 0)
+		if (0 == ft_strncmp(s + i, g_limits[k].redir, g_limits[k].len))
 		{
 			if (i > 0)
 				ft_lstadd_back(args, ft_lstnew(ft_substr(s, 0, i)));
@@ -119,17 +119,6 @@ int	len_variable(char *s)
 		return (NOT_FOUND);
 }
 
-// $? case
-size_t	get_var_last_return_case(char **s, size_t i)
-{
-	char	*ptr;
-
-	ft_asprintf(&ptr, "%.*s%c%s", i - 1, *s, LRV_REPLACEMENT,
-		*s + i + 1);
-	*s = ptr;
-	return (ft_nblen(LRV_REPLACEMENT) - 1);
-}
-
 static size_t	get_env_var(char **s, size_t i)
 {
 	const int	len_str = len_variable(*s + i);
@@ -138,8 +127,6 @@ static size_t	get_env_var(char **s, size_t i)
 	char		*ptr;
 	char		*new;
 
-	if (*(*s + i) == '?')
-		return (get_var_last_return_case(s, i));
 	if (NOT_FOUND == len_str)
 		return (0);
 	p = ft_substr(*s, (unsigned int)i, len_str);
@@ -264,8 +251,17 @@ void	ft_parse(char *s)
 					ft_strnclean(s + i, "$", 1);
 				else if (!singleton()->lst || !(((t_cmd *)ft_lstlast(singleton()->lst)->content)->status_flag & FLG_DINPUT))
 				{
-					++i;
-					i += get_env_var(&s, i);
+					if (s[i + 1] == '?')
+					{
+						ft_strnclean(s, "$", 1);
+						s[i] = LRV_REPLACEMENT;
+						i += 1;
+					}
+					else
+					{
+						++i;
+						i += get_env_var(&s, i);
+					}
 				}
 				else
 					++i;
