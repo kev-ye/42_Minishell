@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:06:33 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 15:03:45 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 12:10:39 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ t_minishl	*singleton(void)
 	return (ptr);
 }
 
-void	print_prompt(void)
+void	update_prompt(void)
 {
 	char	*pwd;
 
@@ -58,22 +58,19 @@ t_list	*get_env(char **env)
 	i = 0;
 	while (env[i])
 	{
-		if (env[i] && !ft_strncmp(env[i], "OLDPWD=", 7))
-		{
-			++i;
+		if (env[i] && !ft_strncmp(env[i], "OLDPWD=", 7) && ++i)
 			continue ;
-		}
 		ptr = ft_strdup(env[i++]);
 		if (!ptr)
 		{
 			ft_lstclear(&new_env, free);
-			return (ft_memdel((void **)&ptr));
+			return (NULL);
 		}
 		tmp = ft_lstnew(ptr);
-		if (!tmp)
+		if (!tmp && NULL == ft_memdel((void **)&ptr))
 		{
 			ft_lstclear(&new_env, free);
-			return (ft_memdel((void **)&tmp));
+			return (NULL);
 		}
 		ft_lstadd_back(&new_env, tmp);
 	}
@@ -107,6 +104,29 @@ static char	*ft_get_shlvl(char *shlvl)
 	return (ret);
 }
 
+void	ft_interrupt(int code)
+{
+	if (SIGQUIT == code)
+	{
+		ft_putstr_fd("exit\n", STDIN_FILENO);
+		ft_free_exit(SUCCESS);
+	}
+	else if (SIGINT == code && EINTR == errno)
+	{
+		singleton()->last_return_value = 1;
+		if (2 == singleton()->rl_lvl)
+			ft_free_exit(EXEC_FAILURE);
+		ft_putstr("\n");
+		rl_on_new_line();
+		#if !defined(__APPLE__) && !defined(__MACH__)
+		rl_replace_line("", 0);
+		#endif
+		rl_redisplay();
+	}
+	else
+		ft_putstr("\n");
+}
+
 static int	ft_init_minishell(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
@@ -124,67 +144,37 @@ static int	ft_init_minishell(char **env)
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
 	singleton()->isatty_stdin = isatty(STDIN_FILENO);
+	signal(SIGQUIT, ft_interrupt);
+	signal(SIGINT, ft_interrupt);
 	return (1);
-}
-
-void	ft_interrupt(int code)
-{
-	if (SIGQUIT == code)
-	{
-		ft_putstr_fd("exit\n", STDIN_FILENO);
-		ft_free_exit(SUCCESS);
-	}
-	else if (SIGINT == code && errno == EINTR)
-	{
-		singleton()->last_return_value = 1;
-		if (singleton()->rl_lvl == 2)
-			ft_free_exit(EXEC_FAILURE);
-		ft_putstr("\n");
-		rl_on_new_line();
-		#if !defined(__APPLE__) && !defined(__MACH__)
-		rl_replace_line("", 0);
-		#endif
-		rl_redisplay();
-	}
-	else
-		ft_putstr("\n");
 }
 
 void	prompt(void)
 {
 	char	*ret;
-	int		r;
-	int built_exec = 0;
+	int		gnl_check;
 
-	signal(SIGQUIT, ft_interrupt);
-	signal(SIGINT, ft_interrupt);
-	r = TRUE;
+	gnl_check = TRUE;
 	while (TRUE)
 	{
 		ft_bzero(&singleton()->edit, sizeof(t_edition));
-		print_prompt();
-		if (singleton()->option.fd == STDIN_FILENO && singleton()->isatty_stdin)
+		update_prompt();
+		if (STDIN_FILENO == singleton()->option.fd && singleton()->isatty_stdin)
 		{
 			singleton()->rl_lvl = 1;
 			ret = readline(singleton()->prompt);
 		}
 		else
-			r = get_next_line(singleton()->option.fd, &ret);
+			gnl_check = get_next_line(singleton()->option.fd, &ret);
 		if (!ret)
-		{
 			ft_interrupt(SIGQUIT);
-		}
 		if (singleton()->isatty_stdin)
 			add2history(ret);
 		ft_parse(ret);
-		built_exec = ft_exec_each_cmd(singleton()->lst);
+		ft_exec_each_cmd(singleton()->lst);
 		__ft_free_cmds__();
-		ft_memdel((void **)(&ret));
-		if (r <= 0)
-		{
+		if (NULL == ft_memdel((void **)(&ret)) && gnl_check <= 0)
 			ft_exit_for_prompt();
-			break ;
-		}
 	}
 }
 

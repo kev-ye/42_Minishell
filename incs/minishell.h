@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 19:18:40 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/22 12:09:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,120 +33,16 @@
 # include <sys/ioctl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+
 # include "libft.h"
+# include "minishell_defs.h"
 # include "ft_termcaps.h"
-
-////////////////////////////////////////////////////////////////////////////////
-// -- DEFINES --
-////////////////////////////////////////////////////////////////////////////////
-# define PROG_NAME "minishell"
-# if defined(__APPLE__) && defined(__MACH__)
-#  define PROMPT "%s $ "
-# else
-#  define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-# endif
-
-// History file. May be renamed at compile time
-# ifndef HISTORY_FILENAME
-#  define HISTORY_FILENAME ".minishell_history"
-# endif
-
-/*
-** Some simple & useful macros
-*/
-# define SUCCESS 0
-# define ERROR 1
-
-# define FOUND 0
-# define NOT_FOUND -1
-
-# ifndef TRUE
-#  define TRUE 1
-# endif
-# if defined(TRUE) && 1 != TRUE		/* May be set already */
-#  undef TRUE
-#  define TRUE 1
-# endif
-
-# ifndef FALSE
-#  define FALSE 0
-# endif
-# if defined(FALSE) && 0 != FALSE	/* May be set already */
-#  undef FALSE
-#  define FALSE 0
-# endif
-
-
-/*
-** Error messages
- */
-# define ERR_MALLOC "malloc error"
-# define ERR_OPEN "cannot open file"
-
-
-# define LRV_REPLACEMENT (-1)	/* before the ascii table */
-
-// Exec
-# define SYNTAXERR "syntax error near unexpected token"
-# define SIMPLE 0
-# define ONLY_PIPE 1
-# define ONLY_REDIR 2
-# define MIX 4
-# define NO_OPTION 0
-# define PIPE_OPEN 1
-# define REDIR_OPEN 2
-# define NO_FIRST 0
-# define FIRST 1
-
-// fd flag
-#define F_APPEND 1
-#define F_TRUNC 2
-#define F_INPUT 3
-#define F_DINPUT 4
-
-// check
-# define NO_ONE (-1)
-
-// Bultin
-# define NO_NUM_ARG 255
-
-/*
-** LRV -> LAST RETURN VALUE ($?)
-** Some return codes :
-*/
-# define PID_FAILURE 1
-# define EXEC_FAILURE 1
-# define LRV_SYNTAX_ERROR 258
-# define LRV_PERMISSION 126
-# define LRV_CMD_NOT_FOUND 127
-# define LRV_GENERAL_ERROR 1
-# define LRV_KILL_SIG 128
-
-// Redir parser
-# define RET_INIT 0
-# define CTRLD 1
-# define OUTPUT 2
-
-// for '<<'
-# define TMP_FD "./double_input_fd"
-
-// DEBUGGING PURPOSE - TO REMOVE
-# define STRINGIFY(x) #x
-# define TOSTRING(x) STRINGIFY(x)
-# define PRINT_ERR(s) \
-	ft_dprintf(2, B_RED "" __FILE__ ":%d:" CLR_COLOR " " s " -> Here\n", __LINE__);
-// END DEBUGGING PURPOSE - TO REMOVE
-
-// Charsets used in the parsing
-// # define SPEC_CHARS " \\$'\""
-# define SPACES " \t"
-# define QUOTES "\"'"
 
 ////////////////////////////////////////////////////////////////////////////////
 // -- DATA STRUCTURES --
 ////////////////////////////////////////////////////////////////////////////////
 /*
-** Used for the parsing to cut the command when the following chars are found:
+** Used for the parsing to cut the commands when the following chars are found:
 **
 ** FLG_EO_CMD:			`;'
 ** FLG_PIPE:			`|'
@@ -155,7 +51,7 @@
 ** FLG_INPUT:			`<'
 ** FLG_DINPUT:			`<<'
 ** FLG_EOL:				`\0' (end of line)
-** FLG_LRV:				`$?' that needs an expension has been found
+** FLG_LRV:				`$?' (code that needs an expansion has been found)
 */
 enum	e_flags
 {
@@ -292,23 +188,22 @@ typedef struct s_minishl
 {
 	int					isatty_stdin;
 	int					last_return_value;
-	char				*cwd;				// one of those must be thrown
-	char				*cwd_basename;		// one of those must be thrown
-	char				*prompt;			// one of those must be thrown
+	char				*cwd;
+	char				*cwd_basename;
+	char				*prompt;
 	t_list				*env;
 	t_list				*lst;
 	t_edition			edit;
 	t_history			hist;
 	struct s_options	option;
 	struct termios		tattr;
-
-	int rl_lvl;
+	int					rl_lvl;
 }	t_minishl;
 
 ////////////////////////////////////////////////////////////////////////////////
 // -- PROTOTYPES --
 ////////////////////////////////////////////////////////////////////////////////
-// Utils
+/* Utils */
 void		__ft_free_cmds__(void);
 int			ft_is_openable(char *path, int flag);
 void		ft_printstrs(int fd, char **strs);
@@ -326,15 +221,13 @@ void		*ft_error(char *message, char *file, int line);
 
 // Parser
 t_minishl	*singleton(void);
-int			ft_gnl(int fd, char **line);
+void		print_prompt(void);
 char		*search_executable(char *command);
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
 void		ft_parse(char *s);
 t_list		*search_env(char *tofind, t_list **env);
 
-/*
-** Execution
-*/
+/* Execution */
 // general
 int			ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
@@ -344,6 +237,7 @@ int			syntax_parser(t_list *lst_cmd);
 int			builtin_exec(t_cmd *cmds);
 int			sys_exec(void *ptr);
 int			check_if_path_exist(t_list *env);
+
 // pipe
 void		*first_cmd_with_pipe(void *cmd, int *fd);
 void		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);
@@ -351,37 +245,35 @@ void		last_cmd_with_pipe(void *cmd, int *fd, int fd_index);
 void		cmd_with_multi_pipe(t_list *lst_cmd, int *fd);
 int			count_pipe(t_list *lst_cmd);
 void		cmd_with_pipe(t_list *lst_cmd);
+
 // redir
 void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
-void			redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
+void		redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
-void 		create_fd(t_list *cmd);
-void 		create_fd_input(t_list *cmd);
-int 		check_for_next(t_list *lst_cmd);
-char 		*get_tmp_fd(int i);
+void		create_fd(t_list *cmd);
+void		create_fd_input(t_list *cmd);
+int			check_for_next(t_list *lst_cmd);
+char		*get_tmp_fd(int i);
 // void 		redir_parser2(t_list *cmd, int fd_input, int fd_output);
-void 		redir_parser2(t_list *cmd, int *fd_input, int *fd_output);
+void		redir_parser2(t_list *cmd, int *fd_input, int *fd_output);
+
 // mix
 void		cmd_with_mix(t_list *lst_cmd);
-void 		cmd_with_pipe_mix(t_list *lst_cmd);
+void		cmd_with_pipe_mix(t_list *lst_cmd);
 
 int			simple_cmd(void *cmd);
-void	exec_all_in_one(t_list *lst_cmd);
+void		exec_all_in_one(t_list *lst_cmd);
 
 // debug to delete
-void show_content(t_list *lst_cmd, char *msg);
-void	show_fd(int fd, char *msg);
+void		show_content(t_list *lst_cmd, char *msg);
+void		show_fd(int fd, char *msg);
 
-/*
-** Flag
-*/
+/* Flag */
 int			flag_check(t_list *lst_cmd);
 int			is_redir(t_list *lst_cmd);
 int			is_sep_or_end(t_list *lst_cmd);
 
-/*
-** Builtin
-*/
+/* Builtins */
 int			ft_echo(t_cmd *cmds);
 int			ft_cd(t_cmd *cmds);
 int			ft_pwd(void);
@@ -399,7 +291,5 @@ void		print_inline(char **ptr, char *buffer);
 
 // Signals
 void		ft_interrupt(int code);
-
-void		print_prompt(void);
 
 #endif
