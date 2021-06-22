@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 12:25:47 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 13:06:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_lstprint(t_list *lst, char sep);
 void		ft_list_sort(t_list **begin_list, int (*cmp)());
 char		**ft_lst2strs(t_list **lst);
-void	ft_lstprint_cmd(t_list *); // TO REMOVE DEBUG PURPOSE
+void		ft_lstprint_cmd(t_list *); // TO REMOVE DEBUG PURPOSE
 
 /* Memory Management */
 void		__ft_free_cmds__(void);
@@ -219,9 +219,15 @@ void		ft_free_exit(int code);
 
 /* General */
 t_minishl	*singleton(void);
-void		print_prompt(void);
+int			ft_init_minishell(char **env);
+
+void		prompt(void);
 char		*search_executable(char *command);
 t_list		*search_env(char *tofind, t_list **env);
+
+/* General Arguments Handling */
+void		option_c(int ac, const char **av);
+void		parse_args(int ac, const char **av);
 
 /* Signals */
 void		ft_interrupt(int code);
@@ -267,8 +273,8 @@ int			simple_cmd(void *cmd);
 void		exec_all_in_one(t_list *lst_cmd);
 
 // debug to delete
-void	show_content(t_list *, char *);
-void	show_fd(int, char *);
+void		show_content(t_list *, char *);
+void		show_fd(int, char *);
 
 /* Flag */
 int			flag_check(t_list *lst_cmd);

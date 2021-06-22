@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/22 12:16:57 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/22 13:11:23 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,7 +58,10 @@ SUB_SRC	:= exec_cmds.c \
 		   exec_all_in_one.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= args_parsing.c \
-		   singleton.c \
+		   init_minishell.c \
+		   prompt.c \
+		   signals_handling.c \
+		   singleton.c
 SRC		+= $(addprefix general/, $(SUB_SRC))
 SUB_SRC	:= parser.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))

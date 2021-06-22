@@ -6,11 +6,40 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 12:17:59 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 12:19:06 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 13:19:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static t_list	*get_env(char **env)
+{
+	t_list	*new_env;
+	t_list	*tmp;
+	void	*ptr;
+	int		i;
+
+	new_env = NULL;
+	i = 0;
+	while (env[i])
+	{
+		if (env[i] && 0 == ft_strncmp(env[i], "OLDPWD=", 7) && ++i)
+			continue ;
+		ptr = ft_strdup(env[i++]);
+		tmp = ft_lstnew(ptr);
+		if (!ptr || !tmp)
+		{
+			if (ptr)
+				ft_memdel((void **)&ptr);
+			if (tmp)
+				ft_memdel((void **)&tmp);
+			ft_lstclear(&new_env, free);
+			return (ft_error(ERR_MALLOC, __FILE__, __LINE__));
+		}
+		ft_lstadd_back(&new_env, tmp);
+	}
+	return (new_env);
+}
 
 static char	*ft_get_shlvl(char *shlvl)
 {
@@ -39,7 +68,7 @@ static char	*ft_get_shlvl(char *shlvl)
 	return (ret);
 }
 
-static int	ft_init_minishell(char **env)
+int	ft_init_minishell(char **env)
 {
 	const char	*args[] = {"export", NULL, NULL};
 	const t_cmd	cmd = {.args = (char **)args, .args_len = 0, .status_flag = 0};
