@@ -17,7 +17,7 @@
 - [x] cat << f$?
 - [x] export lol ; export "lol = fuck" tt ---> result : ttl ???
 - [ ] check env, maybe is not complet
-- [ ] some change with exec -> need to check (unset PATH get some new case)
+- [x] some change with exec -> need to check (unset PATH get some new case)
 - [x] add signal for CTRL-\
 
 
