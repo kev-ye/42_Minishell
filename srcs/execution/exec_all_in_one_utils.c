@@ -68,5 +68,8 @@ void	unlink_fd(void)
 	i = 0;
 	fd_to_unlink = get_tmp_fd(i);
 	if (fd_to_unlink)
+	{
 		unlink(fd_to_unlink);
+		free(fd_to_unlink);
+	}
 }

@@ -34,14 +34,9 @@ static void	cmd_with_multi_flag(t_list *lst_cmd, int *fd)
 
 static void	exec_multi_flag_cmd(t_list *tmp, int pipe_len, int *fd)
 {
-	int	i;
-
 	if (pipe_len > 0)
 	{
 		cmd_with_multi_flag(tmp->next, fd);
-		i = 0;
-		while (i < pipe_len * 2)
-			close(fd[i++]);
 		if (fd)
 			free(fd);
 	}

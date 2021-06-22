@@ -85,7 +85,7 @@ int	ft_init_minishell(char **env)
 	ft_memdel((void **)&ret);
 	ft_memdel((void **)&shlvl);
 	singleton()->isatty_stdin = isatty(STDIN_FILENO);
-	signal(SIGQUIT, ft_interrupt);
+	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, ft_interrupt);
 	return (1);
 }

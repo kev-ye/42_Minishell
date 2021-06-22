@@ -106,7 +106,10 @@ char	*get_tmp_fd(int i)
 			return (tmp_fd.new_name);
 		}
 		else
+		{
+			free(tmp_fd.new_name);
 			++i;
+		}
 	}
 	return (NULL);
 }

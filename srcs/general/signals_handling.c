@@ -16,7 +16,6 @@
 #if defined(__APPLE__) && defined(__MACH__)
 void	ft_interrupt(int code)
 {
-	printf("code : [%d] = sig : [%d]\n", code, SIGQUIT);
 	if (SIGQUIT == code)
 	{
 		ft_putstr_fd("exit\n", STDIN_FILENO);

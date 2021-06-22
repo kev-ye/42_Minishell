@@ -86,6 +86,7 @@ void	simple_cmd(void *cmd)
 			exit(PID_FAILURE);
 		else if (spl_c.pid == 0)
 		{
+			signal(SIGQUIT, ft_interrupt);
 			spl_c.lrv = sys_exec(cmd);
 			exit(spl_c.lrv);
 		}
@@ -94,8 +95,12 @@ void	simple_cmd(void *cmd)
 		if (_wifexited(spl_c.status) != 0)
 			singleton()->last_return_value = _wexitstatus(spl_c.status);
 		else if (_wifsignaled(spl_c.status) == 1)
+		{
+			if (_wtermsig(spl_c.status) == SIGQUIT)
+				printf("Quit: %d\n", SIGQUIT);
 			singleton()->last_return_value = LRV_KILL_SIG
 			+ _wtermsig(spl_c.status);
+		}
 	}
 }
 
