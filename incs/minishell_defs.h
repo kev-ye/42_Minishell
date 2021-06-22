@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:31:30 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 11:43:27 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 16:01:53 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,17 @@
 # define LRV_KILL_SIG      128
 # define LRV_REPLACEMENT   (-1) /* before the ascii table */
 
+/* used to reset static variables in `quotes2close' */
+# define QUOTES_RESET_FLAG 1
+
+/* used to set static variables normally in `quotes2close' */
+# define QUOTES_SET_FLAG   0
+
 /* Charsets used in the parsing */
 # define SPACES " \t"
 # define QUOTES "\"'"
+# define SPEC_CHARS "\\$'\"" /* Special chars n1 */
+# define SC2        "\\$\""  /* Special chars for `\' in double quotes */
 
 // DEBUGGING PURPOSE - TO REMOVE
 # define PRINT_ERR(s) \

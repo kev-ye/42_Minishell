@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 13:06:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 16:05:16 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,19 +65,12 @@ enum	e_flags
 	FLG_LRV = (1U << 7)
 };
 
-// Only used whithin a lookup table for the parsing
+/* Only used whithin a lookup table for the parsing */
 struct s_redirections
 {
-	char	*redir;
-	int		len;
-	uint8_t	flag;
-};
-
-// Only used whithin a lookup table to execute a command based on key codes
-struct s_termcaps
-{
-	char	*termcap;
-	void	(*f)();
+	char		*redir;
+	int			len;
+	uint16_t	flag;
 };
 
 /*
@@ -96,6 +89,22 @@ typedef struct s_quotes
 	int		first;
 	int		did_change;
 }	t_quotes;
+
+/* Main structure in the parsing to avoid norm errors */
+typedef struct s_parsing
+{
+	t_quotes	quotes;
+	t_list		*args;
+	int			limit;
+	char		*s;
+} t_parsing;
+
+/* Only used whithin a lookup table to execute a command based on key codes */
+struct s_termcaps
+{
+	char	*termcap;
+	void	(*f)();
+};
 
 /*
 ** Keeps some important infos about the history:
@@ -139,7 +148,7 @@ typedef struct s_cmd
 {
 	char	**args;
 	int		args_len;
-	uint8_t	status_flag;
+	uint16_t	status_flag;
 }	t_cmd;
 
 /*
@@ -211,7 +220,6 @@ char		*ft_strnclean(char *s, const char *charset, size_t end);
 void		ft_lstprint(t_list *lst, char sep);
 void		ft_list_sort(t_list **begin_list, int (*cmp)());
 char		**ft_lst2strs(t_list **lst);
-void		ft_lstprint_cmd(t_list *); // TO REMOVE DEBUG PURPOSE
 
 /* Memory Management */
 void		__ft_free_cmds__(void);
@@ -234,6 +242,15 @@ void		ft_interrupt(int code);
 
 /* Parser */
 int			quotes2close(unsigned char c, t_quotes *quotes, int status);
+t_cmd		*new_cmd(uint16_t status, t_list **args);
+int			__pass_spaces__(t_parsing *p, size_t *i);
+int			__check_str_limit__(t_parsing *p, size_t *i);
+int			__backslash_case__(t_parsing *p, size_t *i);
+int			__handle_quotes__(t_parsing *p, size_t *i);
+int			__handle_variable_expansion__(t_parsing *p, size_t *i);
+int			__need_to_subdivide_command__(t_parsing *p, size_t *i);
+int			__fill_last_command__(t_parsing *p, size_t *i);
+
 void		ft_parse(char *s);
 
 /* Execution */

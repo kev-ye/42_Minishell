@@ -6,43 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:21:47 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 11:43:51 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 13:40:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// DEBUG PURPOSE
-void	ft_lstprint_cmd(t_list *lst)
-{
-	t_list	*tmp;
-	t_cmd	*cmd;
-	size_t	i;
-
-	if (!lst)
-		return ;
-	ft_putendl(B_RED "# START");
-	tmp = lst;
-	while (tmp)
-	{
-		cmd = tmp->content;
-		ft_printf(B_GREEN "stat[%.8b] args_len[%2d] ",
-			cmd->status_flag, cmd->args_len);
-		if (cmd->args)
-		{
-			ft_putstr("args: ");
-			i = 0;
-			while (cmd->args && cmd->args[i])
-				ft_printf("[%s]", cmd->args[i++]);
-		}
-		else
-			ft_putstr(B_BLUE "no args");
-		ft_putendl("");
-		tmp = tmp->next;
-	}
-	ft_putendl(B_RED "# END" CLR_COLOR);
-}
-// END DEBUG PURPOSE
 
 void	ft_lstprint(t_list *lst, char sep)
 {

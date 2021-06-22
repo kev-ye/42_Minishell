@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/22 13:11:23 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/22 16:06:30 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,7 +63,10 @@ SUB_SRC	:= args_parsing.c \
 		   signals_handling.c \
 		   singleton.c
 SRC		+= $(addprefix general/, $(SUB_SRC))
-SUB_SRC	:= parser.c
+SUB_SRC	:= parser_steps_1.c \
+		   parser_steps_2.c \
+		   parser.c \
+		   quotes_handling.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= history.c
 SRC		+= $(addprefix termcaps/, $(SUB_SRC))
