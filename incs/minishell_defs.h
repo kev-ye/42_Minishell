@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:31:30 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 11:43:27 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 16:16:29 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,16 @@
 # define LRV_KILL_SIG      128
 # define LRV_REPLACEMENT   (-1) /* before the ascii table */
 
-/* Charsets used in the parsing */
-# define SPACES " \t"
-# define QUOTES "\"'"
+/* used to reset static variables in `quotes2close' */
+# define QUOTES_RESET_FLAG 1
 
-// DEBUGGING PURPOSE - TO REMOVE
-# define PRINT_ERR(s) \
-	ft_dprintf(2, B_RED""__FILE__":%d:"CLR_COLOR" "s" -> Here\n",__LINE__);
-// END DEBUGGING PURPOSE - TO REMOVE
+/* used to set static variables normally in `quotes2close' */
+# define QUOTES_SET_FLAG   0
+
+/* Charsets used in the parsing */
+# define SPACES      " \t"
+# define QUOTES      "\"'"
+# define SPEC_CHARS  "\\$'\"" /* Special chars n1 */
+# define SPEC_CHARS2 "\\$\""  /* Special chars for `\' in double quotes */
 
 #endif

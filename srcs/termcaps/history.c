@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 20:53:49 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 10:59:08 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 13:29:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,11 @@ static void	create_history(void)
 	singleton()->hist.path = path;
 	singleton()->hist.fd = open(singleton()->hist.path,
 		O_RDWR | O_CREAT | O_APPEND, __DEFAULT_RIGHTS__);
-	if (singleton()->hist.fd == -1)
+	if ((-1) == singleton()->hist.fd)
 		ft_error(ERR_OPEN, __FILE__, __LINE__);
 }
 
-static void	convert_history2lst(void)
+static void	add_existing_history(void)
 {
 	int		check;
 	char	*ret;
@@ -67,7 +67,7 @@ static void	convert_history2lst(void)
 void	init_history(void)
 {
 	create_history();
-	convert_history2lst();
+	add_existing_history();
 }
 
 void	add2history(char *cmd)

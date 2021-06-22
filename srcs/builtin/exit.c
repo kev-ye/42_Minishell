@@ -3,21 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/21 19:30:59 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/22 13:30:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	check_neg_strdigit(char *strdigit)
+static int	check_neg_strdigit(char *s)
 {
-	if (strdigit && !ft_strncmp(strdigit, "-", 1)
-		&& ft_strisdigit(strdigit + 1) == 1)
-		return (1);
-	return (0);
+	return (s && !ft_strncmp(s, "-", 1) && ft_strisdigit(s + 1));
 }
 
 static int	print_arg_error(t_cmd *cmds)
