@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 16:16:22 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/22 16:30:41 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ static t_list	*create_input_fd(t_list *cmd, int fd_input, int flag_is)
 
 	i = 1;
 	tmp_fd = NULL;
+	input_str = NULL;
 	if (flag_is == F_DINPUT)
 	{
 		tmp_fd = new_tmp_fd_name(i);

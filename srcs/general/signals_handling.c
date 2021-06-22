@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 13:11:16 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 14:18:55 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/22 17:05:53 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #if defined(__APPLE__) && defined(__MACH__)
 void	ft_interrupt(int code)
 {
+	printf("code : [%d] = sig : [%d]\n", code, SIGQUIT);
 	if (SIGQUIT == code)
 	{
 		ft_putstr_fd("exit\n", STDIN_FILENO);
