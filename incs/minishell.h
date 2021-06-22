@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 13:06:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 15:50:54 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,6 +200,17 @@ typedef struct s_minishl
 	int					rl_lvl;
 }	t_minishl;
 
+// cmd utils
+typedef struct s_c_init
+{
+	pid_t	pid;
+	int		status;
+	int		builtin_status;
+	int		input_fd;
+	int		output_fd;
+	int		lrv;
+}	t_c_init;
+
 ////////////////////////////////////////////////////////////////////////////////
 // -- PROTOTYPES --
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +249,7 @@ void		ft_parse(char *s);
 
 /* Execution */
 // General
-int			ft_exec_each_cmd(t_list *lst);
+void		ft_exec_each_cmd(t_list *lst_cmd);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
 int			part_cmd_check(t_list *lst_cmd);
@@ -247,30 +258,31 @@ int			builtin_exec(t_cmd *cmds);
 int			sys_exec(void *ptr);
 int			check_if_path_exist(t_list *env);
 
-// Pipe
-void		*first_cmd_with_pipe(void *cmd, int *fd);
-void		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);
-void		last_cmd_with_pipe(void *cmd, int *fd, int fd_index);
-void		cmd_with_multi_pipe(t_list *lst_cmd, int *fd);
+// All in one
+int			_wstatus(int status);
+int			_wifexited(int status);
+int			_wexitstatus(int status);
+int			_wifsignaled(int status);
+int			_wtermsig(int status);
+int			check_is_inter(t_list *lst_cmd);
+int			check_is_redir_cmd(t_list *lst_cmd);
+int			check_have_dinput(t_list *lst_cmd);
+void		unlink_fd(void);
 int			count_pipe(t_list *lst_cmd);
-void		cmd_with_pipe(t_list *lst_cmd);
-
-// Redirections
+void		first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len);
+void		interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd);
+void		last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd);
+void		redir_parser(t_list *cmd, int *fd_input, int *fd_output);
 void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
-void		redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
-void		cmd_with_redir(void *cmd, t_list *lst_cmd);
-void		create_fd(t_list *cmd);
+void		create_fd_output(t_list *cmd);
 void		create_fd_input(t_list *cmd);
+char		*new_tmp_fd_name(int i);
 int			check_for_next(t_list *lst_cmd);
 char		*get_tmp_fd(int i);
-void		redir_parser2(t_list *cmd, int *fd_input, int *fd_output);
-
-// Redirections Mix
-void		cmd_with_mix(t_list *lst_cmd);
-void		cmd_with_pipe_mix(t_list *lst_cmd);
-
-int			simple_cmd(void *cmd);
+void		simple_cmd(void *cmd);
 void		exec_all_in_one(t_list *lst_cmd);
+void 		set_lrv(int status);
+t_c_init	cmd_init(void);
 
 // debug to delete
 void		show_content(t_list *, char *);

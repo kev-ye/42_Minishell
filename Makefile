@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
+#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/22 13:11:23 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/22 15:56:53 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,9 +53,18 @@ SUB_SRC	:= exec_cmds.c \
 		   builtin_exec.c \
 		   sys_exec.c \
 		   flag_check.c \
-		   create_fd.c \
+		   create_fd_output.c \
+		   create_fd_input.c \
+		   create_fd_utils.c \
 		   redir_parser_utils.c \
-		   exec_all_in_one.c
+		   exec_all_in_one.c \
+		   exec_all_in_one_utils.c \
+		   exec_all_in_one_utils2.c \
+		   first_cmd.c \
+		   inter_cmd.c \
+		   last_cmd.c \
+		   lrv_utils.c \
+		   lrv_utils2.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= args_parsing.c \
 		   init_minishell.c \

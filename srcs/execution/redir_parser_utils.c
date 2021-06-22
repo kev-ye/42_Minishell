@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 13:53:35 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/21 19:54:52 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/22 14:38:59 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,15 @@
 static int	g_trunc_fd = O_WRONLY | O_TRUNC | O_CREAT;
 static int	g_append_fd = O_WRONLY | O_APPEND | O_CREAT;
 
-void	parser_output_fd(t_list *cmd, int *fd_output, int flag_is)
+typedef struct s_tmp_fd
+{
+	char	*old_name;
+	char	*new_name;
+	char	*fd_nbr;
+	int		fd;
+}	t_tmp_fd;
+
+static void	parser_output_fd(t_list *cmd, int *fd_output, int flag_is)
 {
 	if (flag_is == F_TRUNC)
 	{
@@ -33,37 +41,22 @@ void	parser_output_fd(t_list *cmd, int *fd_output, int flag_is)
 		dup2(*fd_output, STDOUT_FILENO);
 }
 
-char	*get_tmp_fd(int i)
+static void	msg_error_with_exit(int opt, t_list *cmd)
 {
-	char	*old_name;
-	char	*new_name;
-	char	*fd_nbr;
-	int		fd;
-
-	fd = -1;
-	while (1)
+	if (opt == 1)
 	{
-		fd_nbr = ft_itoa(i);
-		old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
-		if (!old_name)
-			return (NULL);
-		ft_strcpy(old_name, TMP_FD);
-		new_name = ft_strjoin(old_name, fd_nbr);
-		free(old_name);
-		free(fd_nbr);
-		fd = open(new_name, O_RDWR);
-		if (fd != -1)
-		{
-			close(fd);
-			return (new_name);
-		}
-		else
-			++i;
+		ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n",
+			((t_cmd *)cmd->content)->args[0], strerror(errno));
+		exit(LRV_GENERAL_ERROR);
 	}
-	return (NULL);
+	else if (opt == 2)
+	{
+		ft_dprintf(STDERR_FILENO, "open for double input crash\n");
+		exit(LRV_GENERAL_ERROR);
+	}
 }
 
-t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
+static t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
 {
 	char	*tmp_fd_name;
 	int		i;
@@ -74,11 +67,7 @@ t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
 	{
 		*fd_input = open(((t_cmd *)cmd->content)->args[0], O_RDWR);
 		if (*fd_input == -1)
-		{
-			ft_dprintf(STDERR_FILENO, "minishell: %s: %s\n",
-				((t_cmd *)cmd->content)->args[0], strerror(errno));
-			exit(LRV_GENERAL_ERROR);
-		}
+			msg_error_with_exit(1, cmd);
 		else
 			dup2(*fd_input, STDIN_FILENO);
 	}
@@ -88,17 +77,41 @@ t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
 		*fd_input = open(tmp_fd_name, O_RDWR);
 		free(tmp_fd_name);
 		if (*fd_input == -1)
-		{
-			ft_dprintf(STDERR_FILENO, "open for double input crash parser\n");
-			exit(LRV_GENERAL_ERROR);
-		}
+			msg_error_with_exit(2, cmd);
 		else
 			dup2(*fd_input, STDIN_FILENO);
 	}
 	return (cmd);
 }
 
-void	redir_parser2(t_list *cmd, int *fd_input, int *fd_output)
+char	*get_tmp_fd(int i)
+{
+	t_tmp_fd	tmp_fd;
+
+	tmp_fd.fd = -1;
+	while (1)
+	{
+		tmp_fd.fd_nbr = ft_itoa(i);
+		tmp_fd.old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
+		if (!tmp_fd.old_name)
+			return (NULL);
+		ft_strcpy(tmp_fd.old_name, TMP_FD);
+		tmp_fd.new_name = ft_strjoin(tmp_fd.old_name, tmp_fd.fd_nbr);
+		free(tmp_fd.old_name);
+		free(tmp_fd.fd_nbr);
+		tmp_fd.fd = open(tmp_fd.new_name, O_RDWR);
+		if (tmp_fd.fd != -1)
+		{
+			close(tmp_fd.fd);
+			return (tmp_fd.new_name);
+		}
+		else
+			++i;
+	}
+	return (NULL);
+}
+
+void	redir_parser(t_list *cmd, int *fd_input, int *fd_output)
 {
 	int	first;
 	int	flag_is;
