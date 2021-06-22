@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 16:05:16 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 16:14:45 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ typedef struct s_parsing
 	t_list		*args;
 	int			limit;
 	char		*s;
-} t_parsing;
+}	t_parsing;
 
 /* Only used whithin a lookup table to execute a command based on key codes */
 struct s_termcaps
@@ -146,8 +146,8 @@ typedef struct s_edition
 */
 typedef struct s_cmd
 {
-	char	**args;
-	int		args_len;
+	char		**args;
+	int			args_len;
 	uint16_t	status_flag;
 }	t_cmd;
 

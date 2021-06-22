@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 15:58:10 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 16:05:45 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 16:17:23 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,8 @@ int	__backslash_case__(t_parsing *p, size_t *i)
 	if ('\\' == p->s[*i])
 	{
 		if ((p->quotes.first && p->quotes.d_quote
-				&& ft_incharset(SC2, p->s[*i + 1])) || FALSE == p->quotes.first)
+				&& ft_incharset(SPEC_CHARS2, p->s[*i + 1]))
+			|| FALSE == p->quotes.first)
 		{
 			ft_strnclean(p->s + *i, "\\", 1);
 		}
