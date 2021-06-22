@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 12:09:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 12:25:47 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,31 +204,34 @@ typedef struct s_minishl
 // -- PROTOTYPES --
 ////////////////////////////////////////////////////////////////////////////////
 /* Utils */
-void		__ft_free_cmds__(void);
-int			ft_is_openable(char *path, int flag);
-void		ft_printstrs(int fd, char **strs);
-void		ft_lstprint(t_list *lst, char sep);
-t_list		*ft_lstindex(t_list *lst, size_t index);
-void		ft_lstprint_cmd(t_list *lst);
-char		**ft_lst2strs(t_list **lst);
-void		ft_list_sort(t_list **begin_list, int (*cmp)());
-int			ft_find_in_strs(char *s, const char **strs);
-char		*ft_getenv(const char *name);
-char		*ft_strclean(char *s, const char *charset);
-char		*ft_strnclean(char *s, const char *charset, size_t end);
-void		ft_free_exit(int code);
 void		*ft_error(char *message, char *file, int line);
+int			ft_is_openable(char *path, int flag);
+char		*ft_getenv(const char *name);
+char		*ft_strnclean(char *s, const char *charset, size_t end);
+void		ft_lstprint(t_list *lst, char sep);
+void		ft_list_sort(t_list **begin_list, int (*cmp)());
+char		**ft_lst2strs(t_list **lst);
+void	ft_lstprint_cmd(t_list *); // TO REMOVE DEBUG PURPOSE
 
-// Parser
+/* Memory Management */
+void		__ft_free_cmds__(void);
+void		ft_free_exit(int code);
+
+/* General */
 t_minishl	*singleton(void);
 void		print_prompt(void);
 char		*search_executable(char *command);
-int			quotes2close(unsigned char c, t_quotes *quotes, int status);
-void		ft_parse(char *s);
 t_list		*search_env(char *tofind, t_list **env);
 
+/* Signals */
+void		ft_interrupt(int code);
+
+/* Parser */
+int			quotes2close(unsigned char c, t_quotes *quotes, int status);
+void		ft_parse(char *s);
+
 /* Execution */
-// general
+// General
 int			ft_exec_each_cmd(t_list *lst);
 char		*search_executable(char *command);
 void		ft_pre_exec_cmd(void *ptr);
@@ -238,7 +241,7 @@ int			builtin_exec(t_cmd *cmds);
 int			sys_exec(void *ptr);
 int			check_if_path_exist(t_list *env);
 
-// pipe
+// Pipe
 void		*first_cmd_with_pipe(void *cmd, int *fd);
 void		interm_cmd_with_pipe(void *cmd, int *fd, int fd_index);
 void		last_cmd_with_pipe(void *cmd, int *fd, int fd_index);
@@ -246,7 +249,7 @@ void		cmd_with_multi_pipe(t_list *lst_cmd, int *fd);
 int			count_pipe(t_list *lst_cmd);
 void		cmd_with_pipe(t_list *lst_cmd);
 
-// redir
+// Redirections
 void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
 void		redir_parser(int fd_input, int fd_output, t_list *lst_cmd);
 void		cmd_with_redir(void *cmd, t_list *lst_cmd);
@@ -254,10 +257,9 @@ void		create_fd(t_list *cmd);
 void		create_fd_input(t_list *cmd);
 int			check_for_next(t_list *lst_cmd);
 char		*get_tmp_fd(int i);
-// void 		redir_parser2(t_list *cmd, int fd_input, int fd_output);
 void		redir_parser2(t_list *cmd, int *fd_input, int *fd_output);
 
-// mix
+// Redirections Mix
 void		cmd_with_mix(t_list *lst_cmd);
 void		cmd_with_pipe_mix(t_list *lst_cmd);
 
@@ -265,8 +267,8 @@ int			simple_cmd(void *cmd);
 void		exec_all_in_one(t_list *lst_cmd);
 
 // debug to delete
-void		show_content(t_list *lst_cmd, char *msg);
-void		show_fd(int fd, char *msg);
+void	show_content(t_list *, char *);
+void	show_fd(int, char *);
 
 /* Flag */
 int			flag_check(t_list *lst_cmd);
@@ -286,10 +288,5 @@ int			ft_unset(t_cmd *cmds);
 void		ft_exit_for_prompt(void);
 int			ft_exit(t_cmd *cmds);
 int			ft_clear(void);
-
-void		print_inline(char **ptr, char *buffer);
-
-// Signals
-void		ft_interrupt(int code);
 
 #endif

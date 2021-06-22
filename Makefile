@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/22 11:24:52 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/22 12:16:57 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,9 +24,10 @@ LIB_DIR		:= libft
 INC_DIR		:= incs
 SRC_DIR		:= srcs
 SUB_DIR		:= builtin \
+			   execution \
+			   general \
 			   parser \
 			   termcaps \
-			   execution \
 			   util
 OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
@@ -35,8 +36,16 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 
 NAME	:= minishell
 SRC		:= main.c
-SUB_SRC	:= parser.c
-SRC		+= $(addprefix parser/, $(SUB_SRC))
+SUB_SRC	:= cd.c \
+		   clear.c \
+		   echo.c \
+		   env.c \
+		   exit.c \
+		   export.c \
+		   pwd.c \
+		   unset.c \
+		   export_utils.c
+SRC		+= $(addprefix builtin/, $(SUB_SRC))
 SUB_SRC	:= exec_cmds.c \
 		   search_executable.c \
 		   multi_cmds_check.c \
@@ -48,22 +57,18 @@ SUB_SRC	:= exec_cmds.c \
 		   redir_parser_utils.c \
 		   exec_all_in_one.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
-SUB_SRC	:= cd.c \
-		   clear.c \
-		   echo.c \
-		   env.c \
-		   exit.c \
-		   export.c \
-		   pwd.c \
-		   unset.c \
-		   export_utils.c
-SRC		+= $(addprefix builtin/, $(SUB_SRC))
+SUB_SRC	:= args_parsing.c \
+		   singleton.c \
+SRC		+= $(addprefix general/, $(SUB_SRC))
+SUB_SRC	:= parser.c
+SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= history.c
 SRC		+= $(addprefix termcaps/, $(SUB_SRC))
 SUB_SRC	:= list_utils.c \
 		   memory_management.c \
 		   utils.c
 SRC		+= $(addprefix util/, $(SUB_SRC))
+
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 # COLORS
