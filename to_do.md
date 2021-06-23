@@ -16,10 +16,14 @@
 - [x] ls | ./minishill : command not found, idk why
 - [x] cat << f$?
 - [x] export lol ; export "lol = fuck" tt ---> result : ttl ???
-- [ ] check env, maybe is not complet
+- [x] check env, maybe is not complet
 - [x] some change with exec -> need to check (unset PATH get some new case)
 - [x] add signal for CTRL-\
+- [x] cd : no more 2 args
+- [x] builtin can launch with redir but no with pipe
+- [ ] leak with fd : check \[first/inter/last\]_cmd.c
+- [ ] unset with multi args no fonction + msg error like export
 
 
-cmd1    cm2    cmd3   cmd3  cmd4
+cmd1    cm2    cmd3   cmd3  cmd4 > f1
      0 1    2 3    4 5    6 7 

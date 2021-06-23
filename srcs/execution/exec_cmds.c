@@ -6,11 +6,12 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 14:29:09 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/23 17:04:17 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#define LRV_TERM singleton()->last_return_value = LRV_KILL_SIG + _wtermsig(spl_c.status);
 
 typedef struct s_spl_c
 {

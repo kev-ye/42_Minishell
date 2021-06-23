@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/21 19:17:11 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/23 17:46:06 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ static int	cmds_check(char *cmd)
 	if (!check_space(cmd) && (ft_isalpha(cmd[0]) || cmd[0] == '_'))
 		return (1);
 	else
-		ft_dprintf(STDERR_FILENO, "%s: export: `%s\': not a valid identifier\n",
-			PROG_NAME, cmd);
+		ft_dprintf(STDERR_FILENO, PROG_NAME
+			": export: `%s\': not a valid identifier\n", cmd);
 	return (0);
 }
 

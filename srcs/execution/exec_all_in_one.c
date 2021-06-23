@@ -6,11 +6,18 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 16:33:03 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/23 16:59:53 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+typedef struct s_aio
+{
+	t_list	*tmp;
+	int		*fd;
+	int		pipe_len;
+}	t_aio;
 
 static void	cmd_with_multi_flag(t_list *lst_cmd, int *fd)
 {
@@ -44,30 +51,31 @@ static void	exec_multi_flag_cmd(t_list *tmp, int pipe_len, int *fd)
 
 void	all_in_one(t_list *lst_cmd)
 {
-	t_list	*tmp;
-	int		*fd;
-	int		pipe_len;
+	t_aio	aio;
 
-	tmp = lst_cmd;
-	fd = NULL;
-	if (tmp && (flag_check(tmp) == FLG_EO_CMD || flag_check(tmp) == FLG_EOL))
+	aio.tmp = lst_cmd;
+	aio.fd = NULL;
+	if (aio.tmp && simple_cmd_with_redir(aio.tmp->content, lst_cmd))
+		return ;
+	if (aio.tmp && (flag_check(aio.tmp) == FLG_EO_CMD
+			|| flag_check(aio.tmp) == FLG_EOL))
 	{
-		simple_cmd(tmp->content);
+		simple_cmd(aio.tmp->content);
 		return ;
 	}
-	pipe_len = count_pipe(tmp);
-	if (pipe_len > 0)
+	aio.pipe_len = count_pipe(aio.tmp);
+	if (aio.pipe_len > 0)
 	{
-		fd = malloc(sizeof(int) * (pipe_len * 2));
-		if (!fd)
+		aio.fd = malloc(sizeof(int) * (aio.pipe_len * 2));
+		if (!aio.fd)
 			return ;
-		pipe(fd);
+		pipe(aio.fd);
 	}
 	create_fd_output(lst_cmd);
-	first_cmd(tmp->content, fd, tmp, pipe_len);
-	while (tmp && is_redir(tmp))
-		tmp = tmp->next;
-	exec_multi_flag_cmd(tmp, pipe_len, fd);
+	first_cmd(aio.tmp->content, aio.fd, aio.tmp, aio.pipe_len);
+	while (aio.tmp && is_redir(aio.tmp))
+		aio.tmp = aio.tmp->next;
+	exec_multi_flag_cmd(aio.tmp, aio.pipe_len, aio.fd);
 }
 
 void	exec_all_in_one(t_list *lst_cmd)

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 16:28:15 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/23 17:08:39 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,6 +300,7 @@ void		simple_cmd(void *cmd);
 void		exec_all_in_one(t_list *lst_cmd);
 void 		set_lrv(int status);
 t_c_init	cmd_init(void);
+int			simple_cmd_with_redir(void *cmd, t_list *lst_cmd);
 
 // debug to delete
 void		show_content(t_list *, char *);
@@ -313,6 +314,10 @@ int			is_sep_or_end(t_list *lst_cmd);
 /* Builtins */
 int			ft_echo(t_cmd *cmds);
 int			ft_cd(t_cmd *cmds);
+char		*get_old_pwd(void);
+int			check_if_oldpwd_exist(t_list *env);
+void		replace_pwd(char *old_pwd, char *new_pwd, t_list *env);
+void		update_pwd_env(char *old_pwd);
 int			ft_pwd(void);
 int			ft_env(t_cmd *cmds);
 int			ft_export(t_cmd *cmds);

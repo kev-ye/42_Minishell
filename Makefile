@@ -6,7 +6,7 @@
 #    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/22 17:11:37 by kaye             ###   ########.fr        #
+#    Updated: 2021/06/23 16:40:59 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,7 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 NAME	:= minishell
 SRC		:= main.c
 SUB_SRC	:= cd.c \
+		   cd_utils.c \
 		   clear.c \
 		   echo.c \
 		   env.c \
@@ -64,7 +65,8 @@ SUB_SRC	:= exec_cmds.c \
 		   inter_cmd.c \
 		   last_cmd.c \
 		   lrv_utils.c \
-		   lrv_utils2.c
+		   lrv_utils2.c \
+		   simple_cmd_with_redir.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= args_parsing.c \
 		   init_minishell.c \
