@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 15:44:56 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 18:36:18 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,14 +293,15 @@ void		*get_complete_cmd(void *cmd, t_list *lst_cmd);
 void		create_fd_output(t_list *cmd);
 void		create_fd_input(t_list *cmd);
 char		*new_tmp_fd_name(int i);
+void		fork_fd(t_list *lst_cmd);
 int			check_for_next(t_list *lst_cmd);
 char		*get_tmp_fd(int i);
 void		simple_cmd(void *cmd);
 void		exec_all_in_one(t_list *lst_cmd);
-void 		set_lrv(int status);
+void		set_lrv(int status);
 t_c_init	cmd_init(void);
 int			simple_cmd_with_redir(void *cmd, t_list *lst_cmd);
-void 		unlink_all_tmp_fd(int i);
+void		unlink_all_tmp_fd(int i);
 
 /* Flag */
 int			flag_check(t_list *lst_cmd);

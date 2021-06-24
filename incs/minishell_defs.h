@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:31:30 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 13:23:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/24 18:33:50 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,8 @@
 
 /* Prompt string */
 # define PROG_NAME "minishell"
-// # if defined(__APPLE__) && defined(__MACH__)
-// #  define PROMPT "%s $ "
-// # else
-#  define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-// # endif
+
+# define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
 
 /* History file. May be renamed at compile time */
 # ifndef HISTORY_FILENAME

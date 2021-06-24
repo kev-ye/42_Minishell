@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_fd_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/24 15:17:34 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 18:36:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,22 @@ int	check_for_next(t_list *lst_cmd)
 	else if (flag_check(lst_cmd) == FLG_DINPUT)
 		next_flag = F_DINPUT;
 	return (next_flag);
+}
+
+void	fork_fd(t_list *lst_cmd)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid < 0)
+		exit(PID_FAILURE);
+	else if (pid == 0)
+	{
+		create_fd_input(lst_cmd);
+		ft_free_exit(SUCCESS);
+	}
+	else
+		waitpid(pid, NULL, 0);
 }
 
 char	*new_tmp_fd_name(int i)

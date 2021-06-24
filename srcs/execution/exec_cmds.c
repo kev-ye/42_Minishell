@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 15:58:48 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 18:35:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,22 +124,6 @@ void 	unlink_all_tmp_fd(int i)
 		ft_memdel((void **)&new_name);
 		return ;
 	}
-}
-
-void	fork_fd(t_list *lst_cmd)
-{
-	pid_t pid;
-
-	pid = fork();
-	if (pid < 0)
-		exit(PID_FAILURE);
-	else if (pid == 0)
-	{
-		create_fd_input(lst_cmd);
-		ft_free_exit(SUCCESS);
-	}
-	else
-		waitpid(pid, NULL, 0);
 }
 
 void	ft_exec_each_cmd(t_list *lst_cmd)

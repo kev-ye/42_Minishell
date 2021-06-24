@@ -135,8 +135,8 @@ test_cmd() {
 	# echo "Test #${i} \c"
 
 	# Make test (redirect all output to the file)
-	echo $1 | bash > $__SHL_TST_PATH__/real 2>&1
-	echo $1 | ./minishell > $__SHL_TST_PATH__/mine 2>&1
+	echo $1 | bash > $__SHL_TST_PATH__/real 2>/dev/null
+	echo $1 | ./minishell > $__SHL_TST_PATH__/mine 2>/dev/null
 
 	# Add diff between two files in a `diffs' file
 	diff $__SHL_TST_PATH__/real $__SHL_TST_PATH__/mine > $__SHL_TST_PATH__/diffs
@@ -324,11 +324,7 @@ test_parser() {
 	test_cmd "cd ../../../../../.. ; pwd"
 	test_cmd "cd ; pwd"
 	test_cmd "cd . ; pwd"
-
-	# builtins
-	test_cmd "unset TMPDIR; env"
-	# test_cmd "export bonjour | grep bonjour"
-
+	
 
 	print_stats "parser"
 }

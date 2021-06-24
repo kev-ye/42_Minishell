@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   first_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 14:30:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/24 15:58:28 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 18:36:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ static void	exec_first_cmd(void **cmd, int *fd, t_list *lst_cmd, int pipe_len)
 		else
 			dup2(fd[1], first_c.output_fd);
 	}
-
 	first_c.builtin_status = builtin_exec((t_cmd *)(*cmd));
 	if (first_c.builtin_status == NOT_FOUND)
 		first_c.lrv = sys_exec(*cmd);

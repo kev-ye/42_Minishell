@@ -6,16 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 13:02:48 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 13:25:38 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/24 18:33:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-#ifdef PROMPT
-# undef PROMPT
-# define PROMPT    B_YELLOW "%s " CLR_COLOR "$"  "> " CLR_COLOR
-#endif
 
 static void	update_prompt(void)
 {
