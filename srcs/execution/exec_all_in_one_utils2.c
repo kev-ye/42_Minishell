@@ -89,5 +89,9 @@ void	set_lrv(int status)
 	if (_wifexited(status) != 0)
 		singleton()->lrv = _wexitstatus(status);
 	else if (_wifsignaled(status) == 1)
+	{
+		if (_wtermsig(status) == SIGQUIT)
+			printf("Quit: %d\n", SIGQUIT);
 		singleton()->lrv = LRV_KILL_SIG + _wtermsig(status);
+	}
 }

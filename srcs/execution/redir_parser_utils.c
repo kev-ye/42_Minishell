@@ -42,10 +42,7 @@ static void	msg_error_with_exit(int opt, t_list *cmd)
 		exit(LRV_GENERAL_ERROR);
 	}
 	else if (opt == 2)
-	{
-		ft_dprintf(STDERR_FILENO, "open for double input crash\n");
 		exit(LRV_GENERAL_ERROR);
-	}
 }
 
 static t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
@@ -83,21 +80,14 @@ char	*get_tmp_fd(int i)
 
 	fd = -1;
 	new_name = NULL;
-	while (1)
+	ft_asprintf(&new_name, "%s%d", TMP_FD, i);
+	fd = open(new_name, O_RDWR);
+	if (fd != -1)
 	{
-		ft_asprintf(&new_name, "%s%d", TMP_FD, i);
-		fd = open(new_name, O_RDWR);
-		if (fd != -1)
-		{
-			close(fd);
-			return (new_name);
-		}
-		else
-		{
-			free(new_name);
-			++i;
-		}
+		close(fd);
+		return (new_name);
 	}
+	free(new_name);
 	return (NULL);
 }
 

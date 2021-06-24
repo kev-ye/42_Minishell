@@ -48,7 +48,10 @@ void	interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	if (inter_c.pid < 0)
 		exit(PID_FAILURE);
 	else if (inter_c.pid == 0)
+	{
+		signal(SIGQUIT, ft_interrupt);
 		exec_inter_cmd(&cmd, fd, fd_index, lst_cmd);
+	}
 	else
 	{
 		waitpid(inter_c.pid, &inter_c.status, 0);

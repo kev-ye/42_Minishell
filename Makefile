@@ -15,7 +15,7 @@
 CC			= clang
 CFLAGS 		= -Wall -Wextra -Werror # -g3 -fsanitize=address
 IFLAGS 		= -I./incs -I./libft/incs
-LIBFLAGS 	= -L./libft -lft -lncurses -L. -lreadline
+LIBFLAGS 	= -L./libft -lft -lncurses -lreadline
 
 # DIRECTORIES
 

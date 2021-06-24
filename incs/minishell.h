@@ -300,10 +300,7 @@ void		exec_all_in_one(t_list *lst_cmd);
 void 		set_lrv(int status);
 t_c_init	cmd_init(void);
 int			simple_cmd_with_redir(void *cmd, t_list *lst_cmd);
-
-// debug to delete
-void		show_content(t_list *, char *);
-void		show_fd(int, char *);
+void 		unlink_all_tmp_fd(int i);
 
 /* Flag */
 int			flag_check(t_list *lst_cmd);

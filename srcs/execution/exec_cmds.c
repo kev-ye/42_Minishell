@@ -126,6 +126,22 @@ void 	unlink_all_tmp_fd(int i)
 	}
 }
 
+void	fork_fd(t_list *lst_cmd)
+{
+	pid_t pid;
+
+	pid = fork();
+	if (pid < 0)
+		exit(PID_FAILURE);
+	else if (pid == 0)
+	{
+		create_fd_input(lst_cmd);
+		ft_free_exit(SUCCESS);
+	}
+	else
+		waitpid(pid, NULL, 0);
+}
+
 void	ft_exec_each_cmd(t_list *lst_cmd)
 {
 	t_list	*tmp;
@@ -141,7 +157,7 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 		return ;
 	}
 	if (tmp)
-		create_fd_input(tmp);
+		fork_fd(tmp);
 	while (tmp)
 	{
 		cmd_up(tmp);

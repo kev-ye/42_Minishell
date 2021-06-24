@@ -17,11 +17,7 @@ static int	g_dinput_fd = O_RDWR | O_CREAT | O_TRUNC | O_APPEND;
 static void	msg_error_with_exit(int opt)
 {
 	if (opt == 1)
-	{
-		ft_dprintf(STDERR_FILENO,
-			"open for double input crash\n");
 		exit(LRV_GENERAL_ERROR);
-	}
 	if (opt == 2)
 	{
 		ft_dprintf(STDERR_FILENO, PROG_NAME

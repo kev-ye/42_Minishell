@@ -43,7 +43,10 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	if (last_c.pid < 0)
 		exit(PID_FAILURE);
 	else if (last_c.pid == 0)
+	{
+		signal(SIGQUIT, ft_interrupt);
 		exec_last_cmd(&cmd, fd, fd_index, lst_cmd);
+	}
 	else
 	{
 		waitpid(last_c.pid, &last_c.status, 0);

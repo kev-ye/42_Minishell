@@ -48,7 +48,10 @@ void	ft_interrupt(int code)
 	{
 		singleton()->lrv = LRV_GENERAL_ERROR;
 		if (2 == singleton()->rl_lvl)
+		{
+			unlink_all_tmp_fd(0);
 			ft_free_exit(EXEC_FAILURE);
+		}
 		ft_putstr("\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);

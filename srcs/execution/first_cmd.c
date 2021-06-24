@@ -18,7 +18,9 @@ static void	exec_first_cmd(void **cmd, int *fd, t_list *lst_cmd, int pipe_len)
 
 	first_c = cmd_init();
 	if (check_is_redir_cmd(lst_cmd))
-	{
+	{	{
+		// ft_dprintf(STDERR_FILENO,
+		// 	"open for double input crash\n");
 		*cmd = get_complete_cmd(*cmd, lst_cmd);
 		redir_parser(lst_cmd, &first_c.input_fd, &first_c.output_fd);
 	}
@@ -29,6 +31,7 @@ static void	exec_first_cmd(void **cmd, int *fd, t_list *lst_cmd, int pipe_len)
 		else
 			dup2(fd[1], first_c.output_fd);
 	}
+
 	first_c.builtin_status = builtin_exec((t_cmd *)(*cmd));
 	if (first_c.builtin_status == NOT_FOUND)
 		first_c.lrv = sys_exec(*cmd);
@@ -46,7 +49,10 @@ void	first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 	if (first_c.pid < 0)
 		exit(PID_FAILURE);
 	else if (first_c.pid == 0)
+	{
+		signal(SIGQUIT, ft_interrupt);
 		exec_first_cmd(&cmd, fd, lst_cmd, pipe_len);
+	}
 	else
 	{
 		waitpid(first_c.pid, &first_c.status, 0);
