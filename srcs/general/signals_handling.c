@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 13:11:16 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 13:01:32 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/24 15:56:01 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	ft_interrupt(int code)
 	}
 	else if (SIGINT == code && EINTR == errno)
 	{
-		singleton()->last_return_value = LRV_GENERAL_ERROR;
+		singleton()->lrv = LRV_GENERAL_ERROR;
 		if (2 == singleton()->rl_lvl)
 			ft_free_exit(EXEC_FAILURE);
 		ft_putstr("\n");
@@ -46,7 +46,7 @@ void	ft_interrupt(int code)
 	}
 	else if (SIGINT == code && EINTR == errno)
 	{
-		singleton()->last_return_value = LRV_GENERAL_ERROR;
+		singleton()->lrv = LRV_GENERAL_ERROR;
 		if (2 == singleton()->rl_lvl)
 			ft_free_exit(EXEC_FAILURE);
 		ft_putstr("\n");

@@ -6,30 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 15:55:40 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:17:34 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-typedef struct s_tmp_fd
-{
-	char	*old_name;
-	char	*new_name;
-	char	*fd_nbr;
-	int		fd;
-}	t_tmp_fd;
-
-static t_tmp_fd	init_tmp_fd(void)
-{
-	t_tmp_fd	tmp_fd;
-
-	tmp_fd.old_name = NULL;
-	tmp_fd.new_name = NULL;
-	tmp_fd.fd_nbr = NULL;
-	tmp_fd.fd = -1;
-	return (tmp_fd);
-}
 
 int	check_for_next(t_list *lst_cmd)
 {
@@ -49,28 +30,23 @@ int	check_for_next(t_list *lst_cmd)
 
 char	*new_tmp_fd_name(int i)
 {
-	t_tmp_fd	tmp_fd;
+	char	*new_name;
+	int		fd;
 
-	tmp_fd = init_tmp_fd();
+	new_name = NULL;
+	fd = -1;
 	while (1)
 	{
-		tmp_fd.fd_nbr = ft_itoa(i);
-		tmp_fd.old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
-		if (!tmp_fd.old_name)
-			return (NULL);
-		ft_strcpy(tmp_fd.old_name, TMP_FD);
-		tmp_fd.new_name = ft_strjoin(tmp_fd.old_name, tmp_fd.fd_nbr);
-		free(tmp_fd.old_name);
-		free(tmp_fd.fd_nbr);
-		tmp_fd.fd = open(tmp_fd.new_name, O_RDWR);
-		if (tmp_fd.fd != -1)
+		ft_asprintf(&new_name, "%s%d", TMP_FD, i);
+		fd = open(new_name, O_RDWR);
+		if (fd != -1)
 		{
-			close(tmp_fd.fd);
-			free(tmp_fd.new_name);
+			close(fd);
+			free(new_name);
 			++i;
 		}
 		else
-			return (tmp_fd.new_name);
+			return (new_name);
 	}
 	return (NULL);
 }

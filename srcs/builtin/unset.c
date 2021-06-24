@@ -6,13 +6,13 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/23 17:58:54 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 14:37:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	del_and_swap(t_list **head, t_list **env, t_list **prev)
+static void	del_and_swap(t_list **head, t_list **env, t_list **prev)
 {
 	t_list	*current;
 
@@ -28,7 +28,7 @@ void	del_and_swap(t_list **head, t_list **env, t_list **prev)
 	ft_lstdelone(current, NULL);
 }
 
-void	del_env(t_list *lst_env, size_t len, char *cmd)
+static void	del_env(t_list *lst_env, size_t len, char *cmd)
 {
 	t_list	*prev;
 
@@ -50,12 +50,35 @@ void	del_env(t_list *lst_env, size_t len, char *cmd)
 	}
 }
 
+static int	cmds_check(char *cmd)
+{
+	if (!check_space(cmd) && (ft_isalpha(cmd[0]) || cmd[0] == '_'))
+		return (1);
+	else
+		ft_dprintf(STDERR_FILENO, PROG_NAME
+			": unset: `%s\': not a valid identifier\n", cmd);
+	return (0);
+}
+
+static void	to_unset(char **cmds)
+{
+	int	i;
+
+	i = 1;
+	while (cmds && cmds[i])
+	{
+		if (cmds_check(cmds[i]))
+			del_env(singleton()->env, ft_strlen(cmds[i]), cmds[i]);
+		++i;
+	}
+}
+
 int	ft_unset(t_cmd *cmds)
 {
 	if (!cmds || !cmds->args || !*cmds->args)
 		return (ERROR);
 	if (!*(cmds->args + 1))
 		return (SUCCESS);
-	del_env(singleton()->env, ft_strlen(cmds->args[1]), cmds->args[1]);
+	to_unset(cmds->args);
 	return (SUCCESS);
 }

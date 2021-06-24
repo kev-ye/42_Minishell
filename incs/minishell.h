@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/19 14:07:35 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 17:08:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:44:56 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ struct s_options
 typedef struct s_minishl
 {
 	int					isatty_stdin;
-	int					last_return_value;
+	int					lrv;
 	char				*cwd;
 	char				*cwd_basename;
 	char				*prompt;
@@ -284,7 +284,6 @@ int			_wtermsig(int status);
 int			check_is_inter(t_list *lst_cmd);
 int			check_is_redir_cmd(t_list *lst_cmd);
 int			check_have_dinput(t_list *lst_cmd);
-void		unlink_fd(void);
 int			count_pipe(t_list *lst_cmd);
 void		first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len);
 void		interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd);

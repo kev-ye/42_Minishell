@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/21 15:17:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 13:30:35 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/24 14:39:48 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int	print_arg_error(t_cmd *cmds)
 {
 	ft_dprintf(STDERR_FILENO,
 		PROG_NAME": %s: too many arguments\n", cmds->args[0]);
-	singleton()->last_return_value = LRV_GENERAL_ERROR;
+	singleton()->lrv = LRV_GENERAL_ERROR;
 	return (LRV_GENERAL_ERROR);
 }
 

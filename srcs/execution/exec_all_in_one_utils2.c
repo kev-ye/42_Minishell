@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 14:30:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 15:40:24 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 14:39:48 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ t_c_init	cmd_init(void)
 void	set_lrv(int status)
 {
 	if (_wifexited(status) != 0)
-		singleton()->last_return_value = _wexitstatus(status);
+		singleton()->lrv = _wexitstatus(status);
 	else if (_wifsignaled(status) == 1)
-		singleton()->last_return_value = LRV_KILL_SIG + _wtermsig(status);
+		singleton()->lrv = LRV_KILL_SIG + _wtermsig(status);
 }

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 14:30:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/23 16:21:33 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:58:28 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ void	first_cmd(void *cmd, int *fd, t_list *lst_cmd, int pipe_len)
 		waitpid(first_c.pid, &first_c.status, 0);
 		if (fd)
 			close(fd[1]);
-		if (check_have_dinput(lst_cmd) == 1)
-			unlink_fd();
 	}
 	set_lrv(first_c.status);
 }

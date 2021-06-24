@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 13:53:35 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 14:38:59 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:19:14 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,6 @@
 
 static int	g_trunc_fd = O_WRONLY | O_TRUNC | O_CREAT;
 static int	g_append_fd = O_WRONLY | O_APPEND | O_CREAT;
-
-typedef struct s_tmp_fd
-{
-	char	*old_name;
-	char	*new_name;
-	char	*fd_nbr;
-	int		fd;
-}	t_tmp_fd;
 
 static void	parser_output_fd(t_list *cmd, int *fd_output, int flag_is)
 {
@@ -62,7 +54,7 @@ static t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
 	int		i;
 
 	tmp_fd_name = NULL;
-	i = 1;
+	i = 0;
 	if (flag_is == F_INPUT)
 	{
 		*fd_input = open(((t_cmd *)cmd->content)->args[0], O_RDWR);
@@ -86,28 +78,23 @@ static t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)
 
 char	*get_tmp_fd(int i)
 {
-	t_tmp_fd	tmp_fd;
+	char	*new_name;
+	int		fd;
 
-	tmp_fd.fd = -1;
+	fd = -1;
+	new_name = NULL;
 	while (1)
 	{
-		tmp_fd.fd_nbr = ft_itoa(i);
-		tmp_fd.old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
-		if (!tmp_fd.old_name)
-			return (NULL);
-		ft_strcpy(tmp_fd.old_name, TMP_FD);
-		tmp_fd.new_name = ft_strjoin(tmp_fd.old_name, tmp_fd.fd_nbr);
-		free(tmp_fd.old_name);
-		free(tmp_fd.fd_nbr);
-		tmp_fd.fd = open(tmp_fd.new_name, O_RDWR);
-		if (tmp_fd.fd != -1)
+		ft_asprintf(&new_name, "%s%d", TMP_FD, i);
+		fd = open(new_name, O_RDWR);
+		if (fd != -1)
 		{
-			close(tmp_fd.fd);
-			return (tmp_fd.new_name);
+			close(fd);
+			return (new_name);
 		}
 		else
 		{
-			free(tmp_fd.new_name);
+			free(new_name);
 			++i;
 		}
 	}

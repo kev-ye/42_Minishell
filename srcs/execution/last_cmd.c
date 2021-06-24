@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 14:30:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/23 16:50:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:44:13 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ void	last_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	else
 	{
 		waitpid(last_c.pid, &last_c.status, 0);
-		if (check_have_dinput(lst_cmd) == 1)
-			unlink_fd();
+		close(fd[fd_index * 2]);
 	}
 	set_lrv(last_c.status);
 }

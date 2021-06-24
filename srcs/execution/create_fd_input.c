@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 18:13:57 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 16:30:41 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 16:08:42 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,20 @@
 
 static int	g_dinput_fd = O_RDWR | O_CREAT | O_TRUNC | O_APPEND;
 
-static void	msg_error_with_exit(void)
+static void	msg_error_with_exit(int opt)
 {
-	ft_dprintf(STDERR_FILENO,
-		"open for double input crash\n");
-	exit(LRV_GENERAL_ERROR);
+	if (opt == 1)
+	{
+		ft_dprintf(STDERR_FILENO,
+			"open for double input crash\n");
+		exit(LRV_GENERAL_ERROR);
+	}
+	if (opt == 2)
+	{
+		ft_dprintf(STDERR_FILENO, PROG_NAME
+			": maximum here-document count exceeded\n");
+		ft_free_exit(2);
+	}
 }
 
 static void	wait_dinput(t_list **cmd,
@@ -39,7 +48,7 @@ static void	wait_dinput(t_list **cmd,
 				close(*fd_input);
 				*fd_input = open(*tmp_fd, g_dinput_fd, 0666);
 				if (*fd_input == -1)
-					msg_error_with_exit();
+					msg_error_with_exit(1);
 				(*cmd) = (*cmd)->next;
 				continue ;
 			}
@@ -53,21 +62,38 @@ static void	wait_dinput(t_list **cmd,
 	}
 }
 
+static int	check_max_dinput(t_list *cmd)
+{
+	int	count;
+
+	count = 0;
+	while (cmd)
+	{
+		++count;
+		if (flag_check(cmd) != FLG_DINPUT)
+			break ;
+		cmd = cmd->next;
+	}
+	return (count);
+}
+
 static t_list	*create_input_fd(t_list *cmd, int fd_input, int flag_is)
 {
 	char	*input_str;
 	char	*tmp_fd;
 	int		i;
 
-	i = 1;
+	i = 0;
 	tmp_fd = NULL;
 	input_str = NULL;
 	if (flag_is == F_DINPUT)
 	{
+		if (check_max_dinput(cmd) > 16)
+			msg_error_with_exit(2);
 		tmp_fd = new_tmp_fd_name(i);
 		fd_input = open(tmp_fd, g_dinput_fd, 0666);
 		if (fd_input == -1)
-			msg_error_with_exit();
+			msg_error_with_exit(1);
 		else
 		{
 			wait_dinput(&cmd, &input_str, &tmp_fd, &fd_input);

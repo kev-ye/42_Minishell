@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 14:30:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 14:38:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 16:04:45 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,18 +58,4 @@ int	count_pipe(t_list *lst_cmd)
 		tmp = tmp->next;
 	}
 	return (count);
-}
-
-void	unlink_fd(void)
-{
-	char	*fd_to_unlink;
-	int		i;
-
-	i = 0;
-	fd_to_unlink = get_tmp_fd(i);
-	if (fd_to_unlink)
-	{
-		unlink(fd_to_unlink);
-		free(fd_to_unlink);
-	}
 }

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 14:30:36 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/22 15:13:41 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:44:23 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,7 @@ void	interm_cmd(void *cmd, int *fd, int fd_index, t_list *lst_cmd)
 	{
 		waitpid(inter_c.pid, &inter_c.status, 0);
 		close(fd[((fd_index + 1) * 2) + 1]);
-		close(fd[fd_index]);
-		if (check_have_dinput(lst_cmd) == 1)
-			unlink_fd();
+		close(fd[fd_index * 2]);
 	}
 	set_lrv(inter_c.status);
 }

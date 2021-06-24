@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 13:06:04 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/23 15:14:39 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 14:39:48 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,6 @@ int	builtin_exec(t_cmd *cmds)
 	}
 	if (NOT_FOUND == ret)
 		return (ret);
-	singleton()->last_return_value = ret;
+	singleton()->lrv = ret;
 	return (SUCCESS);
 }

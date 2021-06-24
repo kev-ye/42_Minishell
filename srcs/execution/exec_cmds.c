@@ -6,12 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/20 22:33:29 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 17:04:17 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 15:58:48 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#define LRV_TERM singleton()->last_return_value = LRV_KILL_SIG + _wtermsig(spl_c.status);
 
 typedef struct s_spl_c
 {
@@ -42,12 +41,12 @@ static void	cmd_updating(t_list **lst_cmd, char **new, int i, int j)
 			break ;
 		ft_asprintf(&(*new), "%.*s%d%s", j,
 			((t_cmd *)(*lst_cmd)->content)->args[i],
-			singleton()->last_return_value,
+			singleton()->lrv,
 			((t_cmd *)(*lst_cmd)->content)->args[i] + j + 1);
 		tmp = ((t_cmd *)(*lst_cmd)->content)->args[i];
 		((t_cmd *)(*lst_cmd)->content)->args[i] = *new;
 		ft_memdel((void **)&tmp);
-		j += ft_nblen(singleton()->last_return_value);
+		j += ft_nblen(singleton()->lrv);
 	}
 }
 
@@ -94,41 +93,35 @@ void	simple_cmd(void *cmd)
 		else
 			waitpid(spl_c.pid, &spl_c.status, 0);
 		if (_wifexited(spl_c.status) != 0)
-			singleton()->last_return_value = _wexitstatus(spl_c.status);
+			singleton()->lrv = _wexitstatus(spl_c.status);
 		else if (_wifsignaled(spl_c.status) == 1)
 		{
 			if (_wtermsig(spl_c.status) == SIGQUIT)
 				printf("Quit: %d\n", SIGQUIT);
-			singleton()->last_return_value = LRV_KILL_SIG
-			+ _wtermsig(spl_c.status);
+			singleton()->lrv = LRV_KILL_SIG + _wtermsig(spl_c.status);
 		}
 	}
 }
 
 void 	unlink_all_tmp_fd(int i)
 {
-	t_ulk_tmp	ulk_tmp;
+	char	*new_name;
+	int		fd;
 
-	ulk_tmp.fd = -1;
-	ulk_tmp.fd_nbr = ft_itoa(i);
-	ulk_tmp.old_name = malloc(sizeof(char) * ft_strlen(TMP_FD) + 1);
-	if (!ulk_tmp.old_name)
-		return ;
-	ft_strcpy(ulk_tmp.old_name, TMP_FD);
-	ulk_tmp.new_name = ft_strjoin(ulk_tmp.old_name, ulk_tmp.fd_nbr);
-	free(ulk_tmp.old_name);
-	free(ulk_tmp.fd_nbr);
-	ulk_tmp.fd = open(ulk_tmp.new_name, O_RDWR);
-	if (ulk_tmp.fd != -1)
+	new_name = NULL;
+	fd = -1;
+	ft_asprintf(&new_name, "%s%d", TMP_FD, i);
+	fd = open(new_name, O_RDWR);
+	if (fd != -1)
 	{
-		close(ulk_tmp.fd);
-		unlink(ulk_tmp.new_name);
-		free(ulk_tmp.new_name);
-		unlink_all_tmp_fd(i++);
+		close(fd);
+		unlink(new_name);
+		free(new_name);
+		unlink_all_tmp_fd(++i);
 	}
 	else
 	{
-		ft_memdel((void **)&ulk_tmp.new_name);
+		ft_memdel((void **)&new_name);
 		return ;
 	}
 }
@@ -144,7 +137,7 @@ void	ft_exec_each_cmd(t_list *lst_cmd)
 	i = 0;
 	if (syntax_parser(tmp))
 	{
-		singleton()->last_return_value = LRV_SYNTAX_ERROR;
+		singleton()->lrv = LRV_SYNTAX_ERROR;
 		return ;
 	}
 	if (tmp)

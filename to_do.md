@@ -21,9 +21,5 @@
 - [x] add signal for CTRL-\
 - [x] cd : no more 2 args
 - [x] builtin can launch with redir but no with pipe
-- [ ] leak with fd : check \[first/inter/last\]_cmd.c
-- [ ] unset with multi args no fonction + msg error like export
-
-
-cmd1    cm2    cmd3   cmd3  cmd4 > f1
-     0 1    2 3    4 5    6 7 
+- [x] leak with fd : check \[first/inter/last\]_cmd.c
+- [x] unset with multi args no fonction + msg error like export
