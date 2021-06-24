@@ -31,6 +31,12 @@ static void	parser_output_fd(t_list *cmd, int *fd_output, int flag_is)
 	}
 	if (*fd_output != -1)
 		dup2(*fd_output, STDOUT_FILENO);
+	else
+	{
+		ft_dprintf(STDERR_FILENO, PROG_NAME
+			": %s: %s\n", ((t_cmd *)cmd->content)->args[0], strerror(errno));
+		exit(LRV_GENERAL_ERROR);
+	}
 }
 
 static void	msg_error_with_exit(int opt, t_list *cmd)
@@ -42,7 +48,7 @@ static void	msg_error_with_exit(int opt, t_list *cmd)
 		exit(LRV_GENERAL_ERROR);
 	}
 	else if (opt == 2)
-		exit(LRV_GENERAL_ERROR);
+		exit(130);
 }
 
 static t_list	*parser_input_fd(t_list *cmd, int *fd_input, int flag_is)

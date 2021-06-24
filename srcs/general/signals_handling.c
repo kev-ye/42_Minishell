@@ -50,7 +50,7 @@ void	ft_interrupt(int code)
 		if (2 == singleton()->rl_lvl)
 		{
 			unlink_all_tmp_fd(0);
-			ft_free_exit(EXEC_FAILURE);
+			ft_free_exit(1);
 		}
 		ft_putstr("\n");
 		rl_on_new_line();

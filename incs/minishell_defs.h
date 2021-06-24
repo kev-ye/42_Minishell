@@ -88,7 +88,11 @@
 # define NO_ONE     (-1)
 
 /* Bultin */
-# define NO_NUM_ARG 255
+# if defined(__APPLE__) && defined(__MACH__)
+#  define NO_NUM_ARG 255
+# else
+#  define NO_NUM_ARG 2
+# endif
 
 /* LRV -> Last Return Value ($?) */
 # define PID_FAILURE       1

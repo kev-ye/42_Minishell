@@ -22,7 +22,7 @@ static void	create_output_fd(t_list *cmd, int fd_output, int flag_is)
 	else if (flag_is == F_APPEND)
 		fd_output = open(((t_cmd *)cmd->content)->args[0], g_append_fd, 0666);
 	if (fd_output == -1)
-		exit(LRV_GENERAL_ERROR);
+		return ;
 	else
 		close(fd_output);
 }
