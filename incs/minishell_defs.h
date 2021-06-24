@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_defs.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 11:31:30 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 17:04:21 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 13:23:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 
 /* Prompt string */
 # define PROG_NAME "minishell"
-# if defined(__APPLE__) && defined(__MACH__)
-#  define PROMPT "%s $ "
-# else
+// # if defined(__APPLE__) && defined(__MACH__)
+// #  define PROMPT "%s $ "
+// # else
 #  define PROMPT "\e[1;36m\e[1m%s \e[1;31m$ \e[0m"
-# endif
+// # endif
 
 /* History file. May be renamed at compile time */
 # ifndef HISTORY_FILENAME

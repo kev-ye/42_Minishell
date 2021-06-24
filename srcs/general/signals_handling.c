@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   signals_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 13:11:16 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 17:05:53 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/24 13:01:32 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* on macOS */
+/* rl_on_new_line() does not exist on macOS */
 #if defined(__APPLE__) && defined(__MACH__)
+
 void	ft_interrupt(int code)
 {
 	if (SIGQUIT == code)
@@ -56,4 +57,5 @@ void	ft_interrupt(int code)
 	else
 		ft_putstr("\n");
 }
+
 #endif
