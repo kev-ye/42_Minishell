@@ -92,14 +92,7 @@ void	simple_cmd(void *cmd)
 		}
 		else
 			waitpid(spl_c.pid, &spl_c.status, 0);
-		if (_wifexited(spl_c.status) != 0)
-			singleton()->lrv = _wexitstatus(spl_c.status);
-		else if (_wifsignaled(spl_c.status) == 1)
-		{
-			if (_wtermsig(spl_c.status) == SIGQUIT)
-				printf("Quit: %d\n", SIGQUIT);
-			singleton()->lrv = LRV_KILL_SIG + _wtermsig(spl_c.status);
-		}
+		set_lrv(spl_c.status);
 	}
 }
 

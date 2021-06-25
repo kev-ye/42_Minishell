@@ -92,6 +92,8 @@ void	set_lrv(int status)
 	{
 		if (_wtermsig(status) == SIGQUIT)
 			printf("Quit: %d\n", SIGQUIT);
+		if (_wtermsig(status) == SIGINT)
+			printf("\n");
 		singleton()->lrv = LRV_KILL_SIG + _wtermsig(status);
 	}
 }

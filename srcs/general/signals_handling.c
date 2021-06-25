@@ -46,19 +46,16 @@ void	ft_interrupt(int code)
 	}
 	else if (SIGINT == code && EINTR == errno)
 	{
-		singleton()->lrv = LRV_GENERAL_ERROR;
+		set_lrv(2);
 		if (2 == singleton()->rl_lvl)
 		{
 			unlink_all_tmp_fd(0);
 			ft_free_exit(1);
 		}
-		ft_putstr("\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
-	else
-		ft_putstr("\n");
 }
 
 #endif
