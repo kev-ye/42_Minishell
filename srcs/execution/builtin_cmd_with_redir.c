@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   simple_cmd_with_redir.c                            :+:      :+:    :+:   */
+/*   builtin_cmd_with_redir.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:28:00 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/23 16:57:33 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/26 23:36:56 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	ft_check_builtin_cmd(t_cmd *cmds)
 	return (NOT_FOUND);
 }
 
-static int	simple_redir_cmd(void *cmd, t_list *lst_cmd)
+static int	builtin_redir_cmd(void *cmd, t_list *lst_cmd)
 {
 	t_spl_c		spl_c;
 	t_c_init	spl_c_r;
@@ -54,13 +54,15 @@ static int	simple_redir_cmd(void *cmd, t_list *lst_cmd)
 	else
 	{
 		create_fd_output(lst_cmd);
+		if (builtin_redir_parser(lst_cmd,
+				&spl_c_r.input_fd, &spl_c_r.output_fd) == ERROR)
+			return (1);
 		builtin_exec((t_cmd *)cmd);
-		close(spl_c_r.output_fd);
 	}
 	return (1);
 }
 
-int	simple_cmd_with_redir(void *cmd, t_list *lst_cmd)
+int	builtin_cmd_with_redir(void *cmd, t_list *lst_cmd)
 {
 	t_list	*tmp;
 
@@ -69,7 +71,7 @@ int	simple_cmd_with_redir(void *cmd, t_list *lst_cmd)
 		tmp = tmp->next;
 	if (flag_check(tmp) == FLG_EOL)
 	{
-		if (!simple_redir_cmd(cmd, lst_cmd))
+		if (!builtin_redir_cmd(cmd, lst_cmd))
 			return (0);
 		return (1);
 	}

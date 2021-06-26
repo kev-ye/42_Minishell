@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
+#    By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/17 17:51:28 by kaye              #+#    #+#              #
-#    Updated: 2021/06/24 12:59:45 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/26 23:20:10 by kaye             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,7 +66,8 @@ SUB_SRC	:= exec_cmds.c \
 		   last_cmd.c \
 		   lrv_utils.c \
 		   lrv_utils2.c \
-		   simple_cmd_with_redir.c
+		   builtin_cmd_with_redir.c \
+		   builtin_cmd_with_redir_utils.c
 SRC		+= $(addprefix execution/, $(SUB_SRC))
 SUB_SRC	:= args_parsing.c \
 		   init_minishell.c \

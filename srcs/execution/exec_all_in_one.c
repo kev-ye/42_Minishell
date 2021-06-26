@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 19:03:54 by kaye              #+#    #+#             */
-/*   Updated: 2021/06/23 16:59:53 by kaye             ###   ########.fr       */
+/*   Updated: 2021/06/26 23:20:53 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	all_in_one(t_list *lst_cmd)
 
 	aio.tmp = lst_cmd;
 	aio.fd = NULL;
-	if (aio.tmp && simple_cmd_with_redir(aio.tmp->content, lst_cmd))
+	if (aio.tmp && builtin_cmd_with_redir(aio.tmp->content, lst_cmd))
 		return ;
 	if (aio.tmp && (flag_check(aio.tmp) == FLG_EO_CMD
 			|| flag_check(aio.tmp) == FLG_EOL))
